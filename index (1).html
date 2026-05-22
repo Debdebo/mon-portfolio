@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portefeuille de Compétences – BDC</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --navy: #1a2744;
+    --navy-mid: #2e3f6f;
+    --accent: #c8a96e;
+    --accent-light: #f0e4cc;
+    --soft: #f7f5f0;
+    --border: #d4cfc5;
+    --text: #1a1a1a;
+    --muted: #6b6760;
+    --radio-size: 22px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: #ede9e0;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .toolbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: var(--navy);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 32px;
+    z-index: 999;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+
+  .toolbar-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    color: var(--accent-light);
+  }
+
+  .btn-export {
+    background: var(--accent);
+    color: var(--navy);
+    border: none;
+    padding: 9px 22px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    border-radius: 3px;
+    text-transform: uppercase;
+    transition: background 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-export:hover { background: #dfc07c; }
+  .btn-export svg { width: 16px; height: 16px; }
+
+  .document {
+    max-width: 860px;
+    margin: 72px auto 60px;
+    background: white;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.12);
+  }
+
+  .doc-header {
+    background: var(--navy);
+    padding: 48px 56px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .doc-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,169,110,0.15);
+  }
+  .doc-header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; right: 60px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,169,110,0.1);
+  }
+
+  .doc-header h1 {
+    font-family: 'Libre Baskerville', serif;
+    color: white;
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .doc-header p {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    line-height: 1.7;
+    max-width: 600px;
+  }
+  .accent-bar {
+    width: 48px; height: 3px;
+    background: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .doc-body { padding: 0 56px 56px; }
+
+  .section {
+    margin-top: 40px;
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    background: var(--navy);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-letter {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 20px;
+    color: var(--accent);
+    font-style: italic;
+    min-width: 28px;
+  }
+  .section-title {
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .scale-header {
+    display: grid;
+    grid-template-columns: 1fr 180px;
+    padding: 8px 24px;
+    background: var(--soft);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .scale-header-labels {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .scale-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    width: var(--radio-size);
+    text-align: center;
+  }
+
+  .skill-row {
+    display: grid;
+    grid-template-columns: 1fr 180px;
+    padding: 9px 24px;
+    border-bottom: 0.5px solid #eee;
+    align-items: center;
+    transition: background 0.12s;
+  }
+  .skill-row:last-child { border-bottom: none; }
+  .skill-row:hover { background: #fafaf8; }
+
+  .skill-name {
+    font-size: 13px;
+    color: var(--text);
+    padding-right: 16px;
+    line-height: 1.4;
+  }
+
+  .radio-group {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .radio-group input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: var(--radio-size);
+    height: var(--radio-size);
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.15s, background 0.15s;
+    background: white;
+  }
+  .radio-group input[type="radio"]:checked {
+    border-color: var(--navy-mid);
+    background: var(--navy-mid);
+  }
+  .radio-group input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: white;
+  }
+  .radio-group input[type="radio"]:hover:not(:checked) {
+    border-color: var(--navy-mid);
+    background: var(--accent-light);
+  }
+
+  .score-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: var(--soft);
+    border-top: 1px solid var(--border);
+  }
+  .score-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .score-value {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 18px;
+    color: var(--navy);
+    font-weight: 700;
+    min-width: 70px;
+    text-align: right;
+  }
+  .score-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .score-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  /* Synthesis & Summary table */
+  .summary-section {
+    margin-top: 40px;
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .summary-header {
+    background: var(--navy);
+    padding: 14px 24px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .summary-table td, .summary-table th {
+    padding: 10px 24px;
+    font-size: 13px;
+    border-bottom: 0.5px solid #eee;
+  }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-table th {
+    background: var(--soft);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .summary-table .domain-name { color: var(--text); }
+  .summary-table .domain-score {
+    text-align: right;
+    font-family: 'Libre Baskerville', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy-mid);
+    min-width: 80px;
+  }
+  .summary-table .domain-bar-cell { width: 200px; }
+  .summary-bar-wrap {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .summary-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+
+  /* Synthesis ranking */
+  .synthesis-section {
+    margin-top: 40px;
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .synthesis-header {
+    background: var(--navy);
+    padding: 14px 24px;
+  }
+  .synthesis-header h3 {
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .synthesis-header p {
+    color: rgba(255,255,255,0.55);
+    font-size: 12px;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .synthesis-body { padding: 20px 24px; }
+  .rank-list { list-style: none; }
+  .rank-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid #eee;
+  }
+  .rank-item:last-child { border-bottom: none; }
+  .rank-num {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 16px;
+    color: var(--accent);
+    font-style: italic;
+    min-width: 24px;
+    margin-top: 2px;
+  }
+  .rank-content { flex: 1; }
+  .rank-domain {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy-mid);
+    margin-bottom: 2px;
+  }
+  .rank-score {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .observations-section {
+    margin-top: 40px;
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .observations-header {
+    background: var(--navy);
+    padding: 14px 24px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .observations-body { padding: 20px 24px; }
+  .observations-body textarea {
+    width: 100%;
+    min-height: 120px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--soft);
+    border: 0.5px solid var(--border);
+    border-radius: 3px;
+    padding: 12px 14px;
+    resize: vertical;
+    outline: none;
+    line-height: 1.6;
+  }
+  .observations-body textarea:focus {
+    border-color: var(--navy-mid);
+    background: white;
+  }
+
+  /* Specific section I */
+  .section-i-body { padding: 20px 24px; }
+  .custom-skill-row {
+    display: grid;
+    grid-template-columns: 1fr 180px;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .custom-skill-row input[type="text"] {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--soft);
+    border: 0.5px solid var(--border);
+    border-radius: 3px;
+    padding: 7px 10px;
+    outline: none;
+  }
+  .custom-skill-row input[type="text"]:focus {
+    border-color: var(--navy-mid);
+    background: white;
+  }
+  .btn-add {
+    margin-top: 10px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    padding: 7px 16px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s;
+  }
+  .btn-add:hover { border-color: var(--navy-mid); color: var(--navy-mid); }
+
+  .doc-footer {
+    margin-top: 56px;
+    padding: 24px 56px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .doc-footer p {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  @media print {
+    .toolbar { display: none; }
+    body { background: white; }
+    .document { margin: 0; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="toolbar-title">Portefeuille de Compétences — BDC</span>
+  <button class="btn-export" onclick="exportPDF()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17V3M7 12l5 5 5-5M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"/></svg>
+    Enregistrer en PDF
+  </button>
+</div>
+
+<div class="document" id="doc">
+
+  <div class="doc-header">
+    <div class="accent-bar"></div>
+    <h1>Portefeuille de Compétences</h1>
+    <p>Pour chacune des compétences listées ci-dessous, évaluez votre niveau de maîtrise en vous attribuant une note de 0 à 5, où 0 correspond à une compétence jamais mobilisée et 5 à une compétence pleinement maîtrisée et exercée avec aisance.</p>
+  </div>
+
+  <div class="doc-body">
+
+    <!-- Section A -->
+    <div class="section" id="section-A">
+      <div class="section-header">
+        <span class="section-letter">A</span>
+        <span class="section-title">Compétences interpersonnelles et de communication</span>
+      </div>
+      <div class="scale-header">
+        <div></div>
+        <div class="scale-header-labels">
+          <span class="scale-num">0</span><span class="scale-num">1</span><span class="scale-num">2</span><span class="scale-num">3</span><span class="scale-num">4</span><span class="scale-num">5</span>
+        </div>
+      </div>
+      <div id="skills-A"></div>
+      <div class="score-row">
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-A" style="width:0%"></div></div>
+        <span class="score-label">Mon score</span>
+        <span class="score-value" id="score-A">0 / 100</span>
+      </div>
+    </div>
+
+    <!-- Section B -->
+    <div class="section" id="section-B">
+      <div class="section-header">
+        <span class="section-letter">B</span>
+        <span class="section-title">Compétences organisationnelles et de gestion du temps</span>
+      </div>
+      <div class="scale-header">
+        <div></div>
+        <div class="scale-header-labels">
+          <span class="scale-num">0</span><span class="scale-num">1</span><span class="scale-num">2</span><span class="scale-num">3</span><span class="scale-num">4</span><span class="scale-num">5</span>
+        </div>
+      </div>
+      <div id="skills-B"></div>
+      <div class="score-row">
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-B" style="width:0%"></div></div>
+        <span class="score-label">Mon score</span>
+        <span class="score-value" id="score-B">0 / 100</span>
+      </div>
+    </div>
+
+    <!-- Section C -->
+    <div class="section" id="section-C">
+      <div class="section-header">
+        <span class="section-letter">C</span>
+        <span class="section-title">Compétences d'analyse, d'apprentissage et de résolution de problèmes</span>
+      </div>
+      <div class="scale-header">
+        <div></div>
+        <div class="scale-header-labels">
+          <span class="scale-num">0</span><span class="scale-num">1</span><span class="scale-num">2</span><span class="scale-num">3</span><span class="scale-num">4</span><span class="scale-num">5</span>
+        </div>
+      </div>
+      <div id="skills-C"></div>
+      <div class="score-row">
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-C" style="width:0%"></div></div>
+        <span class="score-label">Mon score</span>
+        <span class="score-value" id="score-C">0 / 100</span>
+      </div>
+    </div>
+
+    <!-- Section D -->
+    <div class="section" id="section-D">
+      <div class="section-header">
+        <span class="section-letter">D</span>
+        <span class="section-title">Compétences créatives, d'innovation et d'amélioration continue</span>
+      </div>
+      <div class="scale-header">
+        <div></div>
+        <div class="scale-header-labels">
+          <span class="scale-num">0</span><span class="scale-num">1</span><span class="scale-num">2</span><span class="scale-num">3</span><span class="scale-num">4</span><span class="scale-num">5</span>
+        </div>
+      </div>
+      <div id="skills-D"></div>
+      <div class="score-row">
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-D" style="width:0%"></div></div>
+        <span class="score-label">Mon score</span>
+        <span class="score-value" id="score-D">0 / 100</span>
+      </div>
+    </div>
+
+    <!-- Section E -->
+    <div class="section" id="section-E">
+      <div class="section-header">
+        <span class="section-letter">E</span>
+        <span class="section-title">Compétences managériales et de coordination</span>
+      </div>
+      <div class="scale-header">
+        <div></div>
+        <div class="scale-header-labels">
+          <span class="scale-num">0</span><span class="scale-num">1</span><span class="scale-num">2</span><span class="scale-num">3</span><span class="scale-num">4</span><span class="scale-num">5</span>
+        </div>
+      </div>
+      <div id="skills-E"></div>
+      <div class="score-row">
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-E" style="width:0%"></div></div>
+        <span class="score-label">Mon score</span>
+        <span class="score-value" id="score-E">0 / 100</span>
+      </div>
+    </div>
+
+    <!-- Section F -->
+    <div class="section" id="section-F">
+      <div class="section-header">
+        <span class="section-letter">F</span>
+        <span class="section-title">Compétences techniques et manuelles</span>
+      </div>
+      <div class="scale-header">
+        <div></div>
+        <div class="scale-header-labels">
+          <span class="scale-num">0</span><span class="scale-num">1</span><span class="scale-num">2</span><span class="scale-num">3</span><span class="scale-num">4</span><span class="scale-num">5</span>
+        </div>
+      </div>
+      <div id="skills-F"></div>
+      <div class="score-row">
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-F" style="width:0%"></div></div>
+        <span class="score-label">Mon score</span>
+        <span class="score-value" id="score-F">0 / 100</span>
+      </div>
+    </div>
+
+    <!-- Section G -->
+    <div class="section" id="section-G">
+      <div class="section-header">
+        <span class="section-letter">G</span>
+        <span class="section-title">Compétences administratives, réglementaires et de gestion</span>
+      </div>
+      <div class="scale-header">
+        <div></div>
+        <div class="scale-header-labels">
+          <span class="scale-num">0</span><span class="scale-num">1</span><span class="scale-num">2</span><span class="scale-num">3</span><span class="scale-num">4</span><span class="scale-num">5</span>
+        </div>
+      </div>
+      <div id="skills-G"></div>
+      <div class="score-row">
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-G" style="width:0%"></div></div>
+        <span class="score-label">Mon score</span>
+        <span class="score-value" id="score-G">0 / 100</span>
+      </div>
+    </div>
+
+    <!-- Section H -->
+    <div class="section" id="section-H">
+      <div class="section-header">
+        <span class="section-letter">H</span>
+        <span class="section-title">Compétences commerciales et relation client</span>
+      </div>
+      <div class="scale-header">
+        <div></div>
+        <div class="scale-header-labels">
+          <span class="scale-num">0</span><span class="scale-num">1</span><span class="scale-num">2</span><span class="scale-num">3</span><span class="scale-num">4</span><span class="scale-num">5</span>
+        </div>
+      </div>
+      <div id="skills-H"></div>
+      <div class="score-row">
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-H" style="width:0%"></div></div>
+        <span class="score-label">Mon score</span>
+        <span class="score-value" id="score-H">0 / 100</span>
+      </div>
+    </div>
+
+    <!-- Section I (custom) -->
+    <div class="section" id="section-I">
+      <div class="section-header">
+        <span class="section-letter">I</span>
+        <span class="section-title">Compétences spécifiques (non mentionnées dans le questionnaire)</span>
+      </div>
+      <div class="section-i-body" id="skills-I-wrap">
+        <div id="custom-skills-list"></div>
+        <button class="btn-add" onclick="addCustomSkill()">+ Ajouter une compétence</button>
+      </div>
+      <div class="score-row">
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-I" style="width:0%"></div></div>
+        <span class="score-label">Mon score</span>
+        <span class="score-value" id="score-I">0 / —</span>
+      </div>
+    </div>
+
+    <!-- Section J -->
+    <div class="section" id="section-J">
+      <div class="section-header">
+        <span class="section-letter">J</span>
+        <span class="section-title">Compétences transversales à forte valeur ajoutée</span>
+      </div>
+      <div class="scale-header">
+        <div></div>
+        <div class="scale-header-labels">
+          <span class="scale-num">0</span><span class="scale-num">1</span><span class="scale-num">2</span><span class="scale-num">3</span><span class="scale-num">4</span><span class="scale-num">5</span>
+        </div>
+      </div>
+      <div id="skills-J"></div>
+      <div class="score-row">
+        <div class="score-bar-wrap"><div class="score-bar" id="bar-J" style="width:0%"></div></div>
+        <span class="score-label">Mon score</span>
+        <span class="score-value" id="score-J">0 / 100</span>
+      </div>
+    </div>
+
+    <!-- Summary Table -->
+    <div class="summary-section">
+      <div class="summary-header">Tableau récapitulatif — Reportez vos scores</div>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Domaine de compétences</th>
+            <th style="width:200px">Progression</th>
+            <th style="text-align:right;min-width:100px">Score</th>
+          </tr>
+        </thead>
+        <tbody id="summary-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Synthesis Ranking -->
+    <div class="synthesis-section">
+      <div class="synthesis-header">
+        <h3>Synthèse — Mes huit compétences principales</h3>
+        <p>Classement automatique des blocs du niveau de maîtrise le plus élevé au plus faible (hors compétences transversales)</p>
+      </div>
+      <div class="synthesis-body">
+        <ol class="rank-list" id="rank-list"></ol>
+      </div>
+    </div>
+
+    <!-- Observations -->
+    <div class="observations-section">
+      <div class="observations-header">Observations</div>
+      <div class="observations-body">
+        <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Quelles sont vos observations au regard de l'exercice réalisé ?</p>
+        <textarea id="observations" placeholder="Saisissez vos observations ici…"></textarea>
+      </div>
+    </div>
+
+  </div><!-- end doc-body -->
+
+  <div class="doc-footer">
+    <p>Portefeuille de Compétences – BDC</p>
+    <p>Auto-évaluation personnelle et confidentielle</p>
+  </div>
+
+</div><!-- end document -->
+
+<script>
+const DATA = {
+  A: [
+    "Accueillir, informer et orienter différents publics",
+    "Écouter activement et reformuler pour vérifier la compréhension",
+    "Adapter sa communication au profil, au rôle et aux attentes de l'interlocuteur",
+    "Communiquer des informations complexes de manière claire et accessible",
+    "Rédiger des messages professionnels clairs et structurés (mails, notes, comptes rendus)",
+    "Argumenter et défendre un point de vue de façon constructive",
+    "Exprimer un désaccord sans générer de tension relationnelle",
+    "Gérer des situations relationnelles délicates ou conflictuelles",
+    "Réguler ses émotions dans les échanges professionnels",
+    "Faire passer des messages sensibles avec diplomatie et discernement",
+    "Créer un climat de confiance propice à la coopération",
+    "Faciliter les échanges entre personnes aux points de vue divergents",
+    "Travailler efficacement en interaction avec différents acteurs (équipes, partenaires, usagers)",
+    "Transmettre des savoirs, expliquer et accompagner la montée en compétence",
+    "Animer des réunions ou des temps d'échange collectifs",
+    "S'exprimer à l'oral de manière claire et structurée, y compris en public",
+    "Détecter les non-dits, signaux faibles ou tensions latentes dans les interactions",
+    "Adapter sa posture relationnelle aux enjeux et aux contextes professionnels",
+    "Communiquer de manière assertive tout en respectant les autres",
+    "Utiliser les outils numériques de communication de façon appropriée et professionnelle"
+  ],
+  B: [
+    "Organiser et structurer son activité de manière méthodique",
+    "Planifier des actions à court, moyen et long terme",
+    "Prioriser les tâches en fonction des délais, contraintes et enjeux",
+    "Anticiper les contraintes, aléas et pics de charge",
+    "Mettre en place des routines de travail favorisant régularité et fiabilité",
+    "Gérer plusieurs dossiers ou activités simultanément",
+    "Gérer les interruptions et sollicitations pour préserver la concentration",
+    "Respecter des délais et des procédures établies",
+    "Mettre en place des outils de suivi et de pilotage de l'activité (plannings, tableaux, check-lists)",
+    "Évaluer la charge de travail afin de prévenir la surcharge ou la désorganisation",
+    "Estimer les ressources nécessaires (temps, moyens, compétences) à une activité ou un projet",
+    "Structurer et maintenir un système de classement fiable (physique ou numérique)",
+    "Organiser la circulation et la transmission des informations essentielles",
+    "Formaliser des méthodes et modes opératoires pour sécuriser les pratiques",
+    "Adapter son organisation aux imprévus et aux priorités évolutives",
+    "Adapter son mode d'organisation à son propre fonctionnement (rythmes, attention, contraintes personnelles)",
+    "Évaluer l'efficacité de son organisation et ajuster ses méthodes dans le temps",
+    "Coordonner son organisation avec celle d'autres acteurs (équipes, services, partenaires)",
+    "Arbitrer entre des demandes concurrentes en tenant compte des contraintes globales",
+    "Sécuriser la continuité d'activité en cas d'absence, de changement ou d'aléa"
+  ],
+  C: [
+    "Comprendre et intégrer des informations nouvelles ou complexes",
+    "Rechercher, sélectionner et vérifier la fiabilité des informations",
+    "Apprendre de manière autonome et continue",
+    "Analyser une situation en identifiant faits, données et contraintes",
+    "Formuler clairement une problématique et ses enjeux",
+    "Identifier les causes profondes d'un dysfonctionnement ou d'un problème",
+    "Mettre en perspective des informations issues de sources multiples",
+    "Hiérarchiser des enjeux lorsqu'ils sont multiples ou contradictoires",
+    "Élaborer et comparer différentes options ou scénarios de résolution",
+    "Évaluer les impacts et les risques associés à une décision",
+    "Tester des hypothèses et ajuster son raisonnement en fonction des résultats",
+    "Prendre des décisions en contexte d'incertitude ou d'informations incomplètes",
+    "Adapter son raisonnement face à un changement de cadre ou de contraintes",
+    "Repérer ses biais de raisonnement et prendre du recul sur son analyse",
+    "Traduire une analyse complexe en recommandations opérationnelles",
+    "Intégrer des contraintes externes (réglementaires, humaines, organisationnelles) dans l'analyse",
+    "Capitaliser sur l'expérience et tirer des enseignements des situations vécues",
+    "Arbitrer entre plusieurs solutions pertinentes en tenant compte des priorités",
+    "Résoudre des problèmes de manière structurée et méthodique",
+    "Évaluer a posteriori la pertinence d'une solution mise en œuvre"
+  ],
+  D: [
+    "Inventer, créer et imaginer de nouveaux services ou produits",
+    "Concevoir et structurer un projet ou une production concrète (objets, vêtements, meubles, aménagements, etc.)",
+    "Adapter des concepts, pratiques ou solutions existants à un nouveau contexte ou besoin",
+    "Utiliser le dessin, la photographie ou le croquis pour représenter, expliquer ou structurer une idée",
+    "Utiliser la voix, le son ou la musique comme moyen d'expression, de transmission ou de valorisation",
+    "Utiliser le mouvement corporel ou la danse comme outil d'expression, de créativité ou de bien-être",
+    "Utiliser des outils numériques de création (design, présentation, visuels) pour concevoir des supports visuels fonctionnels",
+    "Proposer des améliorations de pratiques ou de processus et contribuer à une démarche d'amélioration continue",
+    "Expérimenter de nouvelles méthodes, outils ou approches",
+    "Mobiliser la créativité pour résoudre des problèmes en explorant différentes pistes avant de retenir une solution",
+    "Mettre en forme des contenus (documents, supports, présentations) en harmonisant textes, couleurs et éléments graphiques",
+    "Expérimenter des formes, matières, couleurs ou supports pour créer une expression visuelle ou artistique",
+    "Concevoir des supports visuels (schémas, infographies, tableaux synthétiques) pour valoriser une information complexe",
+    "Partager et diffuser des idées créatives ou des productions",
+    "Remettre en question des modes de fonctionnement établis de manière constructive pour proposer des approches originales",
+    "Transformer une idée en action concrète et opérationnelle en lui donnant une forme tangible",
+    "Contribuer à une dynamique collective d'innovation ou de création en favorisant curiosité, expérimentation et ouverture créative",
+    "Générer un grand nombre d'idées à partir d'une même consigne",
+    "Tester une idée par l'expérimentation ou le prototypage",
+    "Travailler la créativité en interaction avec d'autres personnes"
+  ],
+  E: [
+    "Prendre des décisions en tenant compte des enjeux humains et opérationnels",
+    "Assumer des responsabilités et rendre compte de son action",
+    "Définir des objectifs clairs, réalistes et mesurables",
+    "Organiser et répartir les tâches au sein d'une équipe ou d'un collectif",
+    "Coordonner l'activité de plusieurs personnes ou acteurs",
+    "Donner des consignes claires et adaptées",
+    "Suivre l'avancement des actions et ajuster si nécessaire",
+    "Motiver et mobiliser les collaborateurs autour d'objectifs communs",
+    "Accompagner la montée en compétences des collaborateurs",
+    "Donner des feedbacks constructifs et réguliers",
+    "Évaluer le travail réalisé de manière équitable et objective",
+    "Gérer les tensions, désaccords ou conflits au sein d'une équipe",
+    "Déléguer de manière adaptée et faire confiance",
+    "Favoriser la coopération et l'intelligence collective",
+    "Adapter son style de management aux profils et aux situations",
+    "Conduire le changement et accompagner les évolutions",
+    "Fédérer autour d'un projet, d'une vision ou d'une dynamique",
+    "Assurer le lien entre l'équipe et la hiérarchie ou les partenaires",
+    "Garantir un cadre de travail respectueux, sécurisant et motivant",
+    "Prendre du recul sur sa pratique managériale et l'améliorer en continu"
+  ],
+  F: [
+    "Utiliser des outils, équipements ou machines spécifiques en toute sécurité",
+    "Appliquer des procédures techniques et des modes opératoires",
+    "Lire, comprendre et exploiter des documents techniques (plans, schémas, notices)",
+    "Réaliser des opérations techniques avec précision et rigueur",
+    "Effectuer des contrôles qualité et des vérifications techniques",
+    "Identifier des anomalies, dysfonctionnements ou non-conformités",
+    "Diagnostiquer l'origine d'une panne ou d'un problème technique",
+    "Réaliser des réglages, ajustements ou réparations de premier niveau",
+    "Effectuer des tests, essais ou mises en service",
+    "Assurer la maintenance courante préventive ou corrective",
+    "Respecter les règles d'hygiène, de sécurité et de qualité",
+    "Manipuler avec précision (motricité fine) dans des environnements techniques",
+    "Adapter son geste ou sa méthode à la situation rencontrée",
+    "Utiliser des outils numériques ou logiciels techniques liés à l'activité",
+    "Suivre et consigner des données techniques ou des interventions",
+    "Travailler dans le respect de normes techniques ou réglementaires",
+    "Organiser son poste de travail de manière efficace et sécurisée",
+    "Transmettre des consignes ou informations techniques à d'autres intervenants",
+    "Collaborer avec différents acteurs techniques (internes ou externes)",
+    "Maintenir et développer ses compétences techniques par l'apprentissage continu"
+  ],
+  G: [
+    "Gérer, suivre et mettre à jour des dossiers administratifs",
+    "Classer, archiver et assurer la traçabilité des documents",
+    "Rédiger des documents administratifs clairs et conformes (mails, notes, comptes rendus)",
+    "Vérifier l'exactitude et la cohérence des informations",
+    "Appliquer des procédures et des règles administratives",
+    "Rechercher, interpréter et appliquer une réglementation spécifique",
+    "Maîtriser la langue française à l'écrit (grammaire, orthographe, syntaxe)",
+    "Assurer une veille réglementaire ou documentaire",
+    "Contrôler la conformité des dossiers ou des pratiques",
+    "Préparer et constituer des dossiers administratifs complexes",
+    "Suivre des indicateurs administratifs ou de gestion",
+    "Calculer des coûts, devis ou budgets simples",
+    "Gérer un budget ou suivre des dépenses",
+    "Passer, suivre et contrôler des commandes",
+    "Préparer des éléments pour des audits, contrôles ou inspections",
+    "Répondre à des appels d'offres ou consultations",
+    "Utiliser les outils bureautiques et logiciels de gestion",
+    "Organiser et sécuriser les flux d'informations administratives",
+    "Respecter la confidentialité et la protection des données",
+    "Optimiser et améliorer des processus administratifs existants"
+  ],
+  H: [
+    "Accueillir, informer et orienter les clients ou usagers / vendre des produits et services",
+    "Analyser les besoins, attentes et contraintes d'un client ou usager",
+    "Identifier et qualifier des clients ou cibles potentielles",
+    "Réaliser des actions de prospection dans un cadre défini",
+    "Adapter son discours commercial au profil et au contexte du client",
+    "Présenter une offre, un service ou une solution de manière claire et argumentée",
+    "Élaborer des propositions commerciales adaptées (devis, offres, réponses)",
+    "Négocier des conditions dans le respect du cadre fixé",
+    "Conclure un accord ou formaliser un engagement client",
+    "Assurer le suivi de la relation client tout au long du parcours",
+    "Fidéliser les clients par la qualité du service rendu",
+    "Gérer les situations d'insatisfaction ou de réclamation",
+    "Instaurer une relation de confiance durable avec le client",
+    "Coordonner les échanges entre le client et les acteurs internes",
+    "Exploiter les retours clients pour améliorer les pratiques ou l'offre",
+    "Formaliser et mettre à jour des outils de suivi de la relation client",
+    "Contribuer à la satisfaction et à l'expérience client",
+    "Respecter l'éthique, la transparence et les engagements commerciaux",
+    "Analyser des indicateurs commerciaux ou de satisfaction",
+    "Contribuer à l'élaboration et à la mise en œuvre d'une stratégie commerciale"
+  ],
+  J: [
+    "Prendre du recul et analyser une situation avec objectivité",
+    "S'adapter rapidement à de nouveaux contextes, environnements ou interlocuteurs",
+    "Faire preuve d'autonomie dans l'organisation et la conduite de son activité",
+    "S'impliquer activement et faire preuve d'engagement professionnel",
+    "Gérer la pression et les situations de stress",
+    "Faire preuve de rigueur et de fiabilité dans l'exécution des missions",
+    "Démontrer un sens des responsabilités et de l'éthique professionnelle",
+    "Être force de proposition et prendre des initiatives pertinentes",
+    "Faire preuve de curiosité intellectuelle et professionnelle",
+    "Apprendre de ses expériences et capitaliser sur les acquis",
+    "Coopérer efficacement au sein d'équipes pluridisciplinaires",
+    "Démontrer une capacité d'adaptation face au changement",
+    "Faire preuve de discernement dans ses décisions",
+    "Gérer les priorités dans des contextes complexes ou évolutifs",
+    "Maintenir un niveau de qualité constant dans son travail",
+    "S'auto-évaluer et ajuster ses pratiques de manière proactive",
+    "Respecter des cadres, règles et contraintes tout en faisant preuve de souplesse",
+    "Communiquer avec professionnalisme dans des contextes variés",
+    "Contribuer à une dynamique collective et au climat de travail",
+    "S'inscrire dans une démarche de progrès et d'amélioration continue"
+  ]
+};
+
+const SECTION_NAMES = {
+  A: "Compétences interpersonnelles et de communication",
+  B: "Compétences organisationnelles et de gestion du temps",
+  C: "Compétences d'analyse, d'apprentissage et de résolution de problèmes",
+  D: "Compétences créatives, d'innovation et d'amélioration continue",
+  E: "Compétences managériales et de coordination",
+  F: "Compétences techniques et manuelles",
+  G: "Compétences administratives, réglementaires et de gestion",
+  H: "Compétences commerciales et relation client",
+  I: "Compétences spécifiques",
+  J: "Compétences transversales à forte valeur ajoutée"
+};
+
+function buildSection(letter) {
+  const container = document.getElementById('skills-' + letter);
+  if (!container) return;
+  const skills = DATA[letter];
+  skills.forEach((skill, idx) => {
+    const row = document.createElement('div');
+    row.className = 'skill-row';
+    let radios = '';
+    for (let v = 0; v <= 5; v++) {
+      radios += `<input type="radio" name="${letter}-${idx}" value="${v}" onchange="updateScore('${letter}')" aria-label="${skill} – note ${v}">`;
+    }
+    row.innerHTML = `<span class="skill-name">${skill}</span><div class="radio-group">${radios}</div>`;
+    container.appendChild(row);
+  });
+}
+
+function updateScore(letter) {
+  const skills = DATA[letter];
+  let total = 0;
+  let answered = 0;
+  skills.forEach((_, idx) => {
+    const checked = document.querySelector(`input[name="${letter}-${idx}"]:checked`);
+    if (checked) { total += parseInt(checked.value); answered++; }
+  });
+  const maxScore = skills.length * 5;
+  const normalized = Math.round((total / maxScore) * 100);
+  document.getElementById('score-' + letter).textContent = normalized + ' / 100';
+  document.getElementById('bar-' + letter).style.width = normalized + '%';
+  updateSummary();
+  updateRanking();
+}
+
+function updateCustomScore() {
+  const rows = document.querySelectorAll('.custom-skill-row');
+  let total = 0; let count = 0;
+  rows.forEach((row, idx) => {
+    const checked = row.querySelector('input[type="radio"]:checked');
+    if (checked) { total += parseInt(checked.value); count++; }
+  });
+  const maxScore = rows.length * 5;
+  let normalized = rows.length === 0 ? 0 : Math.round((total / maxScore) * 100);
+  document.getElementById('score-I').textContent = normalized + ' / ' + (rows.length > 0 ? 100 : '—');
+  document.getElementById('bar-I').style.width = (rows.length > 0 ? normalized : 0) + '%';
+  updateSummary();
+  updateRanking();
+}
+
+function getScore(letter) {
+  if (letter === 'I') {
+    const rows = document.querySelectorAll('.custom-skill-row');
+    if (rows.length === 0) return null;
+    let total = 0; let maxScore = rows.length * 5;
+    rows.forEach((row) => {
+      const checked = row.querySelector('input[type="radio"]:checked');
+      if (checked) total += parseInt(checked.value);
+    });
+    return Math.round((total / maxScore) * 100);
+  }
+  const skills = DATA[letter];
+  let total = 0;
+  skills.forEach((_, idx) => {
+    const checked = document.querySelector(`input[name="${letter}-${idx}"]:checked`);
+    if (checked) total += parseInt(checked.value);
+  });
+  const maxScore = skills.length * 5;
+  return Math.round((total / maxScore) * 100);
+}
+
+function updateSummary() {
+  const tbody = document.getElementById('summary-tbody');
+  tbody.innerHTML = '';
+  const letters = ['A','B','C','D','E','F','G','H','I','J'];
+  letters.forEach(l => {
+    const score = getScore(l);
+    const maxLabel = l === 'I' ? (document.querySelectorAll('.custom-skill-row').length > 0 ? '100' : '—') : '100';
+    const scoreDisplay = score === null ? '— / —' : score + ' / ' + maxLabel;
+    const barWidth = score === null ? 0 : score;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="domain-name">${SECTION_NAMES[l]}</td>
+      <td class="domain-bar-cell"><div class="summary-bar-wrap"><div class="summary-bar" style="width:${barWidth}%"></div></div></td>
+      <td class="domain-score">${scoreDisplay}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function updateRanking() {
+  const letters = ['A','B','C','D','E','F','G','H','I'];
+  const ranked = letters.map(l => ({ l, score: getScore(l), name: SECTION_NAMES[l] }))
+    .filter(x => x.score !== null)
+    .sort((a, b) => b.score - a.score);
+
+  const list = document.getElementById('rank-list');
+  list.innerHTML = '';
+  const ordinals = ['1ère','2ème','3ème','4ème','5ème','6ème','7ème','8ème'];
+  const top8 = ranked.slice(0, 8);
+  if (top8.length === 0) {
+    list.innerHTML = '<li style="color:var(--muted);font-size:13px;padding:12px 0;">Le classement apparaîtra automatiquement au fur et à mesure de votre évaluation.</li>';
+    return;
+  }
+  top8.forEach((item, i) => {
+    const li = document.createElement('li');
+    li.className = 'rank-item';
+    li.innerHTML = `
+      <span class="rank-num">${ordinals[i] || (i+1)+'.'}</span>
+      <div class="rank-content">
+        <div class="rank-domain">${item.name}</div>
+        <div class="rank-score">Score : ${item.score} / 100</div>
+      </div>`;
+    list.appendChild(li);
+  });
+  if (ranked.length < 8) {
+    for (let i = ranked.length; i < 8; i++) {
+      const li = document.createElement('li');
+      li.className = 'rank-item';
+      li.innerHTML = `<span class="rank-num">${ordinals[i]}</span><div class="rank-content"><div class="rank-domain" style="color:var(--muted)">—</div></div>`;
+      list.appendChild(li);
+    }
+  }
+}
+
+let customIdx = 0;
+function addCustomSkill() {
+  const idx = customIdx++;
+  const div = document.createElement('div');
+  div.className = 'custom-skill-row';
+  let radios = '';
+  for (let v = 0; v <= 5; v++) {
+    radios += `<input type="radio" name="I-custom-${idx}" value="${v}" onchange="updateCustomScore()" aria-label="Compétence personnalisée – note ${v}">`;
+  }
+  div.innerHTML = `
+    <input type="text" placeholder="Intitulé de la compétence…" style="width:100%">
+    <div class="radio-group">${radios}</div>
+  `;
+  document.getElementById('custom-skills-list').appendChild(div);
+  updateCustomScore();
+}
+
+function exportPDF() {
+  const btn = document.querySelector('.btn-export');
+  btn.textContent = 'Génération…';
+  btn.disabled = true;
+
+  // Replace radios with text for PDF
+  const doc = document.getElementById('doc');
+
+  // Snapshot radio values before conversion
+  const allRadios = doc.querySelectorAll('.radio-group');
+  const snapshots = [];
+  allRadios.forEach(group => {
+    const checked = group.querySelector('input[type="radio"]:checked');
+    snapshots.push(checked ? checked.value : '0');
+  });
+
+  // Replace radio groups with static display
+  allRadios.forEach((group, i) => {
+    const val = parseInt(snapshots[i]);
+    let html = '<div style="display:flex;justify-content:space-around;align-items:center;">';
+    for (let v = 0; v <= 5; v++) {
+      if (v === val) {
+        html += `<div style="width:22px;height:22px;border-radius:50%;background:#2e3f6f;display:flex;align-items:center;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:white;"></div></div>`;
+      } else {
+        html += `<div style="width:22px;height:22px;border-radius:50%;border:1.5px solid #d4cfc5;"></div>`;
+      }
+    }
+    html += '</div>';
+    group.outerHTML = html;
+  });
+
+  // Replace textareas with divs
+  const textareas = doc.querySelectorAll('textarea');
+  const taValues = [];
+  textareas.forEach(ta => { taValues.push(ta.value); });
+  textareas.forEach((ta, i) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'min-height:100px;font-size:13px;line-height:1.6;color:#1a1a1a;white-space:pre-wrap;padding:12px 14px;border:0.5px solid #d4cfc5;border-radius:3px;';
+    div.textContent = taValues[i] || '';
+    ta.replaceWith(div);
+  });
+
+  // Replace text inputs
+  const textInputs = doc.querySelectorAll('input[type="text"]');
+  textInputs.forEach(inp => {
+    const div = document.createElement('div');
+    div.style.cssText = 'font-size:13px;color:#1a1a1a;padding:7px 10px;';
+    div.textContent = inp.value || '—';
+    inp.replaceWith(div);
+  });
+
+  const toolbar = document.querySelector('.toolbar');
+  toolbar.style.display = 'none';
+
+  const opt = {
+    margin: 0,
+    filename: 'portefeuille_competences_BDC.pdf',
+    image: { type: 'jpeg', quality: 0.97 },
+    html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  html2pdf().set(opt).from(doc).save().then(() => {
+    location.reload();
+  });
+}
+
+// Init
+['A','B','C','D','E','F','G','H','J'].forEach(buildSection);
+updateSummary();
+updateRanking();
+</script>
+</body>
+</html>
