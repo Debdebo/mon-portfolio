@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau des Motivations</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF8F4;
+    --surface: #FFFFFF;
+    --border: #E2DDD6;
+    --border-strong: #C8C0B4;
+    --text: #1A1714;
+    --text-muted: #6B6560;
+    --accent: #2C5F8A;
+    --accent-light: #EDF3F9;
+    --yes: #1E6845;
+    --yes-bg: #EBF5F0;
+    --no: #8B2E2E;
+    --no-bg: #FBF0F0;
+    --section-personal: #4A3728;
+    --section-relational: #2C5F8A;
+    --section-task: #1E6845;
+    --section-frame: #6B4E9E;
+    --section-mgmt: #B85C20;
+    --section-ext: #2C5F8A;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--text);
+    color: white;
+    padding: 48px 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30%;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .header p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.72);
+    max-width: 680px;
+    font-weight: 300;
+    position: relative;
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap {
+    background: var(--border);
+    height: 4px;
+    width: 100%;
+  }
+  .progress-bar {
+    height: 4px;
+    background: var(--accent);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  /* TOOLBAR */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 16px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow);
+  }
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .progress-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .progress-text span {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .toolbar-right {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 9px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--border-strong);
+    color: var(--text-muted);
+  }
+  .btn-outline:hover { background: var(--bg); color: var(--text); border-color: var(--text); }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #1e4a6e; }
+  .btn-success {
+    background: var(--yes);
+    color: white;
+  }
+  .btn-success:hover { background: #155235; }
+
+  /* MAIN CONTENT */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 40px;
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .section-header {
+    padding: 22px 30px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .section-count {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--bg);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  /* ROW */
+  .row {
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    min-height: 58px;
+  }
+  .row:last-child { border-bottom: none; }
+  .row:hover { background: var(--bg); }
+  .row.answered-yes { background: var(--yes-bg); }
+  .row.answered-no  { background: var(--no-bg); }
+
+  .row-label {
+    flex: 1;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--text);
+    padding: 14px 0;
+    padding-right: 20px;
+  }
+
+  .toggle-group {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .toggle-btn {
+    padding: 6px 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--border-strong);
+    background: transparent;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    min-width: 58px;
+    text-align: center;
+  }
+  .toggle-btn:hover { border-color: var(--text); color: var(--text); }
+  .toggle-btn.active-yes {
+    background: var(--yes);
+    border-color: var(--yes);
+    color: white;
+  }
+  .toggle-btn.active-no {
+    background: var(--no);
+    border-color: var(--no);
+    color: white;
+  }
+
+  /* TEXTAREA SECTION */
+  .other-section {
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .other-section .section-header { border-bottom: 1px solid var(--border); }
+  .textarea-wrap { padding: 20px 30px; }
+  textarea {
+    width: 100%;
+    min-height: 100px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 14px 16px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14.5px;
+    color: var(--text);
+    background: var(--bg);
+    resize: vertical;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  textarea:focus { border-color: var(--accent); }
+
+  /* SAVE NOTIFICATION */
+  .save-notif {
+    position: fixed;
+    bottom: 30px; right: 30px;
+    background: var(--text);
+    color: white;
+    padding: 14px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .save-notif.visible { opacity: 1; transform: translateY(0); }
+
+  /* SUMMARY MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 14px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal-head {
+    padding: 28px 30px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky; top: 0;
+    background: var(--surface);
+  }
+  .modal-head h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+  }
+  .modal-close {
+    background: none; border: none; cursor: pointer;
+    font-size: 22px; color: var(--text-muted); line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 20px 30px 30px; }
+  .summary-section { margin-bottom: 24px; }
+  .summary-section h3 {
+    font-size: 14px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .summary-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .summary-item {
+    font-size: 14px; padding: 8px 12px;
+    background: var(--yes-bg); border-radius: 5px;
+    margin-bottom: 5px; color: var(--text);
+    border-left: 3px solid var(--yes);
+    line-height: 1.4;
+  }
+  .empty-section { color: var(--text-muted); font-size: 13px; font-style: italic; }
+
+  @media (max-width: 600px) {
+    .header { padding: 32px 20px 28px; }
+    .toolbar { padding: 14px 16px; }
+    .content { padding: 20px 12px 60px; }
+    .row { padding: 0 16px; }
+    .section-header { padding: 18px 16px; }
+    .textarea-wrap { padding: 16px; }
+    .modal-head, .modal-body { padding: 20px; }
+    .row-label { font-size: 13.5px; }
+    .toggle-btn { padding: 5px 12px; min-width: 50px; font-size: 12.5px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Tableau des Motivations</h1>
+  <p>La motivation durable dépend de l'adéquation entre vos besoins, vos valeurs et votre environnement professionnel. Pour chaque item, indiquez s'il constitue un facteur de motivation en sélectionnant <strong style="color:rgba(255,255,255,0.9)">OUI</strong> ou <strong style="color:rgba(255,255,255,0.9)">NON</strong>.</p>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<div class="toolbar">
+  <div class="toolbar-left">
+    <div class="progress-text">Réponses : <span id="progressCount">0</span> / <span id="totalCount">0</span></div>
+  </div>
+  <div class="toolbar-right">
+    <button class="btn btn-outline" onclick="clearAll()">✕ Effacer tout</button>
+    <button class="btn btn-outline" onclick="showSummary()">📋 Résumé OUI</button>
+    <button class="btn btn-primary" onclick="saveAsPDF()">⬇ Enregistrer (PDF)</button>
+  </div>
+</div>
+
+<div class="content" id="mainContent"></div>
+
+<div class="save-notif" id="saveNotif">✓ Réponses sauvegardées</div>
+
+<!-- SUMMARY MODAL -->
+<div class="modal-overlay" id="summaryModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Synthèse — Motivations OUI</h2>
+      <button class="modal-close" onclick="closeSummary()">×</button>
+    </div>
+    <div class="modal-body" id="summaryBody"></div>
+  </div>
+</div>
+
+<script>
+const SECTIONS = [
+  {
+    id: 'personnelles',
+    title: 'Motivations Personnelles',
+    color: '#4A3728',
+    items: [
+      "Cadre professionnel sécurisant, stable et prévisible (CDI, structure établie, environnement rassurant)",
+      "Avoir la possibilité de changer régulièrement de cadre ou de contexte professionnel au cours de sa carrière",
+      "Prendre des risques, relever des défis, vivre l'aventure professionnelle et se dépasser",
+      "Préserver une grande autonomie dans l'organisation et les choix",
+      "Se développer personnellement et développer ses compétences",
+      "Préserver un équilibre satisfaisant entre vie professionnelle et vie privée",
+      "Ressentir un sentiment d'accomplissement personnel, de réalisation de soi",
+      "Travailler dans des contextes permettant de limiter la pression excessive",
+      "Avoir le sentiment d'être utile et de contribuer positivement",
+      "Se sentir aligné avec ses valeurs personnelles",
+      "Donner du sens à son activité et de contribuer à une cause ou à un projet porteur de valeurs",
+      "Se sentir libre de réinventer son rôle ou son métier dans le temps",
+      "Rechercher une activité permettant de laisser une trace ou un impact durable"
+    ]
+  },
+  {
+    id: 'relationnelles',
+    title: 'Motivations Relationnelles',
+    color: '#2C5F8A',
+    items: [
+      "Travailler en contact régulier avec des publics variés",
+      "Encadrer, guider ou accompagner d'autres personnes dans leur travail",
+      "Être reconnu pour ses qualités humaines et techniques",
+      "Influencer positivement les autres par son expertise ou sa posture",
+      "Travailler dans un environnement favorisant la compétition",
+      "Aider, soutenir ou conseiller des personnes",
+      "Coordonner les actions de plusieurs acteurs, faire le lien entre différents interlocuteurs",
+      "Transmettre des connaissances ou des savoir-faire",
+      "Travailler en équipe et coopérer avec différents profils",
+      "Fédérer un collectif autour d'un objectif commun",
+      "Réguler des échanges ou des situations relationnelles délicates",
+      "Travailler dans des environnements où la dimension humaine est centrale dans le travail quotidien",
+      "Travailler en autonomie ou en équipe réduite",
+      "Travailler auprès d'un public jeune, auprès d'enfants",
+      "Sécuriser, protéger les autres",
+      "Préférer des rôles où l'on est référent ou personne-ressource, sans nécessairement manager",
+      "Être motivé par des interactions ponctuelles mais de qualité, plutôt que par des échanges constants",
+      "Aimer travailler avec des profils très différents du sien (diversité culturelle, générationnelle, professionnelle)"
+    ]
+  },
+  {
+    id: 'tache',
+    title: 'Motivations liées à la Tâche',
+    color: '#1E6845',
+    items: [
+      "Travailler dans un cadre structuré et organisé",
+      "Contribuer concrètement aux résultats, au succès de l'organisation",
+      "Réaliser des tâches demandant de la rigueur, de la précision et un haut niveau d'exigence",
+      "Relever des défis professionnels",
+      "Disposer d'une autonomie dans la réalisation des tâches",
+      "Varier les missions et les activités plutôt que de répéter les mêmes tâches",
+      "Convaincre, persuader, vendre, intervenir sur le versant commercial",
+      "Participer à la satisfaction des clients, usagers ou bénéficiaires",
+      "Faire preuve de créativité, innover et proposer des idées nouvelles",
+      "Réaliser des tâches nécessitant de gérer plusieurs dossiers ou priorités en parallèle",
+      "Résoudre des problèmes ou des situations complexes",
+      "Réaliser des tâches techniques ou spécialisées nécessitant expertise et précision",
+      "Exercer des missions impliquant de prendre des responsabilités ou des décisions",
+      "Structurer, organiser ou fiabiliser des activités ou des processus",
+      "Contribuer directement à des résultats concrets ou mesurables",
+      "Réaliser des activités permettant de transmettre des informations, expliquer ou former",
+      "Réaliser des tâches manuelles et techniques",
+      "Réaliser des tâches créatives, innovantes",
+      "Réaliser des tâches intellectuelles, de réflexion, stratégiques",
+      "Apprécier les tâches nécessitant une concentration prolongée et un travail en profondeur",
+      "Être motivé par des activités laissant une trace tangible (production visible, livrable concret)",
+      "Aimer travailler sur des missions nécessitant une veille permanente (réglementaire, technique, sectorielle)"
+    ]
+  },
+  {
+    id: 'cadre',
+    title: 'Motivations liées au Cadre',
+    color: '#6B4E9E',
+    items: [
+      "Avoir besoin d'un cadre de travail structuré et clairement organisé (procédures, repères, cadre établi)",
+      "Se sentir motivé par des environnements proposant des conditions de travail confortables et sécurisantes (ergonomie, sécurité, bien-être)",
+      "Travailler dans un lieu géographiquement à proximité du domicile",
+      "Limiter le temps et la contrainte des déplacements",
+      "Travailler dans un cadre laissant une autonomie dans l'organisation du travail (flexibilité, liberté d'action)",
+      "Se sentir plus efficace dans un environnement calme et propice à la concentration (peu de sollicitations simultanées)",
+      "Être à l'aise dans des contextes dynamiques ou en évolution rapide (changements fréquents, adaptation)",
+      "Travailler en contact avec la nature, l'extérieur, être sur le terrain",
+      "Travailler dans un cadre sédentaire, dans un bureau, des locaux, un endroit fixe",
+      "Apprécier les cadres permettant une organisation du temps souple (horaires flexibles, télétravail)",
+      "Préférer travailler dans des structures à taille humaine plutôt que très hiérarchisées (proximité, accessibilité)",
+      "Se sentir motivé par des environnements disposant de moyens et d'outils adaptés pour bien travailler (ressources, équipements)",
+      "Être motivé par des contextes offrant une forte liberté de méthode, même sans cadre formalisé",
+      "Préférer des environnements où les règles peuvent être co-construites ou adaptées",
+      "Avoir besoin de travailler dans un cadre favorisant la mobilité interne ou la diversité des missions"
+    ]
+  },
+  {
+    id: 'management',
+    title: 'Motivations liées au Style de Management',
+    color: '#B85C20',
+    items: [
+      "Bénéficier de feedbacks réguliers sur son travail",
+      "Se sentir reconnu par la hiérarchie",
+      "Avoir le droit à l'erreur et à l'expérimentation",
+      "Avoir accès à des formations ou à de nouveaux apprentissages",
+      "Bénéficier d'une visibilité sur les attentes à court terme",
+      "Disposer d'objectifs clairs et compréhensibles",
+      "Avoir besoin d'un cadre managérial sécurisant et soutenant (présence, disponibilité du manager)",
+      "Être motivé par un style de management laissant une marge de manœuvre dans les décisions",
+      "Aimer être associé aux décisions qui impactent son travail",
+      "Se sentir motivé par un management fondé sur la confiance et l'autonomie (management participatif)",
+      "Se sentir motivé par un management qui valorise les compétences et les efforts",
+      "Préférer un management favorisant la coopération plutôt que la compétition",
+      "Avoir besoin d'une hiérarchie accessible et à l'écoute (proximité managériale)",
+      "Se sentir motivé par un management qui fait confiance sans contrôle excessif",
+      "Préférer un management qui donne une vision globale plutôt que des consignes détaillées",
+      "Être stimulé par un management qui encourage la prise d'initiative individuelle"
+    ]
+  },
+  {
+    id: 'extrinseques',
+    title: 'Motivations Extrinsèques',
+    color: '#2C5F8A',
+    items: [
+      "Être motivé par une rémunération attractive et évolutive (performance, progression financière)",
+      "Avoir des perspectives d'évolution professionnelle",
+      "Accorder de l'importance à la reconnaissance externe liée au métier ou à l'organisation (image, réputation, notoriété)",
+      "Atteindre des objectifs professionnels ambitieux",
+      "Avoir besoin que les efforts fournis soient clairement reconnus et récompensés",
+      "Être motivé par des avantages matériels ou sociaux (primes, avantages, conditions contractuelles)",
+      "Se sentir stimulé par des perspectives d'évolution hiérarchique (statut, responsabilités, titre)",
+      "Se sentir valorisé par le statut associé à la fonction occupée (positionnement, légitimité)",
+      "Être motivé par la possibilité d'atteindre des objectifs visibles et mesurables (résultats, indicateurs)",
+      "Accorder de l'importance à la reconnaissance formelle du travail accompli (félicitations, évaluations, récompenses)",
+      "Être motivé par la visibilité de son rôle ou de ses résultats au sein de l'organisation (exposition, notoriété interne)",
+      "Accorder de l'importance à la sécurité financière et à la stabilité du revenu (prévisibilité, protection)",
+      "Être motivé par la possibilité de négocier ses conditions de travail (rémunération, missions, temps)",
+      "Accorder de l'importance à la reconnaissance de l'expertise plus qu'au titre ou au statut",
+      "Être motivé par la portabilité de ses compétences sur le marché du travail (employabilité)"
+    ]
+  }
+];
+
+// State
+const state = {};
+let totalItems = 0;
+
+function getKey(sectionId, itemIdx) {
+  return `${sectionId}_${itemIdx}`;
+}
+
+function buildUI() {
+  const container = document.getElementById('mainContent');
+  let html = '';
+  totalItems = 0;
+
+  SECTIONS.forEach(sec => {
+    html += `
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="section-dot" style="background:${sec.color}"></span>
+            ${sec.title}
+          </div>
+          <span class="section-count" id="count-${sec.id}">0 / ${sec.items.length}</span>
+        </div>
+    `;
+    sec.items.forEach((item, idx) => {
+      const key = getKey(sec.id, idx);
+      totalItems++;
+      html += `
+        <div class="row" id="row-${key}">
+          <div class="row-label">${item}</div>
+          <div class="toggle-group">
+            <button class="toggle-btn" id="yes-${key}" onclick="toggle('${key}', 'OUI', '${sec.id}')">OUI</button>
+            <button class="toggle-btn" id="no-${key}"  onclick="toggle('${key}', 'NON', '${sec.id}')">NON</button>
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  });
+
+  // Other/freetext
+  html += `
+    <div class="other-section section">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-dot" style="background:#888"></span>
+          Autres sources de motivation
+        </div>
+      </div>
+      <div class="textarea-wrap">
+        <textarea id="otherMotivations" placeholder="Autres sources de motivation non identifiées dans le tableau…" oninput="autoSave()"></textarea>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('totalCount').textContent = totalItems;
+  container.innerHTML = html;
+  loadFromStorage();
+  updateProgress();
+}
+
+function toggle(key, value, sectionId) {
+  const current = state[key];
+  if (current === value) {
+    delete state[key];
+  } else {
+    state[key] = value;
+  }
+  renderRow(key);
+  updateSectionCount(sectionId);
+  updateProgress();
+  autoSave();
+}
+
+function renderRow(key) {
+  const val = state[key];
+  const row = document.getElementById(`row-${key}`);
+  const yesBtn = document.getElementById(`yes-${key}`);
+  const noBtn = document.getElementById(`no-${key}`);
+  row.classList.remove('answered-yes', 'answered-no');
+  yesBtn.classList.remove('active-yes');
+  noBtn.classList.remove('active-no');
+  if (val === 'OUI') { row.classList.add('answered-yes'); yesBtn.classList.add('active-yes'); }
+  if (val === 'NON') { row.classList.add('answered-no');  noBtn.classList.add('active-no'); }
+}
+
+function updateSectionCount(sectionId) {
+  const sec = SECTIONS.find(s => s.id === sectionId);
+  if (!sec) return;
+  const answered = sec.items.filter((_, i) => state[getKey(sectionId, i)] !== undefined).length;
+  document.getElementById(`count-${sectionId}`).textContent = `${answered} / ${sec.items.length}`;
+}
+
+function updateProgress() {
+  const answered = Object.keys(state).length;
+  document.getElementById('progressCount').textContent = answered;
+  const pct = totalItems > 0 ? (answered / totalItems * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function autoSave() {
+  try {
+    const data = {
+      answers: state,
+      other: document.getElementById('otherMotivations')?.value || ''
+    };
+    localStorage.setItem('motivations_bdc', JSON.stringify(data));
+  } catch(e) {}
+  showNotif();
+}
+
+let notifTimer;
+function showNotif() {
+  const n = document.getElementById('saveNotif');
+  n.classList.add('visible');
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(() => n.classList.remove('visible'), 2000);
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem('motivations_bdc');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.answers) Object.assign(state, data.answers);
+    if (data.other) {
+      const ta = document.getElementById('otherMotivations');
+      if (ta) ta.value = data.other;
+    }
+    SECTIONS.forEach(sec => {
+      sec.items.forEach((_, idx) => {
+        const key = getKey(sec.id, idx);
+        renderRow(key);
+      });
+      updateSectionCount(sec.id);
+    });
+  } catch(e) {}
+}
+
+function clearAll() {
+  if (!confirm('Effacer toutes les réponses ?')) return;
+  Object.keys(state).forEach(k => delete state[k]);
+  const ta = document.getElementById('otherMotivations');
+  if (ta) ta.value = '';
+  SECTIONS.forEach(sec => {
+    sec.items.forEach((_, idx) => renderRow(getKey(sec.id, idx)));
+    updateSectionCount(sec.id);
+  });
+  updateProgress();
+  try { localStorage.removeItem('motivations_bdc'); } catch(e) {}
+}
+
+function showSummary() {
+  let html = '';
+  SECTIONS.forEach(sec => {
+    const yesItems = sec.items.filter((_, i) => state[getKey(sec.id, i)] === 'OUI');
+    html += `
+      <div class="summary-section">
+        <h3>
+          <span class="summary-dot" style="background:${sec.color}"></span>
+          ${sec.title} (${yesItems.length})
+        </h3>
+    `;
+    if (yesItems.length === 0) {
+      html += `<div class="empty-section">Aucune réponse OUI dans cette catégorie.</div>`;
+    } else {
+      yesItems.forEach(item => {
+        html += `<div class="summary-item">${item}</div>`;
+      });
+    }
+    html += `</div>`;
+  });
+  const other = document.getElementById('otherMotivations')?.value?.trim();
+  if (other) {
+    html += `<div class="summary-section"><h3>Autres motivations</h3><div class="summary-item">${other}</div></div>`;
+  }
+  document.getElementById('summaryBody').innerHTML = html;
+  document.getElementById('summaryModal').classList.add('open');
+}
+
+function closeSummary() {
+  document.getElementById('summaryModal').classList.remove('open');
+}
+
+function saveAsPDF() {
+  window.print();
+}
+
+// Close modal on overlay click
+document.addEventListener('click', e => {
+  if (e.target.id === 'summaryModal') closeSummary();
+});
+
+// PRINT STYLES
+const printStyle = document.createElement('style');
+printStyle.textContent = `
+  @media print {
+    .toolbar, .save-notif, .modal-overlay { display: none !important; }
+    .header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .section { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+    .row { break-inside: avoid; }
+    body { background: white; }
+    .content { padding: 20px; }
+    .progress-bar-wrap { display: none; }
+  }
+`;
+document.head.appendChild(printStyle);
+
+buildUI();
+</script>
+</body>
+</html>
