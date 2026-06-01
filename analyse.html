@@ -1306,6 +1306,7 @@ function updateScore(letter) {
   const normalized = Math.round((total / maxScore) * 100);
   document.getElementById('score-' + letter).textContent = normalized + ' / 100';
   document.getElementById('bar-' + letter).style.width = normalized + '%';
+  saveToLocalStorage();
   updateSummary();
   updateRanking();
   if (typeof drawRadar === 'function') drawRadar();
@@ -1323,6 +1324,7 @@ function updateCustomScore() {
   let normalized = rows.length === 0 ? 0 : Math.round((total / maxScore) * 100);
   document.getElementById('score-I').textContent = normalized + ' / ' + (rows.length > 0 ? 100 : '—');
   document.getElementById('bar-I').style.width = (rows.length > 0 ? normalized : 0) + '%';
+  saveToLocalStorage();
   updateSummary();
   updateRanking();
   if (typeof drawRadar === 'function') drawRadar();
@@ -1485,14 +1487,82 @@ function exportPDF() {
   };
 
   html2pdf().set(opt).from(doc).save().then(() => {
-    location.reload();
+    location.reload();  // Les données sont sauvegardées en localStorage, elles seront restaurées
   });
 }
 
-// Init
+// ===== PERSISTANCE localStorage =====
+
+function saveToLocalStorage() {
+  try {
+    const data = {};
+    ['A','B','C','D','E','F','G','H','J'].forEach(l => {
+      const skills = DATA[l];
+      const vals = [];
+      skills.forEach((_, idx) => {
+        const checked = document.querySelector(`input[name="${l}-${idx}"]:checked`);
+        vals.push(checked ? checked.value : null);
+      });
+      data[l] = vals;
+    });
+    const customRows = document.querySelectorAll('.custom-skill-row');
+    const customData = [];
+    customRows.forEach((row) => {
+      const nameInput = row.querySelector('input[type="text"]');
+      const checked = row.querySelector('input[type="radio"]:checked');
+      customData.push({ name: nameInput ? nameInput.value : '', value: checked ? checked.value : null });
+    });
+    data['I_custom'] = customData;
+    const obs = document.getElementById('observations');
+    if (obs) data['observations'] = obs.value;
+    localStorage.setItem('bdc_portfolio', JSON.stringify(data));
+  } catch(e) {}
+}
+
+function restoreFromLocalStorage() {
+  try {
+    const raw = localStorage.getItem('bdc_portfolio');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    ['A','B','C','D','E','F','G','H','J'].forEach(l => {
+      if (!data[l]) return;
+      data[l].forEach((val, idx) => {
+        if (val === null) return;
+        const radio = document.querySelector(`input[name="${l}-${idx}"][value="${val}"]`);
+        if (radio) radio.checked = true;
+      });
+      updateScore(l);
+    });
+    if (data['I_custom'] && data['I_custom'].length > 0) {
+      data['I_custom'].forEach(() => addCustomSkill());
+      const customRows = document.querySelectorAll('.custom-skill-row');
+      data['I_custom'].forEach((item, idx) => {
+        if (!customRows[idx]) return;
+        const nameInput = customRows[idx].querySelector('input[type="text"]');
+        if (nameInput && item.name) nameInput.value = item.name;
+        if (item.value !== null) {
+          const radio = customRows[idx].querySelector(`input[type="radio"][value="${item.value}"]`);
+          if (radio) radio.checked = true;
+        }
+      });
+      updateCustomScore();
+    }
+    if (data['observations']) {
+      const obs = document.getElementById('observations');
+      if (obs) obs.value = data['observations'];
+    }
+  } catch(e) {}
+}
+
+// ===== Init =====
 ['A','B','C','D','E','F','G','H','J'].forEach(buildSection);
 updateSummary();
 updateRanking();
+restoreFromLocalStorage();
+
+// Sauvegarder les observations à la saisie
+const obsEl = document.getElementById('observations');
+if (obsEl) obsEl.addEventListener('input', saveToLocalStorage);
 
 // ===== ANALYSE PAGE =====
 
