@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau Investigations Métiers</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=Source+Serif+4:wght@400;600&display=swap');
+
+  :root {
+    --dark-blue: #1a3a5c;
+    --mid-blue: #2d6a9f;
+    --light-blue: #d0e4f7;
+    --pale-blue: #eaf3fb;
+    --white: #ffffff;
+    --text-dark: #1a1a2e;
+    --text-mid: #444;
+    --border: #2d6a9f;
+    --tooltip-bg: #1a3a5c;
+    --tooltip-text: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: #f4f7fb;
+    color: var(--text-dark);
+    padding: 20px;
+    min-height: 100vh;
+  }
+
+  .page {
+    background: white;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 32px rgba(26,58,92,0.13);
+  }
+
+  /* ── TITLE ── */
+  .title-bar {
+    background: var(--dark-blue);
+    color: white;
+    text-align: center;
+    padding: 18px 24px 14px;
+  }
+  .title-bar h1 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+  }
+  .intro {
+    font-size: 11.5px;
+    color: #b0c8e0;
+    margin-top: 6px;
+    font-weight: 300;
+    letter-spacing: 0.2px;
+  }
+
+  .body { padding: 16px 20px 20px; }
+
+  /* ── SECTEURS BOX ── */
+  .secteurs-box {
+    background: var(--light-blue);
+    border: 1.5px solid var(--mid-blue);
+    border-radius: 6px;
+    padding: 12px 16px 14px;
+    margin-bottom: 10px;
+  }
+  .secteurs-box .label {
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--dark-blue);
+    margin-bottom: 8px;
+  }
+  .secteurs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+  }
+  .secteur-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1.5px solid var(--mid-blue);
+    padding-bottom: 2px;
+  }
+  .secteur-line span { color: #555; font-size: 12px; }
+  .secteur-line input {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--text-dark);
+    width: 100%;
+    outline: none;
+    padding: 2px 0;
+  }
+
+  /* ── SECTEUR HEADER ── */
+  .secteur-header {
+    background: var(--mid-blue);
+    color: white;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 4px 4px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+  .secteur-header input {
+    border: none;
+    background: transparent;
+    color: white;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    outline: none;
+    flex: 1;
+  }
+  .secteur-header input::placeholder { color: rgba(255,255,255,0.5); }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    border: 2px solid var(--dark-blue);
+    border-radius: 0 0 6px 6px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  /* Column widths */
+  col.c-metier      { width: 9%; }
+  col.c-missions    { width: 13%; }
+  col.c-competences { width: 13%; }
+  col.c-conditions  { width: 10%; }
+  col.c-atouts      { width: 10%; }
+  col.c-vigilance   { width: 10%; }
+  col.c-formation   { width: 11%; }
+  col.c-adequation  { width: 11%; }
+  col.c-debouches   { width: 13%; }
+
+  /* ── HEADER ROW ── */
+  thead th {
+    background: var(--dark-blue);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-align: center;
+    padding: 0;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    position: relative;
+    vertical-align: middle;
+    height: 52px;
+  }
+  thead th:last-child { border-right: none; }
+
+  .th-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 6px 4px;
+    cursor: help;
+    transition: background 0.15s;
+    line-height: 1.35;
+  }
+  .th-inner:hover {
+    background: rgba(255,255,255,0.12);
+  }
+
+  /* ── TOOLTIP ── */
+  .th-inner .tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    z-index: 999;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    font-size: 10.5px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 9px 13px;
+    border-radius: 6px;
+    width: 220px;
+    white-space: normal;
+    text-align: left;
+    letter-spacing: 0.1px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+    pointer-events: none;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+  }
+  /* Arrow */
+  .th-inner .tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-bottom-color: var(--tooltip-bg);
+  }
+  /* Keep tooltip inside viewport for edge columns */
+  thead th:first-child .tooltip  { left: 0; transform: none; }
+  thead th:first-child .tooltip::before { left: 20px; }
+  thead th:last-child .tooltip   { left: auto; right: 0; transform: none; }
+  thead th:last-child .tooltip::before  { left: auto; right: 20px; }
+
+  .th-inner:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  /* Tooltip icon hint */
+  .tip-icon {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    font-size: 8px;
+    line-height: 13px;
+    text-align: center;
+    margin-top: 4px;
+    font-style: normal;
+    flex-shrink: 0;
+  }
+
+  /* ── DATA ROWS ── */
+  tbody tr:nth-child(odd)  td { background: var(--pale-blue); }
+  tbody tr:nth-child(even) td { background: var(--white); }
+
+  tbody td {
+    border: 1px solid var(--border);
+    border-top: none;
+    vertical-align: top;
+    padding: 0;
+  }
+
+  tbody td textarea {
+    width: 100%;
+    height: 100%;
+    min-height: 90px;
+    border: none;
+    background: transparent;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 10.5px;
+    color: var(--text-dark);
+    resize: none;
+    padding: 7px 8px;
+    outline: none;
+    line-height: 1.5;
+  }
+  tbody td textarea:focus {
+    background: rgba(45,106,159,0.06);
+  }
+  tbody td textarea::placeholder {
+    color: #bbb;
+    font-style: italic;
+    font-size: 9.5px;
+  }
+
+  /* ── PRINT BUTTON ── */
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--dark-blue);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--mid-blue); }
+  .btn-secondary {
+    background: white;
+    color: var(--dark-blue);
+    border: 1.5px solid var(--mid-blue);
+  }
+  .btn-secondary:hover { background: var(--light-blue); }
+
+  .hint {
+    font-size: 10px;
+    color: #999;
+    margin-top: 8px;
+    text-align: right;
+    font-style: italic;
+  }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    body { background: white; padding: 0; }
+    .page { box-shadow: none; border-radius: 0; }
+    .actions, .hint { display: none; }
+    .th-inner .tooltip { display: none; }
+    tbody td textarea { min-height: 70px; }
+    @page { size: A4 landscape; margin: 10mm; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="title-bar">
+    <h1>TABLEAU INVESTIGATIONS MÉTIERS</h1>
+    <p class="intro">Complétez ce tableau avec les métiers que vous avez repérés et qui éveillent votre intérêt, en lien avec les secteurs d'activité identifiés.</p>
+  </div>
+
+  <div class="body">
+
+    <!-- SECTEURS -->
+    <div class="secteurs-box">
+      <div class="label">Secteurs d'activités identifiés :</div>
+      <div class="secteurs-grid">
+        <div class="secteur-line"><span>–</span><input type="text" placeholder="Secteur 1…"></div>
+        <div class="secteur-line"><span>–</span><input type="text" placeholder="Secteur 3…"></div>
+        <div class="secteur-line"><span>–</span><input type="text" placeholder="Secteur 2…"></div>
+        <div class="secteur-line"><span>–</span><input type="text" placeholder="Secteur 4…"></div>
+      </div>
+    </div>
+
+    <!-- SECTEUR HEADER -->
+    <div class="secteur-header">
+      SECTEUR D'ACTIVITÉ :&nbsp;<input type="text" placeholder="Saisissez le secteur…">
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <table>
+        <colgroup>
+          <col class="c-metier">
+          <col class="c-missions">
+          <col class="c-competences">
+          <col class="c-conditions">
+          <col class="c-atouts">
+          <col class="c-vigilance">
+          <col class="c-formation">
+          <col class="c-adequation">
+          <col class="c-debouches">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>
+              <div class="th-inner">
+                MÉTIER
+                <i class="tip-icon">?</i>
+                <div class="tooltip">
+                  <strong>Métier / Fonction</strong><br>
+                  Nom du métier qui suscite votre intérêt.
+                </div>
+              </div>
+            </th>
+            <th>
+              <div class="th-inner">
+                MISSIONS<br>PRINCIPALES
+                <i class="tip-icon">?</i>
+                <div class="tooltip">
+                  <strong>Missions principales</strong><br>
+                  Résumé des tâches clés du métier.
+                </div>
+              </div>
+            </th>
+            <th>
+              <div class="th-inner">
+                COMPÉTENCES<br>ET QUALITÉS<br>REQUISES
+                <i class="tip-icon">?</i>
+                <div class="tooltip">
+                  <strong>Compétences requises et Qualités / Soft Skills nécessaires</strong><br>
+                  Savoirs, connaissances, compétences techniques et transversales / qualités. Ex : organisation, empathie, autonomie.
+                </div>
+              </div>
+            </th>
+            <th>
+              <div class="th-inner">
+                CONDITIONS<br>DE TRAVAIL
+                <i class="tip-icon">?</i>
+                <div class="tooltip">
+                  <strong>Conditions de travail</strong><br>
+                  Horaires, rythme, mobilité, environnement, contraintes éventuelles.
+                </div>
+              </div>
+            </th>
+            <th>
+              <div class="th-inner">
+                ATOUTS DU<br>MÉTIER
+                <i class="tip-icon">?</i>
+                <div class="tooltip">
+                  <strong>Atouts du métier</strong><br>
+                  Ce qui motive : sens, stabilité, relationnel, autonomie, utilité sociale…
+                </div>
+              </div>
+            </th>
+            <th>
+              <div class="th-inner">
+                POINTS DE<br>VIGILANCE
+                <i class="tip-icon">?</i>
+                <div class="tooltip">
+                  <strong>Points de vigilance</strong><br>
+                  Contraintes possibles : pression, polyvalence, risques, amplitude horaire…
+                </div>
+              </div>
+            </th>
+            <th>
+              <div class="th-inner">
+                FORMATION /<br>PRÉ-REQUIS
+                <i class="tip-icon">?</i>
+                <div class="tooltip">
+                  <strong>Formation / Pré-requis</strong><br>
+                  Diplômes, certifications, expérience nécessaire.
+                </div>
+              </div>
+            </th>
+            <th>
+              <div class="th-inner">
+                ADÉQUATION<br>AVEC MON<br>PROFIL
+                <i class="tip-icon">?</i>
+                <div class="tooltip">
+                  <strong>Adéquation avec votre profil</strong><br>
+                  Indiquer si le métier correspond : à vos valeurs, vos motivations, vos compétences, vos besoins.
+                </div>
+              </div>
+            </th>
+            <th>
+              <div class="th-inner">
+                DÉBOUCHÉS
+                <i class="tip-icon">?</i>
+                <div class="tooltip">
+                  <strong>Débouchés</strong><br>
+                  Étude du marché de l'emploi concernant ce secteur d'activité, et plus précisément ce métier.
+                </div>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><textarea placeholder="Nom du métier…"></textarea></td>
+            <td><textarea placeholder="Missions…"></textarea></td>
+            <td><textarea placeholder="Compétences…"></textarea></td>
+            <td><textarea placeholder="Conditions…"></textarea></td>
+            <td><textarea placeholder="Atouts…"></textarea></td>
+            <td><textarea placeholder="Vigilance…"></textarea></td>
+            <td><textarea placeholder="Formation…"></textarea></td>
+            <td><textarea placeholder="Adéquation…"></textarea></td>
+            <td><textarea placeholder="Débouchés…"></textarea></td>
+          </tr>
+          <tr>
+            <td><textarea placeholder="Nom du métier…"></textarea></td>
+            <td><textarea placeholder="Missions…"></textarea></td>
+            <td><textarea placeholder="Compétences…"></textarea></td>
+            <td><textarea placeholder="Conditions…"></textarea></td>
+            <td><textarea placeholder="Atouts…"></textarea></td>
+            <td><textarea placeholder="Vigilance…"></textarea></td>
+            <td><textarea placeholder="Formation…"></textarea></td>
+            <td><textarea placeholder="Adéquation…"></textarea></td>
+            <td><textarea placeholder="Débouchés…"></textarea></td>
+          </tr>
+          <tr>
+            <td><textarea placeholder="Nom du métier…"></textarea></td>
+            <td><textarea placeholder="Missions…"></textarea></td>
+            <td><textarea placeholder="Compétences…"></textarea></td>
+            <td><textarea placeholder="Conditions…"></textarea></td>
+            <td><textarea placeholder="Atouts…"></textarea></td>
+            <td><textarea placeholder="Vigilance…"></textarea></td>
+            <td><textarea placeholder="Formation…"></textarea></td>
+            <td><textarea placeholder="Adéquation…"></textarea></td>
+            <td><textarea placeholder="Débouchés…"></textarea></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="clearAll()">🗑 Effacer tout</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
+    </div>
+    <p class="hint">Passez la souris sur l'intitulé d'une colonne (icône ?) pour afficher son descriptif.</p>
+
+  </div>
+</div>
+
+<script>
+function clearAll() {
+  if (!confirm('Effacer toutes les données saisies ?')) return;
+  document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+}
+</script>
+</body>
+</html>
