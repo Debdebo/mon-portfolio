@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IKIGAÏ – Formulaire interactif</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap');
+
+  :root {
+    --jaune: #e8d87a;
+    --jaune-light: #f5edac;
+    --rouge: #e08080;
+    --rouge-light: #f0b8b8;
+    --bleu: #7aade8;
+    --bleu-light: #b8d4f5;
+    --vert: #7ac49a;
+    --vert-light: #b4dfc8;
+    --overlap-passion: #c8b060;
+    --overlap-vocation: #c87080;
+    --overlap-mission: #6090c0;
+    --overlap-profession: #60a878;
+    --center: #a090b0;
+    --text-dark: #2c2520;
+    --text-mid: #5a4e48;
+    --text-light: #8a7e78;
+    --border: rgba(80,60,40,0.15);
+    --bg: #faf8f4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 3rem;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+  }
+
+  .header-left h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    line-height: 1;
+  }
+
+  .header-left p {
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: var(--text-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .header-fields {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .field-group label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .field-group input {
+    border: none;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--text-dark);
+    padding: 4px 0;
+    outline: none;
+    width: 160px;
+  }
+
+  .field-group input:focus {
+    border-bottom-color: var(--text-mid);
+  }
+
+  .btn-print {
+    background: var(--text-dark);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: opacity 0.2s;
+  }
+
+  .btn-print:hover { opacity: 0.75; }
+
+  /* ──────────────────────── DIAGRAM ──────────────────────── */
+
+  .diagram-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+  }
+
+  .diagram-inner {
+    position: absolute;
+    inset: 0;
+  }
+
+  svg.ikigai-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Textarea overlays */
+  .zone {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .zone-title {
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    opacity: 0.7;
+  }
+
+  .zone textarea {
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--text-dark);
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    padding: 4px;
+    caret-color: var(--text-dark);
+  }
+
+  .zone textarea::placeholder {
+    color: rgba(80,60,40,0.3);
+    font-style: italic;
+  }
+
+  /* IKIGAI central summary */
+  .ikigai-central {
+    margin-top: 2rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.5rem;
+    background: white;
+  }
+
+  .ikigai-central-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+    color: var(--text-mid);
+  }
+
+  .ikigai-central textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-dark);
+    background: transparent;
+    min-height: 60px;
+  }
+
+  .ikigai-central textarea::placeholder {
+    color: rgba(80,60,40,0.3);
+    font-style: italic;
+  }
+
+  .hint {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    text-align: center;
+    margin-top: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ──────────────────────── PRINT ──────────────────────── */
+  @media print {
+    body { background: white; }
+    .btn-print { display: none !important; }
+    .page { padding: 0.5cm; max-width: none; }
+    .hint { display: none; }
+    .zone textarea { color: #111; }
+    textarea { color: #111; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>IKIGAÏ</h1>
+      <p>Ma raison d'être</p>
+    </div>
+    <div class="header-fields">
+      <div class="field-group">
+        <label>Nom / Prénom</label>
+        <input type="text" id="nom" placeholder="M. / Mme …">
+      </div>
+      <div class="field-group">
+        <label>Date</label>
+        <input type="text" id="date" placeholder="jj / mm / aaaa">
+      </div>
+      <button class="btn-print" onclick="window.print()">⎙ Imprimer / PDF</button>
+    </div>
+  </div>
+
+  <!-- DIAGRAM -->
+  <div class="diagram-wrapper" id="diagramWrapper">
+    <div class="diagram-inner" id="diagramInner">
+
+      <!-- SVG circles -->
+      <svg class="ikigai-svg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+        <!-- Halo background -->
+        <circle cx="250" cy="250" r="245" fill="#f0ede6" opacity="0.4"/>
+
+        <!-- 4 circles -->
+        <!-- Jaune – Ce que j'aime (haut) -->
+        <circle cx="250" cy="185" r="130" fill="#e8d87a" opacity="0.38"/>
+        <!-- Rouge – Ce dont le monde a besoin (droite) -->
+        <circle cx="315" cy="250" r="130" fill="#e08080" opacity="0.38"/>
+        <!-- Bleu – Ce pour quoi je suis payé(e) (bas) -->
+        <circle cx="250" cy="315" r="130" fill="#7aade8" opacity="0.38"/>
+        <!-- Vert – Ce pour quoi je suis doué(e) (gauche) -->
+        <circle cx="185" cy="250" r="130" fill="#7ac49a" opacity="0.38"/>
+
+        <!-- Borders -->
+        <circle cx="250" cy="185" r="130" fill="none" stroke="#c8b43a" stroke-width="0.8" opacity="0.5"/>
+        <circle cx="315" cy="250" r="130" fill="none" stroke="#c06060" stroke-width="0.8" opacity="0.5"/>
+        <circle cx="250" cy="315" r="130" fill="none" stroke="#4a8acc" stroke-width="0.8" opacity="0.5"/>
+        <circle cx="185" cy="250" r="130" fill="none" stroke="#3a9464" stroke-width="0.8" opacity="0.5"/>
+
+        <!-- Labels des grands cercles -->
+        <text x="250" y="68" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="12" font-weight="600" fill="#6a5820" letter-spacing="1">Ce que j'aime</text>
+
+        <text x="420" y="246" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="12" font-weight="600" fill="#8a3030" letter-spacing="1">Ce dont le</text>
+        <text x="420" y="262" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="12" font-weight="600" fill="#8a3030" letter-spacing="1">monde a besoin</text>
+
+        <text x="250" y="438" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="12" font-weight="600" fill="#2a4a8a" letter-spacing="1">Ce pour quoi je suis payé(e)</text>
+
+        <text x="80" y="246" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="12" font-weight="600" fill="#1a6644" letter-spacing="1">Ce pour quoi</text>
+        <text x="80" y="262" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="12" font-weight="600" fill="#1a6644" letter-spacing="1">je suis doué(e)</text>
+
+        <!-- Labels intersections (SVG uniquement, pas dupliqués en HTML) -->
+        <text x="200" y="162" text-anchor="middle" font-family="'Jost',sans-serif" font-size="7.5" font-weight="500" fill="#7a6010" letter-spacing="1.5">PASSION</text>
+        <text x="300" y="162" text-anchor="middle" font-family="'Jost',sans-serif" font-size="7.5" font-weight="500" fill="#903030" letter-spacing="1.5">VOCATION</text>
+        <text x="200" y="345" text-anchor="middle" font-family="'Jost',sans-serif" font-size="7.5" font-weight="500" fill="#1a4888" letter-spacing="1.5">PROFESSION</text>
+        <text x="300" y="345" text-anchor="middle" font-family="'Jost',sans-serif" font-size="7.5" font-weight="500" fill="#0a5e30" letter-spacing="1.5">MISSION</text>
+
+        <!-- Ikigai center label – petit -->
+        <text x="250" y="248" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="11" font-weight="600" fill="#3a2d4a" letter-spacing="2">Ikigaï</text>
+      </svg>
+
+      <!-- ── TEXTAREA ZONES ──
+           ViewBox 500×500. Cercles r=130 :
+           Haut(jaune)  cx=250 cy=185  Droite(rouge) cx=315 cy=250
+           Bas(bleu)    cx=250 cy=315  Gauche(vert)  cx=185 cy=250
+      -->
+
+      <!-- CE QUE J'AIME – zone exclusive haute du cercle jaune -->
+      <div class="zone" style="left:30%;top:9%;width:40%;height:16%;">
+        <textarea placeholder="Loisirs, passions, sujets qui vous font vibrer…"></textarea>
+      </div>
+
+      <!-- CE DONT LE MONDE A BESOIN – zone exclusive droite du cercle rouge -->
+      <div class="zone" style="left:71%;top:34%;width:15%;height:32%;">
+        <textarea placeholder="Besoins sociaux, causes, problèmes…"></textarea>
+      </div>
+
+      <!-- CE POUR QUOI JE SUIS PAYÉ(E) – zone exclusive basse du cercle bleu -->
+      <div class="zone" style="left:30%;top:75%;width:40%;height:16%;">
+        <textarea placeholder="Compétences monnayables, métiers…"></textarea>
+      </div>
+
+      <!-- CE POUR QUOI JE SUIS DOUÉ(E) – zone exclusive gauche du cercle vert -->
+      <div class="zone" style="left:14%;top:34%;width:15%;height:32%;">
+        <textarea placeholder="Talents, forces reconnues…"></textarea>
+      </div>
+
+      <!-- PASSION – intersection vert+jaune (haut gauche) – textarea seul, titre déjà dans SVG -->
+      <div class="zone" style="left:25%;top:29%;width:17%;height:15%;">
+        <textarea placeholder="…"></textarea>
+      </div>
+
+      <!-- VOCATION – intersection jaune+rouge (haut droit) -->
+      <div class="zone" style="left:58%;top:29%;width:17%;height:15%;">
+        <textarea placeholder="…"></textarea>
+      </div>
+
+      <!-- PROFESSION – intersection vert+bleu (bas gauche) -->
+      <div class="zone" style="left:25%;top:56%;width:17%;height:15%;">
+        <textarea placeholder="…"></textarea>
+      </div>
+
+      <!-- MISSION – intersection rouge+bleu (bas droit) -->
+      <div class="zone" style="left:58%;top:56%;width:17%;height:15%;">
+        <textarea placeholder="…"></textarea>
+      </div>
+
+    </div><!-- /diagram-inner -->
+  </div><!-- /diagram-wrapper -->
+
+  <p class="hint">Cliquez dans chaque zone pour écrire · Utilisez « Imprimer / PDF » pour sauvegarder en PDF</p>
+
+  <!-- IKIGAÏ CENTRAL -->
+  <div class="ikigai-central">
+    <div class="ikigai-central-label">Mon Ikigaï central</div>
+    <textarea placeholder="À l'intersection de tout : ce qui me donne envie de me lever chaque matin… En quelques mots, ma raison d'être."></textarea>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2,'0');
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const yyyy = today.getFullYear();
+  document.getElementById('date').placeholder = dd + ' / ' + mm + ' / ' + yyyy;
+
+  /* Auto-resize all textareas on input */
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = ta.scrollHeight + 'px';
+    });
+  });
+</script>
+</body>
+</html>
