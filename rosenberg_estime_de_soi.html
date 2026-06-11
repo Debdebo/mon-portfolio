@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questionnaire Estime de Soi — Échelle de Rosenberg</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, serif; background: #f4f6fb; color: #222; min-height: 100vh; padding: 2rem 1rem; }
+  .wrapper { max-width: 720px; margin: 0 auto; }
+  .card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .header { background: #1a3a6b; color: #fff; padding: 1.5rem 2rem; text-align: center; }
+  .header h1 { font-size: 1.3rem; font-weight: 600; letter-spacing: 1px; margin-bottom: 0.3rem; }
+  .header p { font-size: 0.875rem; opacity: 0.8; }
+  .body { padding: 2rem; }
+  .intro { border-left: 4px solid #1a3a6b; padding: 0.75rem 1rem; background: #f0f4fb; border-radius: 0 8px 8px 0; margin-bottom: 1.75rem; }
+  .intro h2 { font-size: 0.95rem; font-weight: 600; color: #1a3a6b; margin-bottom: 0.4rem; }
+  .intro p { font-size: 0.875rem; color: #444; line-height: 1.65; }
+  .scale-box { background: #f7f8fb; border: 1px solid #dde3f0; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.75rem; font-size: 0.85rem; color: #555; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+  .scale-box strong { color: #1a3a6b; display: block; width: 100%; margin-bottom: 0.2rem; }
+  .q-list { list-style: none; }
+  .q-item { display: flex; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid #eef0f5; align-items: flex-start; }
+  .q-item:last-child { border-bottom: none; }
+  .q-num { min-width: 24px; font-size: 0.85rem; font-weight: 600; color: #888; padding-top: 3px; }
+  .q-content { flex: 1; }
+  .q-text { font-size: 0.95rem; color: #333; line-height: 1.5; margin-bottom: 0.6rem; }
+  .q-options { display: flex; gap: 8px; }
+  .q-options label { cursor: pointer; }
+  .q-options input { display: none; }
+  .opt-btn { width: 38px; height: 38px; border-radius: 8px; border: 1.5px solid #cdd5e8; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 600; color: #666; background: #fff; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .q-options input:checked + .opt-btn { background: #1a3a6b; color: #fff; border-color: #1a3a6b; }
+  .opt-btn:hover { border-color: #1a3a6b; color: #1a3a6b; }
+  .btn-submit { width: 100%; margin-top: 1.75rem; padding: 0.85rem; background: #1a3a6b; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+  .btn-submit:hover { opacity: 0.88; }
+  .btn-submit:disabled { opacity: 0.35; cursor: not-allowed; }
+  .result { display: none; margin-top: 2rem; border-top: 1px solid #eef0f5; padding-top: 1.75rem; }
+  .score-header { text-align: center; margin-bottom: 1rem; }
+  .score-header .label { font-size: 0.85rem; color: #888; margin-bottom: 0.2rem; }
+  .score-header .number { font-size: 3.5rem; font-weight: 700; line-height: 1; }
+  .score-header .sub { font-size: 0.85rem; color: #888; margin-top: 0.2rem; }
+  .bar-bg { height: 10px; background: #eaecf4; border-radius: 5px; overflow: hidden; margin: 1rem 0 1.5rem; }
+  .bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+  .analysis { border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+  .analysis h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+  .analysis p { font-size: 0.9rem; color: #333; line-height: 1.7; margin-bottom: 0.75rem; }
+  .analysis p:last-child { margin-bottom: 0; }
+  .ranges-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.5rem; }
+  .range-pill { font-size: 0.8rem; padding: 7px 10px; border-radius: 8px; border: 1.5px solid #dde3f0; color: #666; line-height: 1.4; }
+  .range-pill.active { font-weight: 600; }
+  .btn-row { display: flex; gap: 10px; }
+  .btn-reset { flex: 1; padding: 0.7rem; background: transparent; color: #555; border: 1.5px solid #cdd5e8; border-radius: 8px; font-size: 0.9rem; cursor: pointer; font-family: inherit; }
+  .btn-reset:hover { background: #f4f6fb; }
+  .btn-pdf { flex: 1; padding: 0.7rem; background: #1a3a6b; color: #fff; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .btn-pdf:hover { opacity: 0.88; }
+  footer { text-align: center; margin-top: 1.5rem; font-size: 0.78rem; color: #aaa; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="card">
+    <div class="header">
+      <h1>QUESTIONNAIRE — ESTIME DE SOI</h1>
+      <p>Échelle de Rosenberg · 10 questions</p>
+    </div>
+    <div class="body">
+
+      <div class="intro">
+        <h2>Présentation de l'échelle d'estime de soi de Rosenberg</h2>
+        <p>L'échelle d'estime de soi de Rosenberg (Rosenberg Self-Esteem Scale, 1965) est un questionnaire largement utilisé pour évaluer l'estime de soi globale d'une personne. Elle se compose de 10 affirmations portant sur la perception que l'individu a de sa propre valeur et de ses qualités. Les réponses sont recueillies sur une échelle graduée permettant de mesurer le degré d'accord avec chaque affirmation. Cet outil permet d'obtenir une appréciation générale de l'estime de soi et constitue une référence dans les domaines de la psychologie, de la recherche et de l'accompagnement clinique.</p>
+      </div>
+
+      <div class="scale-box">
+        <strong>Échelle de réponse :</strong>
+        <span>1 = Pas du tout d'accord</span>
+        <span>2 = Plutôt pas d'accord</span>
+        <span>3 = Plutôt d'accord</span>
+        <span>4 = Tout à fait d'accord</span>
+      </div>
+
+      <ul class="q-list" id="q-list"></ul>
+
+      <button class="btn-submit" id="btn-submit" disabled onclick="calculate()">Calculer mon score</button>
+
+      <div class="result" id="result">
+        <div class="score-header">
+          <div class="label">Votre score</div>
+          <div class="number" id="score-num"></div>
+          <div class="sub">sur 40 points</div>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-fill"></div></div>
+        <div class="analysis" id="analysis"></div>
+        <div class="ranges-grid" id="ranges-grid"></div>
+        <div class="btn-row">
+          <button class="btn-reset" onclick="reset()">&#8635; Recommencer</button>
+          <button class="btn-pdf" onclick="exportPDF()">&#8595; Enregistrer en PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <footer>Questionnaire basé sur l'échelle de Rosenberg (1965) — Ne constitue pas un diagnostic clinique.</footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  { id:1,  text:"Je sens que je suis une personne de valeur, au moins égale à n'importe qui d'autre.", neg:false },
+  { id:2,  text:"Je pense que je possède un certain nombre de belles qualités.", neg:false },
+  { id:3,  text:"En général, j'ai tendance à penser que je suis un raté.", neg:true },
+  { id:4,  text:"Je suis capable de faire les choses aussi bien que la majorité des gens.", neg:false },
+  { id:5,  text:"Je sens peu de raisons d'être fier de moi.", neg:true },
+  { id:6,  text:"J'ai une attitude positive vis-à-vis de moi-même.", neg:false },
+  { id:7,  text:"Dans l'ensemble, je suis satisfait(e) de moi.", neg:false },
+  { id:8,  text:"J'aimerais avoir plus de respect pour moi-même.", neg:true },
+  { id:9,  text:"Parfois, je me sens vraiment inutile.", neg:true },
+  { id:10, text:"Il m'arrive de penser que je suis un bon à rien.", neg:true }
+];
+
+const RANGES = [
+  {
+    min:10, max:24, short:"Moins de 25", cat:"très faible",
+    color:"#A32D2D", bg:"#FCEBEB",
+    title:"Estime de soi très faible",
+    paras:[
+      "Un score très faible à l'échelle de Rosenberg traduit une perception fortement négative de soi-même. La personne peut avoir tendance à sous-estimer significativement ses compétences, à douter profondément de sa valeur personnelle et à éprouver un manque de confiance marqué dans différentes situations de la vie quotidienne.",
+      "Ce résultat peut être associé à une vulnérabilité accrue face aux critiques, aux échecs ou aux situations stressantes, ainsi qu'à une difficulté à reconnaître ses propres réussites. Des pensées négatives récurrentes sur soi-même peuvent également être présentes.",
+      "Un travail de renforcement de l'estime de soi est souhaitable. Un accompagnement par un professionnel de santé mentale (psychologue, thérapeute) peut être particulièrement bénéfique pour identifier les sources de cette perception et mettre en place des stratégies adaptées. Il convient toutefois d'interpréter ce score en tenant compte du contexte personnel et émotionnel de la personne évaluée."
+    ]
+  },
+  {
+    min:25, max:30, short:"25 – 30", cat:"faible",
+    color:"#854F0B", bg:"#FAEEDA",
+    title:"Estime de soi faible",
+    paras:[
+      "Un score faible à l'échelle de Rosenberg traduit une perception négative de soi-même. La personne peut avoir tendance à sous-estimer ses compétences, à douter de sa valeur personnelle ou à éprouver un manque de confiance dans différentes situations de la vie quotidienne.",
+      "Ce résultat peut être associé à une plus grande vulnérabilité face aux critiques, aux échecs ou au stress. La personne peut avoir du mal à s'affirmer ou à reconnaître ses propres qualités, même lorsqu'elles sont soulignées par son entourage.",
+      "Un travail sur l'estime de soi, éventuellement avec l'aide d'un professionnel, pourrait être bénéfique pour explorer les fondements de cette perception et développer une image de soi plus équilibrée. Il convient toutefois d'interpréter ce score en tenant compte du contexte personnel et émotionnel de la personne évaluée."
+    ]
+  },
+  {
+    min:31, max:34, short:"31 – 34", cat:"moyenne",
+    color:"#185FA5", bg:"#E6F1FB",
+    title:"Estime de soi dans la moyenne",
+    paras:[
+      "Un score moyen reflète une estime de soi globalement satisfaisante, mais parfois fluctuante selon les situations rencontrées. La personne reconnaît généralement ses qualités et ses capacités, tout en pouvant éprouver ponctuellement des doutes ou des incertitudes sur sa valeur personnelle.",
+      "Ce niveau d'estime de soi est fréquent et témoigne souvent d'une perception réaliste de soi, avec des points forts identifiés et des axes d'amélioration reconnus. La personne est généralement capable de faire face aux défis du quotidien, même si certaines situations peuvent ébranler sa confiance en elle.",
+      "Ce résultat n'appelle pas nécessairement un accompagnement spécifique, mais une attention portée à l'auto-bienveillance et à la valorisation de ses réussites peut contribuer à renforcer durablement l'estime de soi."
+    ]
+  },
+  {
+    min:35, max:39, short:"35 – 39", cat:"forte",
+    color:"#3B6D11", bg:"#EAF3DE",
+    title:"Estime de soi forte",
+    paras:[
+      "Un score élevé indique une image de soi positive et une bonne confiance en ses capacités. La personne tend à se percevoir comme ayant de la valeur, à reconnaître ses compétences et à faire face aux difficultés avec davantage d'assurance.",
+      "Une estime de soi forte favorise généralement l'affirmation de soi, l'adaptation aux situations nouvelles et la persévérance face aux obstacles. La personne est davantage en mesure d'accueillir les critiques constructives sans se sentir profondément remise en question, et de rebondir après les échecs.",
+      "Ce résultat ne signifie pas nécessairement une absence de doutes, mais traduit une appréciation globale positive de soi-même. Il constitue un atout précieux dans les relations interpersonnelles, la vie professionnelle et le bien-être général."
+    ]
+  },
+  {
+    min:40, max:40, short:"40", cat:"très forte",
+    color:"#0F6E56", bg:"#E1F5EE",
+    title:"Estime de soi très forte",
+    paras:[
+      "Un score maximal traduit une image de soi très positive et une confiance en soi particulièrement affirmée. La personne se perçoit comme ayant pleinement de la valeur et reconnaît ses qualités et ses compétences de manière prononcée.",
+      "Ce niveau d'estime de soi favorise une grande capacité d'affirmation, une aisance dans les relations sociales et une résilience marquée face aux épreuves. La personne aborde généralement les défis avec sérénité et fait preuve d'une solide stabilité émotionnelle.",
+      "Il convient de souligner qu'une estime de soi très élevée reste bénéfique tant qu'elle s'accompagne d'une capacité à reconnaître ses limites et à rester ouvert(e) aux retours d'autrui. Ce résultat témoigne d'une personne épanouie dans sa perception d'elle-même."
+    ]
+  }
+];
+
+const answers = {};
+let currentScore = null;
+let currentRange = null;
+
+function buildQuestions() {
+  const ul = document.getElementById('q-list');
+  QUESTIONS.forEach(q => {
+    const li = document.createElement('li');
+    li.className = 'q-item';
+    li.innerHTML = `<div class="q-num">${q.id}.</div>
+      <div class="q-content">
+        <div class="q-text">${q.text}</div>
+        <div class="q-options">
+          ${[1,2,3,4].map(v => `<label><input type="radio" name="q${q.id}" value="${v}" onchange="onAnswer(${q.id},${v})"><div class="opt-btn">${v}</div></label>`).join('')}
+        </div>
+      </div>`;
+    ul.appendChild(li);
+  });
+}
+
+function onAnswer(qId, val) {
+  answers[qId] = val;
+  if (Object.keys(answers).length === 10) {
+    document.getElementById('btn-submit').disabled = false;
+  }
+}
+
+function calculate() {
+  let score = 0;
+  QUESTIONS.forEach(q => {
+    const v = answers[q.id];
+    score += q.neg ? (5 - v) : v;
+  });
+  currentScore = score;
+  currentRange = RANGES.find(r => score >= r.min && score <= r.max);
+  showResult();
+}
+
+function showResult() {
+  const r = currentRange;
+  const s = currentScore;
+  document.getElementById('score-num').textContent = s;
+  document.getElementById('score-num').style.color = r.color;
+  const pct = ((s - 10) / 30) * 100;
+  const bar = document.getElementById('bar-fill');
+  bar.style.width = pct + '%';
+  bar.style.background = r.color;
+
+  const an = document.getElementById('analysis');
+  an.style.background = r.bg;
+  an.style.borderLeft = '4px solid ' + r.color;
+  an.innerHTML = `<h3 style="color:${r.color}">${r.title}</h3>` + r.paras.map(p => `<p>${p}</p>`).join('');
+
+  document.getElementById('ranges-grid').innerHTML = RANGES.map(rr => {
+    const active = s >= rr.min && s <= rr.max;
+    return `<div class="range-pill ${active?'active':''}" style="${active?'border-color:'+rr.color+';background:'+rr.bg+';color:'+rr.color:''}">
+      <strong>${rr.short} pts</strong><br>Estime de soi ${rr.cat}
+    </div>`;
+  }).join('');
+
+  const resultEl = document.getElementById('result');
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function reset() {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('btn-submit').disabled = true;
+  currentScore = null; currentRange = null;
+}
+
+function hexRgb(hex) {
+  return [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)];
+}
+
+function exportPDF() {
+  if (!currentRange) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const M = 18, W = 210, CW = W - M*2;
+  let y = 0;
+
+  doc.setFillColor(26,58,107);
+  doc.rect(0,0,W,30,'F');
+  doc.setFontSize(16); doc.setFont('helvetica','bold'); doc.setTextColor(255,255,255);
+  doc.text('QUESTIONNAIRE — ESTIME DE SOI', W/2, 13, {align:'center'});
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text('Échelle de Rosenberg (1965)', W/2, 21, {align:'center'});
+  const dateStr = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  doc.text('Date : ' + dateStr, W/2, 27, {align:'center'});
+  y = 40;
+
+  doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(26,58,107);
+  doc.text('Résultat', M, y); y += 8;
+
+  doc.setFillColor(245,247,252); doc.setDrawColor(210,220,235);
+  doc.roundedRect(M, y, CW, 22, 3, 3, 'FD');
+  doc.setFontSize(28); doc.setFont('helvetica','bold'); doc.setTextColor(...hexRgb(currentRange.color));
+  doc.text(String(currentScore), M+20, y+15, {align:'center'});
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(100,100,100);
+  doc.text('/ 40 pts', M+30, y+15);
+  doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(...hexRgb(currentRange.color));
+  doc.text(currentRange.title, M+65, y+10);
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(80,80,80);
+  doc.text('Estime de soi ' + currentRange.cat, M+65, y+17);
+  y += 28;
+
+  doc.setFillColor(234,236,244);
+  doc.roundedRect(M, y, CW, 5, 2, 2, 'F');
+  const fw = Math.max(4, ((currentScore-10)/30)*CW);
+  doc.setFillColor(...hexRgb(currentRange.color));
+  doc.roundedRect(M, y, fw, 5, 2, 2, 'F');
+  y += 12;
+
+  doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(26,58,107);
+  doc.text('Analyse détaillée', M, y); y += 7;
+
+  currentRange.paras.forEach((para, i) => {
+    const lines = doc.splitTextToSize(para, CW - 8);
+    const bh = lines.length * 5.2 + 8;
+    doc.setDrawColor(...hexRgb(currentRange.color));
+    doc.setLineWidth(i===0?0.8:0.4);
+    doc.line(M, y, M, y+bh);
+    doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
+    doc.text(lines, M+5, y+5);
+    y += bh + 4;
+  });
+
+  y += 4;
+  doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(26,58,107);
+  doc.text('Détail des réponses', M, y); y += 7;
+
+  QUESTIONS.forEach(q => {
+    const val = answers[q.id];
+    const pts = q.neg ? (5-val) : val;
+    doc.setFillColor(248,249,252); doc.setDrawColor(215,220,230);
+    doc.roundedRect(M, y, CW, 9, 1.5, 1.5, 'FD');
+    doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(60,60,60);
+    const t = q.text.length > 74 ? q.text.slice(0,72)+'…' : q.text;
+    doc.text(q.id+'. '+t, M+3, y+6);
+    doc.setFont('helvetica','bold'); doc.setTextColor(...hexRgb(currentRange.color));
+    doc.text('Réponse : '+val+' → '+pts+' pt'+(pts>1?'s':''), W-M-3, y+6, {align:'right'});
+    y += 11;
+  });
+
+  y += 6;
+  doc.setDrawColor(200,205,215); doc.setLineWidth(0.3);
+  doc.line(M, y, W-M, y); y += 5;
+  doc.setFontSize(8); doc.setFont('helvetica','italic'); doc.setTextColor(150,150,150);
+  doc.text("Ce document est généré automatiquement. Il ne constitue pas un diagnostic clinique.", M, y, {maxWidth:CW});
+
+  doc.save('rosenberg_estime_de_soi_'+dateStr.replace(/ /g,'_')+'.pdf');
+}
+
+buildQuestions();
+</script>
+</body>
+</html>
