@@ -1,0 +1,208 @@
+
+<style>
+  .q-container { padding: 1.5rem 0; font-family: var(--font-sans); }
+  .q-header { background: #1a3a6b; color: white; border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0; padding: 1rem 1.5rem; text-align: center; }
+  .q-header h2 { margin: 0; font-size: 18px; font-weight: 500; letter-spacing: 1px; color: white; }
+  .q-header p { margin: 0.5rem 0 0; font-size: 13px; opacity: 0.85; }
+  .q-body { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-top: none; border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg); padding: 1.5rem; }
+  .intro-block { border-left: 3px solid #1a3a6b; padding: 0.75rem 1rem 0.75rem 1.25rem; margin-bottom: 1.5rem; background: var(--color-background-secondary); border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; }
+  .intro-block h3 { margin: 0 0 0.5rem; font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .intro-block p { margin: 0; font-size: 13px; color: var(--color-text-secondary); line-height: 1.65; }
+  .scale-legend { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; margin-bottom: 1.5rem; font-size: 13px; color: var(--color-text-secondary); }
+  .q-item { display: flex; align-items: flex-start; gap: 1rem; padding: 0.75rem 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .q-item:last-child { border-bottom: none; }
+  .q-num { min-width: 22px; font-size: 13px; font-weight: 500; color: var(--color-text-secondary); padding-top: 2px; }
+  .q-text { flex: 1; font-size: 14px; color: var(--color-text-primary); line-height: 1.5; }
+  .q-scale { display: flex; gap: 6px; margin-top: 8px; }
+  .q-scale label { cursor: pointer; }
+  .q-scale input[type=radio] { display: none; }
+  .q-scale .btn-opt { width: 36px; height: 36px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: var(--color-text-secondary); background: var(--color-background-primary); cursor: pointer; transition: all 0.15s; }
+  .q-scale input[type=radio]:checked + .btn-opt { background: #1a3a6b; color: white; border-color: #1a3a6b; }
+  .submit-btn { width: 100%; margin-top: 1.5rem; padding: 0.75rem; background: #1a3a6b; color: white; border: none; border-radius: var(--border-radius-md); font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+  .submit-btn:hover { opacity: 0.88; }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .result-box { display: none; margin-top: 1.5rem; padding: 1.25rem; border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); }
+  .score-big { font-size: 48px; font-weight: 500; text-align: center; margin: 0.5rem 0; }
+  .score-bar-bg { height: 12px; background: var(--color-background-secondary); border-radius: 6px; overflow: hidden; margin: 1rem 0; }
+  .score-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; }
+  .analysis-block { border-radius: var(--border-radius-md); padding: 1rem 1.25rem; margin-top: 1rem; font-size: 14px; line-height: 1.7; }
+  .analysis-block h4 { margin: 0 0 0.5rem; font-size: 15px; font-weight: 500; }
+  .analysis-block p { margin: 0 0 0.75rem; }
+  .analysis-block p:last-child { margin: 0; }
+  .score-ranges { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 1rem; }
+  .range-item { font-size: 12px; padding: 6px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); line-height: 1.4; }
+  .range-item.active { border-width: 2px; font-weight: 500; }
+  .reset-btn { width: 100%; margin-top: 1rem; padding: 0.6rem; background: transparent; color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 14px; cursor: pointer; }
+  .reset-btn:hover { background: var(--color-background-secondary); }
+</style>
+
+<div class="q-container">
+  <div class="q-header">
+    <h2>QUESTIONNAIRE — ESTIME DE SOI</h2>
+    <p>Échelle de Rosenberg · 10 questions</p>
+  </div>
+  <div class="q-body">
+
+    <div class="intro-block">
+      <h3>Présentation de l'échelle d'estime de soi de Rosenberg</h3>
+      <p>L'échelle d'estime de soi de Rosenberg (Rosenberg Self-Esteem Scale, 1965) est un questionnaire largement utilisé pour évaluer l'estime de soi globale d'une personne. Elle se compose de 10 affirmations portant sur la perception que l'individu a de sa propre valeur et de ses qualités. Les réponses sont recueillies sur une échelle graduée permettant de mesurer le degré d'accord avec chaque affirmation. Cet outil permet d'obtenir une appréciation générale de l'estime de soi et constitue une référence dans les domaines de la psychologie, de la recherche et de l'accompagnement clinique.</p>
+    </div>
+
+    <div class="scale-legend">
+      <span style="margin-right:12px">1 = Pas du tout d'accord</span>
+      <span style="margin-right:12px">2 = Plutôt pas d'accord</span>
+      <span style="margin-right:12px">3 = Plutôt d'accord</span>
+      <span>4 = Tout à fait d'accord</span>
+    </div>
+
+    <div id="questions-list"></div>
+
+    <button class="submit-btn" id="submit-btn" disabled onclick="calculate()">Calculer mon score</button>
+
+    <div class="result-box" id="result-box">
+      <div style="text-align:center; margin-bottom:0.5rem; font-size:14px; color:var(--color-text-secondary);">Votre score</div>
+      <div class="score-big" id="score-display"></div>
+      <div style="text-align:center; font-size:13px; color:var(--color-text-secondary); margin-bottom:0.5rem;">sur 40 points</div>
+      <div class="score-bar-bg"><div class="score-bar-fill" id="score-bar"></div></div>
+      <div class="analysis-block" id="analysis-block"></div>
+      <div class="score-ranges" id="score-ranges"></div>
+      <button class="reset-btn" onclick="reset()"><i class="ti ti-refresh" aria-hidden="true"></i> Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  { id: 1, text: "Je sens que je suis une personne de valeur, au moins égale à n'importe qui d'autre.", neg: false },
+  { id: 2, text: "Je pense que je possède un certain nombre de belles qualités.", neg: false },
+  { id: 3, text: "En général, j'ai tendance à penser que je suis un raté.", neg: true },
+  { id: 4, text: "Je suis capable de faire les choses aussi bien que la majorité des gens.", neg: false },
+  { id: 5, text: "Je sens peu de raisons d'être fier de moi.", neg: true },
+  { id: 6, text: "J'ai une attitude positive vis-à-vis de moi-même.", neg: false },
+  { id: 7, text: "Dans l'ensemble, je suis satisfait(e) de moi.", neg: false },
+  { id: 8, text: "J'aimerais avoir plus de respect pour moi-même.", neg: true },
+  { id: 9, text: "Parfois, je me sens vraiment inutile.", neg: true },
+  { id: 10, text: "Il m'arrive de penser que je suis un bon à rien.", neg: true }
+];
+
+const ranges = [
+  {
+    min: 10, max: 24,
+    label: "Moins de 25 pts", shortLabel: "Moins de 25",
+    category: "très faible",
+    color: "#A32D2D", bg: "#FCEBEB",
+    title: "Estime de soi très faible",
+    analysis: `<p>Un score très faible à l'échelle de Rosenberg traduit une perception fortement négative de soi-même. La personne peut avoir tendance à sous-estimer significativement ses compétences, à douter profondément de sa valeur personnelle et à éprouver un manque de confiance marqué dans différentes situations de la vie quotidienne.</p><p>Ce résultat peut être associé à une vulnérabilité accrue face aux critiques, aux échecs ou aux situations stressantes, ainsi qu'à une difficulté à reconnaître ses propres réussites. Des pensées négatives récurrentes sur soi-même peuvent également être présentes.</p><p>Un travail de renforcement de l'estime de soi est souhaitable. Un accompagnement par un professionnel de santé mentale (psychologue, thérapeute) peut être particulièrement bénéfique pour identifier les sources de cette perception et mettre en place des stratégies adaptées. Il convient toutefois d'interpréter ce score en tenant compte du contexte personnel et émotionnel de la personne évaluée.</p>`
+  },
+  {
+    min: 25, max: 30,
+    label: "25 – 30 pts", shortLabel: "25 – 30",
+    category: "faible",
+    color: "#854F0B", bg: "#FAEEDA",
+    title: "Estime de soi faible",
+    analysis: `<p>Un score faible à l'échelle de Rosenberg traduit une perception négative de soi-même. La personne peut avoir tendance à sous-estimer ses compétences, à douter de sa valeur personnelle ou à éprouver un manque de confiance dans différentes situations de la vie quotidienne.</p><p>Ce résultat peut être associé à une plus grande vulnérabilité face aux critiques, aux échecs ou au stress. La personne peut avoir du mal à s'affirmer ou à reconnaître ses propres qualités, même lorsqu'elles sont soulignées par son entourage.</p><p>Un travail sur l'estime de soi, éventuellement avec l'aide d'un professionnel, pourrait être bénéfique pour explorer les fondements de cette perception et développer une image de soi plus équilibrée. Il convient toutefois d'interpréter ce score en tenant compte du contexte personnel et émotionnel de la personne évaluée.</p>`
+  },
+  {
+    min: 31, max: 34,
+    label: "31 – 34 pts", shortLabel: "31 – 34",
+    category: "moyenne",
+    color: "#185FA5", bg: "#E6F1FB",
+    title: "Estime de soi dans la moyenne",
+    analysis: `<p>Un score moyen reflète une estime de soi globalement satisfaisante, mais parfois fluctuante selon les situations rencontrées. La personne reconnaît généralement ses qualités et ses capacités, tout en pouvant éprouver ponctuellement des doutes ou des incertitudes sur sa valeur personnelle.</p><p>Ce niveau d'estime de soi est fréquent et témoigne souvent d'une perception réaliste de soi, avec des points forts identifiés et des axes d'amélioration reconnus. La personne est généralement capable de faire face aux défis du quotidien, même si certaines situations peuvent ébranler sa confiance en elle.</p><p>Ce résultat n'appelle pas nécessairement un accompagnement spécifique, mais une attention portée à l'auto-bienveillance et à la valorisation de ses réussites peut contribuer à renforcer durablement l'estime de soi.</p>`
+  },
+  {
+    min: 35, max: 39,
+    label: "35 – 39 pts", shortLabel: "35 – 39",
+    category: "forte",
+    color: "#3B6D11", bg: "#EAF3DE",
+    title: "Estime de soi forte",
+    analysis: `<p>Un score élevé indique une image de soi positive et une bonne confiance en ses capacités. La personne tend à se percevoir comme ayant de la valeur, à reconnaître ses compétences et à faire face aux difficultés avec davantage d'assurance.</p><p>Une estime de soi forte favorise généralement l'affirmation de soi, l'adaptation aux situations nouvelles et la persévérance face aux obstacles. La personne est davantage en mesure d'accueillir les critiques constructives sans se sentir profondément remise en question, et de rebondir après les échecs.</p><p>Ce résultat ne signifie pas nécessairement une absence de doutes, mais traduit une appréciation globale positive de soi-même. Il constitue un atout précieux dans les relations interpersonnelles, la vie professionnelle et le bien-être général.</p>`
+  },
+  {
+    min: 40, max: 40,
+    label: "40 pts", shortLabel: "40",
+    category: "très forte",
+    color: "#0F6E56", bg: "#E1F5EE",
+    title: "Estime de soi très forte",
+    analysis: `<p>Un score maximal traduit une image de soi très positive et une confiance en soi particulièrement affirmée. La personne se perçoit comme ayant pleinement de la valeur et reconnaît ses qualités et ses compétences de manière prononcée.</p><p>Ce niveau d'estime de soi favorise une grande capacité d'affirmation, une aisance dans les relations sociales et une résilience marquée face aux épreuves. La personne aborde généralement les défis avec sérénité et fait preuve d'une solide stabilité émotionnelle.</p><p>Il convient de souligner qu'une estime de soi très élevée reste bénéfique tant qu'elle s'accompagne d'une capacité à reconnaître ses limites et à rester ouvert(e) aux retours d'autrui. Ce résultat témoigne d'une personne épanouie dans sa perception d'elle-même.</p>`
+  }
+];
+
+const answers = {};
+
+function buildQuestions() {
+  const list = document.getElementById('questions-list');
+  questions.forEach(q => {
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    div.innerHTML = `
+      <div class="q-num">${q.id}.</div>
+      <div class="q-text">
+        ${q.text}
+        <div class="q-scale">
+          ${[1,2,3,4].map(v => `
+            <label>
+              <input type="radio" name="q${q.id}" value="${v}" onchange="onAnswer(${q.id},${v})">
+              <div class="btn-opt">${v}</div>
+            </label>
+          `).join('')}
+        </div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function onAnswer(qId, val) {
+  answers[qId] = val;
+  if (Object.keys(answers).length === 10) {
+    document.getElementById('submit-btn').disabled = false;
+  }
+}
+
+function calculate() {
+  let score = 0;
+  questions.forEach(q => {
+    const val = answers[q.id];
+    score += q.neg ? (5 - val) : val;
+  });
+  showResult(score);
+}
+
+function showResult(score) {
+  const box = document.getElementById('result-box');
+  box.style.display = 'block';
+  document.getElementById('score-display').textContent = score;
+
+  const pct = ((score - 10) / 30) * 100;
+  const bar = document.getElementById('score-bar');
+  const range = ranges.find(r => score >= r.min && score <= r.max);
+  bar.style.width = pct + '%';
+  bar.style.background = range.color;
+
+  const ab = document.getElementById('analysis-block');
+  ab.style.background = range.bg;
+  ab.style.borderLeft = `3px solid ${range.color}`;
+  ab.style.paddingLeft = '1.25rem';
+  ab.style.color = 'var(--color-text-primary)';
+  ab.innerHTML = `<h4 style="color:${range.color}">${range.title}</h4>${range.analysis}`;
+
+  const rangesEl = document.getElementById('score-ranges');
+  rangesEl.innerHTML = ranges.map(r => {
+    const isActive = score >= r.min && score <= r.max;
+    return `<div class="range-item ${isActive ? 'active' : ''}" style="${isActive ? `border-color:${r.color}; background:${r.bg}; color:${r.color}` : 'color:var(--color-text-secondary)'}">
+      <span style="font-weight:500">${r.shortLabel} pts</span><br>Estime de soi ${r.category}
+    </div>`;
+  }).join('');
+
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function reset() {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+  document.getElementById('result-box').style.display = 'none';
+  document.getElementById('submit-btn').disabled = true;
+}
+
+buildQuestions();
+</script>
