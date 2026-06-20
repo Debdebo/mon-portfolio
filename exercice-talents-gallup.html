@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercice Talents Gallup — 34 thèmes</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #1a1a1a; background: #f8f9fb; font-size: 14px; }
+
+.app { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+h1 { font-size: 22px; font-weight: 600; color: #1A237E; margin-bottom: 4px; }
+.subtitle { font-size: 13px; color: #666; margin-bottom: 1.25rem; }
+
+.intro-banner { background: #EEF2FF; border: 1px solid #C5CAE9; border-radius: 10px; padding: 14px 18px; margin-bottom: 1.25rem; font-size: 13px; color: #3949AB; line-height: 1.6; }
+.intro-banner strong { font-weight: 600; }
+
+.identity-card { background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 16px 20px; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.identity-card label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; }
+.identity-card input { width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; font-family: inherit; }
+.identity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.cat-section { margin-bottom: 12px; border-radius: 10px; border: 1px solid #e0e0e0; overflow: hidden; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.cat-header { display: flex; align-items: center; gap: 10px; padding: 11px 16px; cursor: pointer; user-select: none; background: white; }
+.cat-header:hover { background: #fafafa; }
+.cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.cat-title { font-size: 13px; font-weight: 600; flex: 1; }
+.cat-badge { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+.cat-chevron { font-size: 14px; color: #999; transition: transform 0.2s; display: inline-block; }
+.cat-chevron.open { transform: rotate(180deg); }
+
+.col-labels { display: grid; grid-template-columns: 1fr 72px 72px 72px; padding: 6px 16px 5px; border-top: 1px solid #f0f0f0; background: #fafafa; }
+.col-label { font-size: 11px; font-weight: 600; text-align: center; }
+.col-label:first-child { text-align: left; color: #888; font-weight: 400; }
+
+.talent-row { display: grid; grid-template-columns: 1fr 72px 72px 72px; padding: 10px 16px; border-top: 1px solid #f0f0f0; align-items: start; }
+.talent-row:hover { background: #fafafa; }
+
+.talent-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.talent-desc { font-size: 12px; color: #444; line-height: 1.5; margin-bottom: 2px; }
+.talent-ex { font-size: 11.5px; color: #888; font-style: italic; line-height: 1.4; }
+
+.radio-cell { display: flex; justify-content: center; padding-top: 3px; }
+.radio-cell input[type=radio] { width: 16px; height: 16px; cursor: pointer; }
+
+.sticky-bar { position: sticky; top: 0; z-index: 10; background: #f8f9fb; padding: 10px 0; margin-bottom: 1rem; }
+.actions-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+button { font-family: inherit; }
+.btn-primary { background: #1A237E; color: white; border: none; padding: 10px 22px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+.btn-primary:hover:not(:disabled) { background: #283593; }
+.btn-primary:disabled { background: #bbb; cursor: not-allowed; }
+.btn-secondary { background: white; color: #444; border: 1px solid #ddd; padding: 9px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+.btn-secondary:hover { background: #f5f5f5; }
+
+.progress-wrap { flex: 1; min-width: 120px; }
+.progress-track { height: 6px; background: #e8e8e8; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: #1565C0; border-radius: 3px; transition: width 0.3s; }
+.progress-label { font-size: 11px; color: #888; margin-top: 3px; }
+
+.summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+.summary-card { border-radius: 8px; padding: 10px 12px; border: 1px solid #e0e0e0; background: white; }
+.summary-cat-name { font-size: 11px; font-weight: 600; margin-bottom: 6px; }
+.scores { display: flex; gap: 5px; flex-wrap: wrap; }
+.score-pill { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 12px; }
+.sp-plus  { background: #E8F5E9; color: #1B5E20; }
+.sp-moyen { background: #FFF3E0; color: #E65100; }
+.sp-moins { background: #FFEBEE; color: #B71C1C; }
+
+.analysis-box { border-radius: 10px; border: 1px solid #C5CAE9; overflow: hidden; margin-top: 1.25rem; }
+.analysis-header { padding: 12px 18px; background: #1A237E; color: white; font-size: 14px; font-weight: 600; }
+.analysis-body { padding: 1.5rem; background: white; }
+.analysis-body h3 { font-size: 14px; color: #1A237E; margin: 1.1rem 0 0.5rem; }
+.analysis-body h3:first-child { margin-top: 0; }
+.analysis-body p { font-size: 13.5px; line-height: 1.75; color: #2a2a2a; margin-bottom: 0.4rem; }
+.analysis-body ul { margin: 0.4rem 0 0.6rem 1.1rem; }
+.analysis-body li { font-size: 13.5px; line-height: 1.7; color: #2a2a2a; margin-bottom: 0.3rem; }
+.analysis-body .talent-tag { display: inline-block; background: #EEF2FF; color: #1A237E; font-weight: 600; font-size: 12.5px; padding: 1px 8px; border-radius: 10px; margin: 0 2px; }
+.analysis-body .key-advice { background: #FFF8E1; border-left: 3px solid #F5B400; padding: 12px 16px; margin-top: 1.1rem; font-size: 13.5px; font-style: italic; color: #6D4C00; border-radius: 0 6px 6px 0; }
+
+.analysis-actions { padding: 10px 18px; border-top: 1px solid #eee; display: flex; gap: 8px; background: #fafafa; }
+
+.hidden { display: none !important; }
+
+footer { text-align: center; font-size: 11.5px; color: #aaa; margin-top: 2.5rem; line-height: 1.6; }
+
+@media (max-width: 560px) {
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .col-labels, .talent-row { grid-template-columns: 1fr 56px 56px 56px; }
+  .identity-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<h1>Exercice Talents Gallup</h1>
+<p class="subtitle">34 talents · 4 familles · Analyse instantanée</p>
+
+<div class="intro-banner">
+  <strong>Avant de commencer :</strong> Cet exercice vise à identifier vos talents dominants parmi 34 thèmes. Il ne s'agit pas d'évaluer des compétences ou des performances, mais de mettre en lumière vos forces naturelles. L'objectif est de mieux vous connaître et d'orienter votre projet professionnel. <strong>Il n'y a pas de bonnes ou mauvaises réponses !</strong>
+</div>
+
+<div class="identity-card">
+  <div class="identity-row">
+    <div>
+      <label for="field-name">Nom et prénom (facultatif)</label>
+      <input type="text" id="field-name" placeholder="Ex : Jean Dupont" autocomplete="name">
+    </div>
+    <div>
+      <label for="field-date">Date</label>
+      <input type="date" id="field-date">
+    </div>
+  </div>
+</div>
+
+<div class="sticky-bar">
+  <div class="actions-row">
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="progress-label" id="prog-label">0 / 34 talents renseignés</div>
+    </div>
+    <button class="btn-secondary" id="btn-reset">Réinitialiser</button>
+  </div>
+</div>
+
+<div id="cats-container"></div>
+
+<div id="summary-section" class="hidden">
+  <div class="summary-grid" id="summary-grid"></div>
+</div>
+
+<div id="analysis-section" class="hidden">
+  <div class="analysis-box">
+    <div class="analysis-header">✦ Votre analyse personnalisée</div>
+    <div class="analysis-body" id="analysis-body"></div>
+    <div class="analysis-actions">
+      <button class="btn-secondary" id="btn-print">Imprimer / Enregistrer en PDF</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Outil basé sur le modèle des 34 talents Gallup CliftonStrengths.<br>
+  Vos réponses restent uniquement dans votre navigateur — rien n'est envoyé à un serveur.
+</footer>
+
+</div>
+
+<script>
+const TALENTS = {
+  "Stratégiques": {
+    color: "#1565C0", light: "#E3F2FD",
+    items: [
+      ["Analytique","Tu décortiques les situations. Tu cherches les preuves, les causes, les données. Tu veux comprendre comment les choses fonctionnent réellement.","Ex : Examiner des données ou des résultats pour comprendre pourquoi un projet a échoué."],
+      ["Contexte","Tu comprends le présent en regardant le passé. Tu t'appuies sur les faits historiques, les origines ou les expériences précédentes pour décider.","Ex : Utiliser l'expérience passée pour guider les décisions actuelles."],
+      ["Futuriste","Tu imagines le futur comme une vision claire. Tu te projettes facilement et inspires les autres grâce à tes idées sur ce qui pourrait exister.","Ex : Imaginer de nouvelles solutions ou projets qui pourraient transformer l'entreprise."],
+      ["Idéation","Tu produis beaucoup d'idées et aimes les concepts originaux. Tu fais des liens que d'autres ne voient pas.","Ex : Proposer des idées innovantes pour résoudre un problème complexe."],
+      ["Collecteur","Tu accumules des informations, outils, ressources ou contacts. Tu es curieux de tout et gardes ce qui pourrait servir plus tard.","Ex : Collecter des informations et ressources utiles pour un projet futur."],
+      ["Intellect","Tu aimes réfléchir, explorer des concepts et avoir des conversations profondes. La pensée est une activité en soi.","Ex : Prendre le temps de réfléchir profondément avant de proposer des stratégies."],
+      ["Apprenant","Tu adores apprendre. Le processus d'apprentissage te donne de l'énergie, peu importe le résultat final.","Ex : Explorer de nouvelles connaissances, participer à des ateliers ou lire des articles spécialisés."],
+      ["Stratégique","Tu repères rapidement les chemins possibles. Là où d'autres voient un mur, tu vois des options.","Ex : Identifier rapidement la meilleure approche parmi plusieurs options."],
+    ]
+  },
+  "Exécutifs": {
+    color: "#2E7D32", light: "#E8F5E9",
+    items: [
+      ["Accomplissement","Tu aimes avancer, réaliser, accomplir. Tu te sens bien quand tu progresses.","Ex : Terminer un projet complexe en respectant les délais, même si cela demande un effort soutenu."],
+      ["Organisateur","Tu sais gérer plusieurs éléments en même temps et optimiser l'organisation des ressources humaines ou matérielles.","Ex : Réorganiser les tâches d'une équipe pour que tout le monde soit efficace et motivé."],
+      ["Conviction","Tu possèdes des valeurs fortes qui guident tes choix et donnent du sens à tes actions.","Ex : Maintenir des standards éthiques élevés et faire passer la mission ou les valeurs avant tout."],
+      ["Équité","Tu cherches la justice et l'équité. Tu veux que les règles soient appliquées de manière égale.","Ex : Appliquer les mêmes règles à tous les collègues pour garantir l'équité."],
+      ["Prudent","Tu identifies les risques, anticipes les problèmes et avances avec prudence réfléchie.","Ex : Analyser attentivement les risques avant de prendre une décision importante."],
+      ["Discipline","Tu crées de l'ordre, des routines et des processus stables. Tu aimes la structure.","Ex : Créer un planning précis et s'y tenir pour accomplir ses objectifs."],
+      ["Focus","Tu avances vers un objectif clair. Tu élimines les distractions et restes concentré.","Ex : Se concentrer sur un objectif clé malgré les distractions ou les urgences."],
+      ["Responsabilité","Tu tiens tes engagements avec sérieux. Quand tu acceptes quelque chose, tu t'y sens profondément lié.","Ex : Prendre en charge un dossier de A à Z et s'assurer qu'il est parfaitement traité."],
+      ["Réparateur","Tu repères ce qui ne fonctionne pas et tu as le talent pour réparer ou résoudre ces problèmes.","Ex : Identifier un problème récurrent dans une procédure et proposer des solutions efficaces."],
+    ]
+  },
+  "Influence": {
+    color: "#E65100", light: "#FFF3E0",
+    items: [
+      ["Activateur","Tu dois passer à l'action. Tu transformes une idée en mouvement rapidement.","Ex : Passer rapidement de l'idée à l'action et motiver l'équipe à avancer."],
+      ["Commandement","Tu prends naturellement le lead et n'as pas peur d'aborder des sujets difficiles.","Ex : Prendre les devants dans une situation complexe et guider les autres avec assurance."],
+      ["Communication","Tu sais parler, raconter et expliquer. Tu rends les messages vivants et accessibles.","Ex : Présenter un projet ou un rapport de manière claire et persuasive."],
+      ["Compétition","Tu te compares, vises le meilleur et es stimulé par les défis.","Ex : Chercher à être le meilleur dans un domaine tout en inspirant les autres à se dépasser."],
+      ["Maximiseur","Tu veux transformer ce qui est déjà bon en excellent. Tu cherches l'excellence, pas juste le correct.","Ex : Identifier les points forts d'un collègue et l'aider à les développer."],
+      ["Confiance","Tu possèdes une certitude intérieure forte. Tu as confiance en ton jugement même en terrain incertain.","Ex : Prendre des décisions difficiles avec confiance, même face à l'incertitude."],
+      ["Importance","Tu veux avoir un impact visible et être reconnu pour tes contributions.","Ex : Chercher des responsabilités ou des missions à fort impact et visibilité."],
+      ["Sociabilité","Tu aimes rencontrer de nouvelles personnes et gagner leur sympathie.","Ex : Créer rapidement des liens et convaincre de nouveaux partenaires ou collègues."],
+    ]
+  },
+  "Relationnels": {
+    color: "#6A1B9A", light: "#F3E5F5",
+    items: [
+      ["Adaptabilité","Tu vis dans le présent et t'adaptes facilement aux changements.","Ex : S'adapter rapidement à un changement de projet ou de planning sans stress."],
+      ["Lié au sens","Tu vois des liens entre les choses, un sens global. Rien n'arrive complètement par hasard.","Ex : Identifier les liens entre les projets, les personnes et les objectifs pour favoriser la collaboration."],
+      ["Développeur","Tu aimes voir les autres progresser et tu les encourages naturellement.","Ex : Accompagner un collègue débutant pour qu'il progresse dans son poste."],
+      ["Empathie","Tu ressens ce que les autres vivent. Tu perçois les émotions même non exprimées.","Ex : Ressentir le stress ou les inquiétudes d'un collègue et l'écouter pour le soutenir."],
+      ["Harmonie","Tu apaises les tensions et cherches la collaboration plutôt que les conflits.","Ex : Réduire les conflits dans l'équipe en cherchant un terrain d'entente."],
+      ["Intégrateur","Tu invites ceux qui sont mis de côté. Tu veux que chacun se sente accepté.","Ex : S'assurer que toutes les voix sont entendues et que personne n'est laissé de côté."],
+      ["Individualisation","Tu vois l'unicité de chaque personne et adaptes ton approche en fonction de ses besoins.","Ex : Adapter son management ou ses conseils à chaque personne selon ses forces et besoins."],
+      ["Positive","Tu diffuses de l'énergie et de l'enthousiasme. Tu aides les autres à voir les opportunités.","Ex : Maintenir l'enthousiasme de l'équipe lors d'un projet difficile."],
+      ["Relationnel","Tu préfères les relations profondes. Tu investis dans des liens vrais et durables.","Ex : Créer des liens profonds et durables avec ses collègues et partenaires."],
+    ]
+  }
+};
+
+/* ---- Textes utilisés pour générer l'analyse localement (sans IA) ---- */
+const CAT_PROFILE_TEXT = {
+  "Stratégiques": "une appétence naturelle pour l'analyse, la réflexion et la vision. Vous aimez comprendre en profondeur avant d'agir, et vous savez repérer des options ou des angles que d'autres ne voient pas",
+  "Exécutifs": "une vraie capacité à transformer les idées en actions concrètes. Vous savez structurer, tenir vos engagements et faire avancer les projets jusqu'au bout",
+  "Influence": "une aisance naturelle à mobiliser, convaincre et entraîner les autres. Vous n'hésitez pas à prendre position et à donner de l'élan à un projet ou une équipe",
+  "Relationnels": "une grande sensibilité aux autres et à la qualité des liens humains. Vous créez naturellement de la confiance et de la cohésion autour de vous",
+};
+
+const CAT_METIER_TEXT = {
+  "Stratégiques": ["conseil et analyse stratégique", "recherche ou veille", "gestion de projets nécessitant une vision long terme", "expertise et formation"],
+  "Exécutifs": ["gestion de projet ou pilotage opérationnel", "coordination d'équipe", "gestion administrative ou financière", "amélioration continue / qualité"],
+  "Influence": ["développement commercial", "management ou leadership d'équipe", "communication, marketing ou relations publiques", "entrepreneuriat"],
+  "Relationnels": ["accompagnement, coaching ou ressources humaines", "métiers du soin ou du social", "enseignement ou formation", "médiation et travail d'équipe"],
+};
+
+const CAT_VIGILANCE_TEXT = {
+  "Stratégiques": "un environnement qui exige beaucoup d'analyse préalable ou de prise de recul pourra vous demander plus d'énergie qu'à d'autres",
+  "Exécutifs": "les contextes très flous, sans cadre ni structure claire, pourront générer chez vous de l'inconfort",
+  "Influence": "prendre la parole en public, négocier ou porter un message avec assurance pourra demander un effort plus important",
+  "Relationnels": "un poste très solitaire ou avec peu d'interactions humaines pourra moins bien vous correspondre",
+};
+
+const state = {};
+let answered = 0;
+const TOTAL = 34;
+
+/* ---------- Build questionnaire UI ---------- */
+function buildUI() {
+  const container = document.getElementById('cats-container');
+  Object.entries(TALENTS).forEach(([catName, cat]) => {
+    const section = document.createElement('div');
+    section.className = 'cat-section';
+
+    const header = document.createElement('div');
+    header.className = 'cat-header';
+    header.innerHTML = `
+      <div class="cat-dot" style="background:${cat.color}"></div>
+      <span class="cat-title" style="color:${cat.color}">${catName}</span>
+      <span class="cat-badge" id="badge-${catName}" style="background:${cat.light};color:${cat.color}">0/${cat.items.length}</span>
+      <span class="cat-chevron open" id="chev-${catName}">▾</span>
+    `;
+
+    const body = document.createElement('div');
+    body.id = 'body-' + catName;
+
+    const labelRow = document.createElement('div');
+    labelRow.className = 'col-labels';
+    labelRow.innerHTML = `
+      <div class="col-label">Talent</div>
+      <div class="col-label" style="color:#1B5E20">Plus</div>
+      <div class="col-label" style="color:#E65100">Moyen</div>
+      <div class="col-label" style="color:#B71C1C">Moins</div>
+    `;
+    body.appendChild(labelRow);
+
+    cat.items.forEach(([name, desc, ex]) => {
+      const key = catName + '||' + name;
+      state[key] = null;
+      const row = document.createElement('div');
+      row.className = 'talent-row';
+      row.innerHTML = `
+        <div>
+          <div class="talent-name" style="color:${cat.color}">${name}</div>
+          <div class="talent-desc">${desc}</div>
+          <div class="talent-ex">${ex}</div>
+        </div>
+        <div class="radio-cell"><input type="radio" name="${key}" value="Plus" style="accent-color:${cat.color}"></div>
+        <div class="radio-cell"><input type="radio" name="${key}" value="Moyen" style="accent-color:#E65100"></div>
+        <div class="radio-cell"><input type="radio" name="${key}" value="Moins" style="accent-color:#B71C1C"></div>
+      `;
+      row.querySelectorAll('input').forEach(r => {
+        r.addEventListener('change', () => onChange(key, r.value, catName, cat));
+      });
+      body.appendChild(row);
+    });
+
+    header.addEventListener('click', () => {
+      const b = document.getElementById('body-' + catName);
+      const ch = document.getElementById('chev-' + catName);
+      b.classList.toggle('hidden');
+      ch.classList.toggle('open');
+    });
+
+    section.appendChild(header);
+    section.appendChild(body);
+    container.appendChild(section);
+  });
+}
+
+function onChange(key, val, catName, cat) {
+  if (state[key] === null) answered++;
+  state[key] = val;
+  updateProgress();
+  updateBadge(catName, cat);
+  if (answered === TOTAL) {
+    updateSummary();
+    document.getElementById('summary-section').classList.remove('hidden');
+    generateAnalysis();
+    document.getElementById('analysis-section').classList.remove('hidden');
+  } else {
+    document.getElementById('summary-section').classList.add('hidden');
+    document.getElementById('analysis-section').classList.add('hidden');
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round(answered / TOTAL * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = `${answered} / ${TOTAL} talents renseignés`;
+}
+
+function updateBadge(catName, cat) {
+  const done = cat.items.filter(([n]) => state[catName + '||' + n] !== null).length;
+  const badge = document.getElementById('badge-' + catName);
+  badge.textContent = `${done}/${cat.items.length}`;
+  if (done === cat.items.length) { badge.style.background = cat.color; badge.style.color = 'white'; }
+}
+
+function getCounts() {
+  const result = {};
+  Object.entries(TALENTS).forEach(([catName, cat]) => {
+    const counts = { Plus: 0, Moyen: 0, Moins: 0 };
+    const plusNames = [];
+    cat.items.forEach(([n]) => {
+      const v = state[catName + '||' + n];
+      if (v) counts[v]++;
+      if (v === 'Plus') plusNames.push(n);
+    });
+    result[catName] = { counts, plusNames };
+  });
+  return result;
+}
+
+function updateSummary() {
+  const grid = document.getElementById('summary-grid');
+  grid.innerHTML = '';
+  const data = getCounts();
+  Object.entries(TALENTS).forEach(([catName, cat]) => {
+    const counts = data[catName].counts;
+    grid.innerHTML += `
+      <div class="summary-card">
+        <div class="summary-cat-name" style="color:${cat.color}">${catName}</div>
+        <div class="scores">
+          <span class="score-pill sp-plus">+${counts.Plus}</span>
+          <span class="score-pill sp-moyen">~${counts.Moyen}</span>
+          <span class="score-pill sp-moins">-${counts.Moins}</span>
+        </div>
+      </div>`;
+  });
+}
+
+/* ---------- Local rule-based analysis (no API) ---------- */
+function generateAnalysis() {
+  const data = getCounts();
+  const name = document.getElementById('field-name').value.trim();
+
+  const ranked = Object.entries(data)
+    .map(([cat, d]) => ({ cat, plus: d.counts.Plus, plusNames: d.plusNames }))
+    .sort((a, b) => b.plus - a.plus);
+
+  const top = ranked[0];
+  const second = ranked[1];
+  const weakest = ranked[ranked.length - 1];
+
+  const allPlusTalents = [];
+  ranked.forEach(r => r.plusNames.forEach(n => allPlusTalents.push(n)));
+
+  const greeting = name ? `${name}, ` : '';
+  let html = '';
+
+  // 1. Profil dominant
+  html += `<h3>Profil dominant</h3>`;
+  if (top.plus > 0) {
+    html += `<p>${greeting}votre profil de talents est marqué en priorité par la famille <span class="talent-tag" style="background:${TALENTS[top.cat].light};color:${TALENTS[top.cat].color}">${top.cat}</span> (${top.plus} talent${top.plus > 1 ? 's' : ''} dominant${top.plus > 1 ? 's' : ''}), avec ${CAT_PROFILE_TEXT[top.cat]}.</p>`;
+    if (second && second.plus > 0) {
+      html += `<p>Cette force se conjugue à une seconde tendance forte du côté <span class="talent-tag" style="background:${TALENTS[second.cat].light};color:${TALENTS[second.cat].color}">${second.cat}</span>, qui vient compléter et nuancer votre manière d'agir au quotidien.</p>`;
+    }
+  } else {
+    html += `<p>${greeting}vos réponses montrent un profil assez équilibré entre les 4 familles de talents, sans dominante très marquée. C'est aussi une richesse : vous pouvez mobiliser des registres différents selon les situations.</p>`;
+  }
+
+  // 2. Points forts à valoriser
+  html += `<h3>Points forts à valoriser</h3>`;
+  if (allPlusTalents.length > 0) {
+    html += `<p>Vos talents les plus naturels sont :</p><ul>`;
+    allPlusTalents.slice(0, 8).forEach(n => {
+      html += `<li><strong>${n}</strong></li>`;
+    });
+    html += `</ul><p>Ce sont les leviers sur lesquels vous pouvez vous appuyer en priorité : ils vous demandent le moins d'effort et constituent vos points d'excellence naturelle.</p>`;
+  } else {
+    html += `<p>Aucun talent n'a été identifié en "Plus" — vos forces se répartissent plutôt du côté des talents "Moyen", à mobiliser selon le contexte.</p>`;
+  }
+
+  // 3. Combinaison remarquable
+  if (top.plus > 0 && second && second.plus > 0) {
+    html += `<h3>Combinaison remarquable</h3>`;
+    html += `<p>L'association de vos talents <span class="talent-tag" style="background:${TALENTS[top.cat].light};color:${TALENTS[top.cat].color}">${top.cat}</span> et <span class="talent-tag" style="background:${TALENTS[second.cat].light};color:${TALENTS[second.cat].color}">${second.cat}</span> est particulièrement intéressante : elle vous permet de combiner ${CAT_PROFILE_TEXT[top.cat].split(',')[0]} avec ${CAT_PROFILE_TEXT[second.cat].split(',')[0]}. C'est une combinaison qui peut faire une vraie différence dans votre façon de travailler.</p>`;
+  }
+
+  // 4. Orientations professionnelles
+  html += `<h3>Orientations professionnelles suggérées</h3>`;
+  html += `<p>Sur la base de votre famille de talents dominante (${top.cat}), les environnements suivants pourraient particulièrement vous convenir :</p><ul>`;
+  CAT_METIER_TEXT[top.cat].forEach(m => html += `<li>${m.charAt(0).toUpperCase() + m.slice(1)}</li>`);
+  html += `</ul>`;
+
+  // 5. Points de vigilance
+  html += `<h3>Points de vigilance</h3>`;
+  html += `<p>Vos talents les moins mobilisés se situent du côté de la famille <span class="talent-tag" style="background:${TALENTS[weakest.cat].light};color:${TALENTS[weakest.cat].color}">${weakest.cat}</span>. Cela ne signifie pas une faiblesse à corriger absolument, mais un point à avoir en tête : ${CAT_VIGILANCE_TEXT[weakest.cat]}. Le plus efficace est souvent de s'entourer de personnes complémentaires sur ce registre plutôt que de chercher à tout faire seul·e.</p>`;
+
+  // 6. Conseil clé
+  html += `<div class="key-advice">Conseil clé : ne cherchez pas à corriger vos points faibles en priorité — concentrez votre énergie sur vos talents dominants, c'est là que vous serez le plus efficace, le plus naturel et le plus épanoui professionnellement.</div>`;
+
+  document.getElementById('analysis-body').innerHTML = html;
+}
+
+document.getElementById('btn-print').addEventListener('click', () => window.print());
+
+function resetAll() {
+  Object.keys(state).forEach(k => state[k] = null);
+  answered = 0;
+  document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+  document.getElementById('field-name').value = '';
+  document.getElementById('field-date').value = '';
+  updateProgress();
+  document.getElementById('summary-section').classList.add('hidden');
+  document.getElementById('analysis-section').classList.add('hidden');
+  Object.entries(TALENTS).forEach(([catName, cat]) => {
+    const b = document.getElementById('badge-' + catName);
+    b.textContent = `0/${cat.items.length}`;
+    b.style.background = cat.light;
+    b.style.color = cat.color;
+  });
+}
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (confirm('Voulez-vous vraiment réinitialiser toutes vos réponses ?')) resetAll();
+});
+
+buildUI();
+</script>
+</body>
+</html>
