@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clarification des valeurs — Bilan de compétences</title>
+<style>
+  :root{
+    --marine: #173A56;
+    --marine-deep: #0E2538;
+    --marine-soft: #4A6B85;
+    --papier: #F7F3EC;
+    --papier-card: #FFFFFF;
+    --terracotta: #C9622E;
+    --terracotta-soft: #E8C4A8;
+    --encre: #2B2622;
+    --gris: #837A6E;
+    --ligne: #DAD2C2;
+    --vert-sauge: #6E8B6B;
+    --serif: "Source Serif Pro", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--papier);
+    color:var(--encre);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .app{max-width:900px;margin:0 auto;padding:0 24px 80px;}
+
+  /* ===== HEADER ===== */
+  .masthead{
+    padding:56px 24px 38px;
+    background:
+      radial-gradient(circle at 85% 0%, rgba(201,98,46,0.10), transparent 55%),
+      var(--marine);
+    color:var(--papier);
+    position:relative;
+    overflow:hidden;
+  }
+  .masthead::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 64px);
+    pointer-events:none;
+  }
+  .masthead-inner{max-width:852px;margin:0 auto;position:relative;}
+  .eyebrow{
+    font-size:12px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--terracotta-soft); font-weight:600;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:""; width:22px; height:1px; background:var(--terracotta-soft); display:inline-block;}
+  h1{
+    font-family:var(--serif);
+    font-size:clamp(30px, 4.4vw, 44px);
+    font-weight:600;
+    margin:16px 0 14px;
+    letter-spacing:-0.01em;
+    max-width:640px;
+  }
+  .masthead p.lede{
+    font-size:16px; color:#D8E0E7; max-width:560px; margin:0;
+  }
+  .progress-rail{
+    display:flex; gap:6px; margin-top:32px;
+  }
+  .progress-seg{
+    flex:1; height:3px; background:rgba(255,255,255,0.18); border-radius:2px; overflow:hidden;
+  }
+  .progress-seg .fill{height:100%; width:0%; background:var(--terracotta); transition:width .4s ease;}
+  .progress-labels{display:flex; justify-content:space-between; margin-top:8px; font-size:11px; color:#9FB2C0; letter-spacing:0.04em;}
+
+  /* ===== STEP NAV ===== */
+  .stepnav{
+    display:flex; gap:8px; margin:28px 0 0; flex-wrap:wrap;
+  }
+  .stepnav button{
+    font-family:var(--sans); font-size:13px; font-weight:600;
+    border:1px solid var(--ligne); background:var(--papier-card);
+    color:var(--gris); padding:8px 14px; border-radius:20px; cursor:pointer;
+    transition:all .2s ease;
+  }
+  .stepnav button.active{background:var(--marine); border-color:var(--marine); color:#fff;}
+  .stepnav button.done{border-color:var(--vert-sauge); color:var(--vert-sauge);}
+  .stepnav button:disabled{opacity:0.45; cursor:not-allowed;}
+
+  /* ===== SECTIONS ===== */
+  section.panel{display:none; padding-top:36px;}
+  section.panel.active{display:block; animation:fadein .35s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  h2.section-title{
+    font-family:var(--serif); font-size:24px; font-weight:600; color:var(--marine-deep);
+    margin:0 0 6px;
+  }
+  p.section-sub{color:var(--gris); font-size:14.5px; margin:0 0 28px; max-width:620px;}
+
+  /* ===== VALUE ROWS ===== */
+  .value-row{
+    display:grid; grid-template-columns:34px 1fr; gap:14px;
+    background:var(--papier-card); border:1px solid var(--ligne); border-radius:10px;
+    padding:16px 18px; margin-bottom:12px;
+    position:relative;
+  }
+  .value-num{
+    font-family:var(--serif); font-weight:600; font-size:18px; color:var(--terracotta-soft);
+    background:var(--marine); width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .value-fields{display:flex; flex-direction:column; gap:8px;}
+  .value-fields input, .value-fields textarea{
+    font-family:var(--sans); border:none; border-bottom:1px solid var(--ligne);
+    background:transparent; padding:6px 2px; font-size:15px; color:var(--encre);
+    width:100%; resize:none;
+  }
+  .value-fields input{font-weight:700; font-size:16.5px; letter-spacing:0.01em;}
+  .value-fields input::placeholder{font-weight:500; color:#B9AE9C;}
+  .value-fields textarea::placeholder{color:#B9AE9C; font-weight:400;}
+  .value-fields input:focus, .value-fields textarea:focus{outline:none; border-bottom-color:var(--terracotta);}
+  .value-fields textarea{min-height:38px; line-height:1.4;}
+  .suggest-row{display:flex; flex-wrap:wrap; gap:6px; margin-top:2px;}
+  .chip{
+    font-size:11.5px; color:var(--marine-soft); background:#EEF2F4; border:1px solid #DCE4E8;
+    padding:3px 9px; border-radius:12px; cursor:pointer; transition:all .15s ease;
+  }
+  .chip:hover{background:var(--marine); color:#fff; border-color:var(--marine);}
+
+  .helper-bank{
+    margin-top:6px; padding:18px 20px; background:#EFEAE0; border-radius:10px; border:1px dashed var(--ligne);
+  }
+  .helper-bank summary{cursor:pointer; font-weight:600; font-size:14px; color:var(--marine);}
+  .bank-grid{display:flex; flex-wrap:wrap; gap:7px; margin-top:14px;}
+
+  /* ===== PHRASES (étape 2) ===== */
+  .example-card{
+    background:#EFEAE0; border:1px dashed var(--marine-soft); border-radius:10px;
+    padding:18px 22px; margin-bottom:24px; position:relative;
+  }
+  .example-label{
+    position:absolute; top:-10px; left:18px; background:var(--marine); color:#fff;
+    font-size:10.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    padding:3px 10px; border-radius:10px;
+  }
+  .example-body p{margin:6px 0; font-size:13.5px; color:#4A453D;}
+  .example-body strong{color:var(--marine-deep);}
+
+  .phrase-card{
+    background:var(--papier-card); border:1px solid var(--ligne); border-radius:10px;
+    padding:20px 22px; margin-bottom:16px;
+  }
+  .phrase-card label{
+    display:block; font-weight:700; font-size:14px; color:var(--marine-deep); margin-bottom:8px;
+  }
+  .phrase-card .micro{font-size:12.5px; color:var(--gris); margin-bottom:10px; font-style:italic;}
+  .phrase-card textarea{
+    width:100%; font-family:var(--sans); font-size:14.5px; border:1px solid var(--ligne);
+    border-radius:7px; padding:10px 12px; min-height:64px; color:var(--encre); background:#FCFAF6;
+  }
+  .phrase-card textarea:focus{outline:none; border-color:var(--terracotta);}
+  .phrase-card-title{
+    font-family:var(--serif); font-weight:700; font-size:17px; color:var(--marine);
+    margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--ligne);
+  }
+
+  /* ===== RANKING (étape 3) ===== */
+  .rank-instructions{
+    background:#EFEAE0; border-radius:10px; padding:16px 20px; margin-bottom:20px; font-size:14px; color:var(--encre);
+  }
+  .rank-list{list-style:none; margin:0; padding:0;}
+  .rank-item{
+    display:flex; align-items:center; gap:14px;
+    background:var(--papier-card); border:1px solid var(--ligne); border-radius:9px;
+    padding:12px 16px; margin-bottom:8px; cursor:grab; user-select:none;
+  }
+  .rank-item.dragging{opacity:0.4;}
+  .rank-handle{color:var(--gris); font-size:16px; letter-spacing:1px;}
+  .rank-pos{
+    font-family:var(--serif); font-weight:700; color:var(--terracotta); width:24px; text-align:center; font-size:15px;
+  }
+  .rank-name{font-weight:600; font-size:15px; flex:1;}
+
+  /* ===== BUTTONS ===== */
+  .actions-row{display:flex; justify-content:space-between; margin-top:32px; gap:12px;}
+  .btn{
+    font-family:var(--sans); font-weight:700; font-size:14px; letter-spacing:0.01em;
+    padding:13px 26px; border-radius:8px; cursor:pointer; border:none; transition:all .2s ease;
+  }
+  .btn-primary{background:var(--marine); color:#fff;}
+  .btn-primary:hover{background:var(--marine-deep);}
+  .btn-ghost{background:transparent; color:var(--marine); border:1px solid var(--marine);}
+  .btn-ghost:hover{background:rgba(23,58,86,0.06);}
+  .btn:disabled{opacity:0.4; cursor:not-allowed;}
+  .btn-accent{background:var(--terracotta); color:#fff;}
+  .btn-accent:hover{background:#A8501F;}
+
+  /* ===== ANALYSIS OUTPUT ===== */
+  .analysis-wrap{background:var(--papier-card); border:1px solid var(--ligne); border-radius:14px; padding:40px 44px; margin-top:6px;}
+  .analysis-header{border-bottom:2px solid var(--marine); padding-bottom:20px; margin-bottom:28px;}
+  .analysis-header .kicker{font-size:11.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--terracotta); font-weight:700;}
+  .analysis-header h3{font-family:var(--serif); font-size:26px; color:var(--marine-deep); margin:8px 0 4px;}
+  .analysis-header .meta{font-size:13px; color:var(--gris);}
+
+  .analysis-section{margin-bottom:30px;}
+  .analysis-section h4{
+    font-family:var(--serif); font-size:18px; color:var(--marine-deep); margin:0 0 12px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .analysis-section h4 .tag{
+    font-size:10.5px; background:var(--marine); color:#fff; padding:3px 9px; border-radius:5px;
+    letter-spacing:0.05em; text-transform:uppercase; font-weight:700;
+  }
+  .analysis-section p{font-size:15px; margin:0 0 10px; color:#3A352F;}
+  .analysis-section ul{margin:8px 0 0; padding-left:20px;}
+  .analysis-section li{font-size:14.5px; margin-bottom:6px; color:#3A352F;}
+
+  .family-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px;}
+  .family-card{
+    background:#FAF7F1; border:1px solid var(--ligne); border-left:4px solid var(--terracotta);
+    border-radius:8px; padding:14px 16px;
+  }
+  .family-card .fname{font-weight:700; font-size:14.5px; color:var(--marine-deep);}
+  .family-card .fcount{font-size:12px; color:var(--gris); margin-bottom:6px;}
+  .family-card .fvalues{font-size:13px; color:#4A453D;}
+
+  .crit-table{width:100%; border-collapse:collapse; margin-top:8px; font-size:14px;}
+  .crit-table th{
+    text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em;
+    color:var(--gris); padding:8px 10px; border-bottom:2px solid var(--ligne);
+  }
+  .crit-table td{padding:10px 10px; border-bottom:1px solid var(--ligne); vertical-align:top;}
+  .crit-table tr:last-child td{border-bottom:none;}
+  .crit-table .rank-cell{
+    font-family:var(--serif); font-weight:700; color:var(--terracotta); font-size:15px; text-align:center;
+  }
+  .recap-table tr{page-break-inside:avoid;}
+
+  .quote-block{
+    background:#F0EFE6; border-left:3px solid var(--marine-soft); padding:12px 18px;
+    font-style:italic; font-size:14px; color:#4A453D; border-radius:0 6px 6px 0; margin:10px 0;
+  }
+
+  .phrase-recap-card{
+    background:#FAF7F1; border:1px solid var(--ligne); border-radius:9px;
+    padding:16px 20px; margin-bottom:14px; page-break-inside:avoid;
+  }
+  .phrase-recap-title{
+    font-family:var(--serif); font-weight:700; font-size:15.5px; color:var(--marine-deep);
+    margin-bottom:8px;
+  }
+  .phrase-recap-card p{
+    font-size:14px; color:#4A453D; margin:5px 0; font-style:italic;
+  }
+
+  .top-values-strip{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .tv-pill{
+    background:var(--marine); color:#fff; font-size:13px; font-weight:600;
+    padding:7px 14px; border-radius:20px; display:flex; align-items:center; gap:7px;
+  }
+  .tv-pill .n{color:var(--terracotta-soft); font-family:var(--serif); font-weight:700;}
+
+  .signal-box{
+    display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:6px;
+  }
+  .signal-card{border-radius:9px; padding:16px 18px;}
+  .signal-card.align{background:#EEF3EC; border:1px solid #C9D9C5;}
+  .signal-card.tension{background:#F7EBE3; border:1px solid #E5C5AD;}
+  .signal-card h5{font-size:13px; margin:0 0 8px; text-transform:uppercase; letter-spacing:0.04em;}
+  .signal-card.align h5{color:var(--vert-sauge);}
+  .signal-card.tension h5{color:var(--terracotta);}
+  .signal-card ul{padding-left:18px; margin:0;}
+  .signal-card li{font-size:13.5px; margin-bottom:6px;}
+
+  @media print{
+    .stepnav, .actions-row, .no-print{display:none !important;}
+    body{background:#fff;}
+    .analysis-wrap{border:none; padding:0;}
+  }
+
+  @media (max-width:680px){
+    .family-grid, .signal-box{grid-template-columns:1fr;}
+    .analysis-wrap{padding:28px 20px;}
+    .masthead{padding:40px 18px 28px;}
+  }
+
+  .toolbar-fixed{
+    position:sticky; top:0; z-index:50; background:rgba(247,243,236,0.92); backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--ligne); padding:10px 24px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .toolbar-fixed .brand{font-family:var(--serif); font-weight:700; font-size:14px; color:var(--marine);}
+  .toolbar-fixed .save-state{font-size:12px; color:var(--gris);}
+</style>
+</head>
+<body>
+
+<div class="toolbar-fixed no-print">
+  <span class="brand">Clarification des valeurs</span>
+  <span class="save-state" id="saveState">Vos réponses restent dans cette page</span>
+</div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <span class="eyebrow">Bilan de compétences · Exploration des valeurs</span>
+    <h1>Vos valeurs essentielles</h1>
+    <p class="lede">Les compétences disent ce que vous savez faire. Les valeurs disent pourquoi vous avez envie de le faire. Cet outil vous aide à les nommer, les définir, puis à en tirer une lecture utile pour votre projet professionnel.</p>
+    <div class="progress-rail">
+      <div class="progress-seg"><div class="fill" id="fill1"></div></div>
+      <div class="progress-seg"><div class="fill" id="fill2"></div></div>
+      <div class="progress-seg"><div class="fill" id="fill3"></div></div>
+      <div class="progress-seg"><div class="fill" id="fill4"></div></div>
+    </div>
+    <div class="progress-labels">
+      <span>1 · Vos 10 valeurs</span>
+      <span>2 · Les approfondir</span>
+      <span>3 · Les hiérarchiser</span>
+      <span>4 · Votre analyse</span>
+    </div>
+  </div>
+</header>
+
+<div class="app">
+
+  <nav class="stepnav no-print">
+    <button data-step="1" class="active" onclick="goToStep(1)">① Mes 10 valeurs</button>
+    <button data-step="2" onclick="goToStep(2)">② Les approfondir</button>
+    <button data-step="3" onclick="goToStep(3)">③ Les hiérarchiser</button>
+    <button data-step="4" onclick="goToStep(4)">④ Mon analyse</button>
+  </nav>
+
+  <!-- STEP 1 : VALEURS + DEFINITIONS -->
+  <section class="panel active" id="panel1">
+    <h2 class="section-title">Quelles sont vos 10 valeurs essentielles ?</h2>
+    <p class="section-sub">Celles qui guident vos choix et vos actions. Pour chacune, donnez une définition courte : qu'est-ce que cette valeur signifie concrètement pour vous ?</p>
+
+    <div id="valueRows"></div>
+
+    <details class="helper-bank">
+      <summary>Besoin d'inspiration ? Cliquez sur une valeur pour la placer dans la première ligne vide</summary>
+      <div class="bank-grid" id="bankGrid"></div>
+    </details>
+
+    <div class="actions-row">
+      <span></span>
+      <button class="btn btn-primary" onclick="goToStep(2)">Continuer → Approfondir mes valeurs</button>
+    </div>
+  </section>
+
+  <!-- STEP 2 : PHRASES A COMPLETER -->
+  <section class="panel" id="panel2">
+    <h2 class="section-title">Approfondissez chacune de vos valeurs</h2>
+    <p class="section-sub">Pour chacune de vos 10 valeurs, complétez ces trois phrases. Cela révèle comment la valeur s'exprime concrètement dans votre vie, et ce qui se passe quand elle est bafouée — un signal souvent très parlant pour identifier les environnements professionnels à éviter.</p>
+
+    <div class="example-card">
+      <div class="example-label">Exemple</div>
+      <div class="example-body">
+        <p><strong>Valeur :</strong> Respect</p>
+        <p><strong>Cela signifie :</strong> reconnaître la dignité de chacun</p>
+        <p><strong>Je l'exprime :</strong> en écoutant sans juger et en tenant mes promesses</p>
+        <p><strong>Je me sens mal :</strong> quand on m'interrompt ou qu'on me parle avec mépris</p>
+      </div>
+    </div>
+
+    <div id="phraseCards"></div>
+
+    <div class="actions-row">
+      <button class="btn btn-ghost" onclick="goToStep(1)">← Retour</button>
+      <button class="btn btn-primary" onclick="goToStep(3)">Continuer → Hiérarchiser</button>
+    </div>
+  </section>
+
+  <!-- STEP 3 : HIERARCHIE -->
+  <section class="panel" id="panel3">
+    <h2 class="section-title">Hiérarchisez vos valeurs</h2>
+    <p class="section-sub">Glissez-déposez pour ordonner vos valeurs de la plus essentielle (1) à la moins prioritaire (10). Cet ordre n'est pas définitif : il sert de point de départ pour l'analyse et peut évoluer avec la réflexion.</p>
+
+    <div class="rank-instructions">↕ Glissez chaque carte pour la repositionner — l'ordre est enregistré automatiquement.</div>
+    <ul class="rank-list" id="rankList"></ul>
+
+    <div class="actions-row">
+      <button class="btn btn-ghost" onclick="goToStep(2)">← Retour</button>
+      <button class="btn btn-accent" onclick="generateAnalysis()">Générer mon analyse →</button>
+    </div>
+  </section>
+
+  <!-- STEP 4 : ANALYSE -->
+  <section class="panel" id="panel4">
+    <h2 class="section-title">Votre analyse des valeurs</h2>
+    <p class="section-sub">Une lecture construite à partir de vos réponses, pour nourrir votre réflexion de projet professionnel.</p>
+
+    <div class="actions-row no-print" style="margin-top:0; margin-bottom:24px;">
+      <button class="btn btn-ghost" onclick="goToStep(3)">← Retour à la hiérarchisation</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨 Imprimer / Exporter en PDF</button>
+    </div>
+
+    <div class="analysis-wrap" id="analysisOutput"></div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   BANQUE DE VALEURS — familles + implications professionnelles
+   ============================================================ */
+const VALUE_BANK = [
+  {name:"Respect", family:"Relation à autrui", def:"reconnaître la dignité et la valeur de chaque personne"},
+  {name:"Honnêteté", family:"Intégrité personnelle", def:"dire la vérité, agir avec transparence"},
+  {name:"Responsabilité", family:"Intégrité personnelle", def:"assumer ses actes et leurs conséquences"},
+  {name:"Justice / équité", family:"Relation à autrui", def:"traiter chacun avec impartialité et sans discrimination"},
+  {name:"Bienveillance", family:"Relation à autrui", def:"vouloir le bien d'autrui, prendre soin des autres"},
+  {name:"Solidarité", family:"Relation à autrui", def:"entraide et soutien mutuel, surtout dans les difficultés"},
+  {name:"Tolérance", family:"Ouverture", def:"accepter les différences d'opinions, de cultures, de croyances"},
+  {name:"Liberté", family:"Autonomie", def:"respecter la capacité de chacun à faire ses choix"},
+  {name:"Intégrité", family:"Intégrité personnelle", def:"agir en accord avec ses principes, même dans l'adversité"},
+  {name:"Courage", family:"Réalisation / dépassement", def:"affronter les difficultés et défendre ce qui est juste"},
+  {name:"Altruisme", family:"Relation à autrui", def:"penser aux autres avant soi-même, générosité"},
+  {name:"Gratitude", family:"Équilibre / sérénité", def:"reconnaître et apprécier ce que l'on reçoit"},
+  {name:"Humilité", family:"Intégrité personnelle", def:"rester simple et reconnaître ses limites"},
+  {name:"Paix", family:"Équilibre / sérénité", def:"rechercher l'harmonie, éviter la violence et les conflits inutiles"},
+  {name:"Amour / compassion", family:"Relation à autrui", def:"ouverture du cœur envers soi-même et autrui"},
+  {name:"Autonomie", family:"Autonomie", def:"décider et agir par soi-même, sans dépendance excessive"},
+  {name:"Créativité", family:"Réalisation / dépassement", def:"imaginer, inventer, sortir des sentiers battus"},
+  {name:"Sécurité / stabilité", family:"Équilibre / sérénité", def:"avoir un cadre prévisible et fiable"},
+  {name:"Performance / excellence", family:"Réalisation / dépassement", def:"viser le meilleur résultat possible"},
+  {name:"Équilibre de vie", family:"Équilibre / sérénité", def:"concilier vie professionnelle et vie personnelle"},
+  {name:"Utilité sociale", family:"Relation à autrui", def:"avoir un impact positif sur la société ou les autres"},
+  {name:"Reconnaissance", family:"Réalisation / dépassement", def:"être valorisé pour ce que l'on accomplit"},
+  {name:"Apprentissage / curiosité", family:"Ouverture", def:"continuer à apprendre et découvrir"},
+  {name:"Innovation", family:"Ouverture", def:"rechercher la nouveauté, remettre en question l'existant"},
+  {name:"Esprit d'équipe", family:"Relation à autrui", def:"coopérer, avancer collectivement"},
+  {name:"Leadership", family:"Réalisation / dépassement", def:"guider, entraîner, donner une direction"},
+  {name:"Loyauté", family:"Intégrité personnelle", def:"rester fidèle à ses engagements et aux personnes"},
+  {name:"Authenticité", family:"Intégrité personnelle", def:"être fidèle à soi-même, sans artifice"},
+  {name:"Engagement", family:"Réalisation / dépassement", def:"s'investir pleinement dans ce que l'on fait"},
+  {name:"Ambition", family:"Réalisation / dépassement", def:"viser haut, progresser, évoluer"},
+  {name:"Ordre / rigueur", family:"Équilibre / sérénité", def:"structurer, organiser, faire les choses avec méthode"},
+  {name:"Spontanéité", family:"Ouverture", def:"agir avec naturel, sans trop calculer"},
+  {name:"Esthétique / beauté", family:"Ouverture", def:"rechercher l'harmonie visuelle et sensorielle"},
+  {name:"Indépendance financière", family:"Autonomie", def:"disposer de ses propres ressources"},
+  {name:"Simplicité", family:"Équilibre / sérénité", def:"aller à l'essentiel, éviter le superflu"},
+  {name:"Audace", family:"Réalisation / dépassement", def:"oser, prendre des risques mesurés"}
+];
+
+const FAMILY_PROFILES = {
+  "Relation à autrui": {
+    org:"des environnements collectifs, où la qualité humaine des échanges compte autant que les résultats",
+    mgmt:"un management qui privilégie l'écoute, la coopération et la reconnaissance des personnes",
+    risk:"des contextes très individualistes, compétitifs ou indifférents à l'humain"
+  },
+  "Intégrité personnelle": {
+    org:"des structures cohérentes entre discours et pratiques, où les règles sont claires et respectées",
+    mgmt:"un management transparent, qui tient ses engagements et donne du sens à ses décisions",
+    risk:"des environnements où les décisions sont opaques, ou où le double discours est fréquent"
+  },
+  "Autonomie": {
+    org:"des organisations qui délèguent réellement, avec une marge de manœuvre sur les méthodes de travail",
+    mgmt:"un management qui fixe des objectifs clairs puis laisse la liberté d'action sur le comment",
+    risk:"un encadrement très procédural, un contrôle hiérarchique fort ou un reporting excessif"
+  },
+  "Réalisation / dépassement": {
+    org:"des contextes stimulants, avec des objectifs ambitieux et des perspectives d'évolution réelles",
+    mgmt:"un management qui valorise la performance, fixe des défis et donne de la reconnaissance concrète",
+    risk:"des postes routiniers sans perspective d'évolution ni reconnaissance du travail accompli"
+  },
+  "Équilibre / sérénité": {
+    org:"des environnements stables, prévisibles, qui respectent les temps de vie personnelle",
+    mgmt:"un management posé, qui ne cultive pas l'urgence permanente et respecte les horaires",
+    risk:"des rythmes de travail intenses, une charge imprévisible ou une culture de la disponibilité totale"
+  },
+  "Ouverture": {
+    org:"des organisations qui encouragent l'expérimentation, la diversité des idées et la remise en question",
+    mgmt:"un management qui accueille les initiatives, tolère l'erreur et favorise l'apprentissage continu",
+    risk:"des structures figées, très normées, hostiles au changement ou à la nouveauté"
+  }
+};
+
+let state = {
+  values: Array.from({length:10}, () => ({name:"", def:""})),
+  phrases: Array.from({length:10}, () => ({signifie:"", exprime:"", malAise:""})),
+  ranking: null // array of indices 0..9 in priority order
+};
+
+/* ============================================================
+   STEP 1 — rendu des 10 lignes valeur/définition
+   ============================================================ */
+function renderValueRows(){
+  const wrap = document.getElementById("valueRows");
+  wrap.innerHTML = "";
+  state.values.forEach((v, i) => {
+    const row = document.createElement("div");
+    row.className = "value-row";
+    row.innerHTML = `
+      <div class="value-num">${i+1}</div>
+      <div class="value-fields">
+        <input type="text" placeholder="Nom de la valeur (ex : Autonomie)" value="${escapeHtml(v.name)}" data-idx="${i}" data-field="name" />
+        <textarea placeholder="Qu'est-ce que cette valeur signifie pour vous, concrètement ?" data-idx="${i}" data-field="def">${escapeHtml(v.def)}</textarea>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+  wrap.querySelectorAll("input,textarea").forEach(el => {
+    el.addEventListener("input", e => {
+      const idx = +e.target.dataset.idx;
+      const field = e.target.dataset.field;
+      state.values[idx][field] = e.target.value;
+      if(field === "name"){ renderPhraseSelectors(); }
+      autoResize(e.target);
+    });
+  });
+  wrap.querySelectorAll("textarea").forEach(autoResize);
+}
+
+function autoResize(el){
+  if(el.tagName !== "TEXTAREA") return;
+  el.style.height = "auto";
+  el.style.height = (el.scrollHeight) + "px";
+}
+
+function renderBank(){
+  const grid = document.getElementById("bankGrid");
+  grid.innerHTML = "";
+  VALUE_BANK.forEach(v => {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = v.name;
+    chip.title = v.def;
+    chip.onclick = () => placeInFirstEmpty(v);
+    grid.appendChild(chip);
+  });
+}
+
+function placeInFirstEmpty(v){
+  const emptyIdx = state.values.findIndex(x => !x.name.trim());
+  const targetIdx = emptyIdx === -1 ? 9 : emptyIdx;
+  state.values[targetIdx] = {name:v.name, def: state.values[targetIdx].def || v.def};
+  renderValueRows();
+}
+
+function escapeHtml(s){
+  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+/* ============================================================
+   STEP 2 — phrases d'approfondissement
+   ============================================================ */
+function renderPhraseSelectors(){
+  const wrap = document.getElementById("phraseCards");
+  wrap.innerHTML = "";
+
+  const namedCount = state.values.filter(v => v.name.trim()).length;
+  if(namedCount === 0){
+    wrap.innerHTML = `<p class="section-sub" style="margin:0;">Renseignez d'abord vos valeurs à l'étape 1 pour pouvoir les approfondir ici.</p>`;
+    return;
+  }
+
+  state.values.forEach((v, i) => {
+    if(!v.name.trim()) return; // on n'affiche une carte que pour les valeurs nommées
+    const p = state.phrases[i];
+    // Si le participant n'a pas encore complété "signifie" ici, on reprend automatiquement
+    // la définition saisie à l'étape 1 comme point de départ (reste modifiable).
+    if(!p.signifie.trim() && v.def.trim()){
+      p.signifie = v.def.trim();
+    }
+    const card = document.createElement("div");
+    card.className = "phrase-card";
+    card.innerHTML = `
+      <div class="phrase-card-title">${i+1}. ${escapeHtml(v.name)}</div>
+      <label>Cette valeur signifie pour moi que…</label>
+      <textarea data-idx="${i}" data-field="signifie" placeholder="ex : reconnaître la dignité de chacun">${escapeHtml(p.signifie)}</textarea>
+      <label style="margin-top:14px;">Je l'exprime dans ma vie en…</label>
+      <textarea data-idx="${i}" data-field="exprime" placeholder="ex : en écoutant sans juger et en tenant mes promesses">${escapeHtml(p.exprime)}</textarea>
+      <label style="margin-top:14px;">Je me sens mal quand… <span class="micro">(cette valeur est bafouée)</span></label>
+      <textarea data-idx="${i}" data-field="malAise" placeholder="ex : quand on m'interrompt ou qu'on me parle avec mépris">${escapeHtml(p.malAise)}</textarea>
+    `;
+    wrap.appendChild(card);
+  });
+
+  wrap.querySelectorAll("textarea").forEach(t => {
+    t.addEventListener("input", e => {
+      const idx = +e.target.dataset.idx;
+      const field = e.target.dataset.field;
+      state.phrases[idx][field] = e.target.value;
+      autoResize(e.target);
+    });
+    autoResize(t);
+  });
+}
+
+/* ============================================================
+   STEP 3 — hiérarchisation par drag & drop
+   ============================================================ */
+function ensureRanking(){
+  const named = state.values.map((v,i)=>i).filter(i => state.values[i].name.trim());
+  if(!state.ranking){
+    state.ranking = named;
+  } else {
+    // garder l'ordre existant, ajouter les nouveaux, retirer les vides
+    state.ranking = state.ranking.filter(i => named.includes(i));
+    named.forEach(i => { if(!state.ranking.includes(i)) state.ranking.push(i); });
+  }
+}
+
+function renderRankList(){
+  ensureRanking();
+  const list = document.getElementById("rankList");
+  list.innerHTML = "";
+  state.ranking.forEach((valIdx, pos) => {
+    const v = state.values[valIdx];
+    const li = document.createElement("li");
+    li.className = "rank-item";
+    li.draggable = true;
+    li.dataset.valIdx = valIdx;
+    li.innerHTML = `
+      <span class="rank-handle">⠿⠿</span>
+      <span class="rank-pos">${pos+1}</span>
+      <span class="rank-name">${escapeHtml(v.name)}</span>
+    `;
+    li.addEventListener("dragstart", () => li.classList.add("dragging"));
+    li.addEventListener("dragend", () => { li.classList.remove("dragging"); syncRankingFromDOM(); });
+    list.appendChild(li);
+  });
+
+  list.addEventListener("dragover", e => {
+    e.preventDefault();
+    const dragging = list.querySelector(".dragging");
+    const siblings = [...list.querySelectorAll(".rank-item:not(.dragging)")];
+    const next = siblings.find(sib => e.clientY <= sib.getBoundingClientRect().top + sib.getBoundingClientRect().height/2);
+    if(next){ list.insertBefore(dragging, next); } else { list.appendChild(dragging); }
+  });
+}
+
+function syncRankingFromDOM(){
+  const items = [...document.querySelectorAll(".rank-item")];
+  state.ranking = items.map(it => +it.dataset.valIdx);
+  items.forEach((it, pos) => { it.querySelector(".rank-pos").textContent = pos+1; });
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function goToStep(step){
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  document.getElementById("panel"+step).classList.add("active");
+  document.querySelectorAll(".stepnav button").forEach(b => {
+    b.classList.toggle("active", +b.dataset.step === step);
+  });
+  for(let i=1;i<=4;i++){
+    document.getElementById("fill"+i).style.width = (i<=step ? "100%":"0%");
+  }
+  if(step===2) renderPhraseSelectors();
+  if(step===3) renderRankList();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ============================================================
+   MOTEUR D'ANALYSE
+   ============================================================ */
+function matchBank(name){
+  const norm = name.trim().toLowerCase();
+  return VALUE_BANK.find(v => v.name.toLowerCase() === norm || v.name.toLowerCase().includes(norm) || norm.includes(v.name.toLowerCase().split(" ")[0]));
+}
+
+function generateAnalysis(){
+  ensureRanking();
+  const namedValues = state.ranking.map((idx, pos) => {
+    const v = state.values[idx];
+    const match = matchBank(v.name);
+    return {
+      idx, pos,
+      name: v.name.trim(),
+      def: v.def.trim(),
+      family: match ? match.family : null
+    };
+  }).filter(v => v.name);
+
+  if(namedValues.length < 3){
+    alert("Merci de renseigner au moins 3 valeurs avant de générer l'analyse.");
+    goToStep(1);
+    return;
+  }
+
+  // Comptage des familles
+  const familyCount = {};
+  namedValues.forEach(v => {
+    if(v.family){
+      if(!familyCount[v.family]) familyCount[v.family] = [];
+      familyCount[v.family].push(v.name);
+    }
+  });
+  const sortedFamilies = Object.entries(familyCount).sort((a,b)=>b[1].length-a[1].length);
+  const unclassified = namedValues.filter(v => !v.family);
+
+  const top3 = namedValues.slice(0,3);
+  const dominantFamilies = sortedFamilies.slice(0,2);
+
+  const html = buildAnalysisHTML({namedValues, familyCount: sortedFamilies, unclassified, top3, dominantFamilies});
+  document.getElementById("analysisOutput").innerHTML = html;
+  goToStep(4);
+}
+
+function buildAnalysisHTML({namedValues, familyCount, unclassified, top3, dominantFamilies}){
+  const today = new Date().toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"});
+
+  // --- Bloc 0 : récapitulatif complet des 10 valeurs classées ---
+  const fullTableRows = namedValues.map(v => `
+    <tr>
+      <td class="rank-cell">${v.pos+1}</td>
+      <td><strong>${escapeHtml(v.name)}</strong></td>
+      <td>${escapeHtml(v.def) || "<em>définition non renseignée</em>"}</td>
+    </tr>
+  `).join("");
+
+  // --- Bloc 1 : vos valeurs prioritaires ---
+  const topStrip = top3.map(v => `<span class="tv-pill"><span class="n">${v.pos+1}</span>${escapeHtml(v.name)}</span>`).join("");
+
+  // --- Bloc 2 : familles de valeurs ---
+  const familyCards = familyCount.map(([fam, names]) => `
+    <div class="family-card">
+      <div class="fname">${escapeHtml(fam)}</div>
+      <div class="fcount">${names.length} valeur${names.length>1?"s":""}</div>
+      <div class="fvalues">${names.map(escapeHtml).join(", ")}</div>
+    </div>
+  `).join("");
+
+  const unclassifiedBlock = unclassified.length ? `
+    <p style="margin-top:14px;"><strong>Valeurs personnelles non rattachées à une famille type :</strong> ${unclassified.map(v=>escapeHtml(v.name)).join(", ")}. Ces valeurs vous sont propres — reportez-vous à la définition que vous en avez donnée pour en tirer du sens.</p>
+  ` : "";
+
+  // --- Bloc 3 : implications professionnelles ---
+  let implicationsHTML = "";
+  if(dominantFamilies.length){
+    implicationsHTML = dominantFamilies.map(([fam, names]) => {
+      const profile = FAMILY_PROFILES[fam];
+      if(!profile) return "";
+      return `
+        <div class="signal-box">
+          <div class="signal-card align">
+            <h5>Favorise l'engagement</h5>
+            <ul>
+              <li>${profile.org}</li>
+              <li>${profile.mgmt}</li>
+            </ul>
+          </div>
+          <div class="signal-card tension">
+            <h5>Sources de tension probables</h5>
+            <ul><li>${profile.risk}</li></ul>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // --- Bloc 4 : tableau de critères de décision ---
+  const critRows = top3.map(v => {
+    const match = matchBank(v.name);
+    const orgHint = match && FAMILY_PROFILES[match.family] ? FAMILY_PROFILES[match.family].org : "un contexte cohérent avec votre définition de cette valeur";
+    return `
+      <tr>
+        <td><strong>${escapeHtml(v.name)}</strong></td>
+        <td>${escapeHtml(v.def) || "<em>définition non renseignée</em>"}</td>
+        <td>${orgHint}</td>
+      </tr>
+    `;
+  }).join("");
+
+  // --- Bloc 5 : phrases d'approfondissement, pour chaque valeur classée ---
+  const phraseBlocks = namedValues.map(v => {
+    const p = state.phrases[v.idx];
+    const hasContent = (p.signifie && p.signifie.trim()) || (p.exprime && p.exprime.trim()) || (p.malAise && p.malAise.trim());
+    if(!hasContent) return "";
+    let lines = "";
+    if(p.signifie && p.signifie.trim()) lines += `<p>Cette valeur signifie pour moi que ${escapeHtml(p.signifie.trim())}.</p>`;
+    if(p.exprime && p.exprime.trim()) lines += `<p>Je l'exprime dans ma vie en ${escapeHtml(p.exprime.trim())}.</p>`;
+    if(p.malAise && p.malAise.trim()) lines += `<p>Je me sens mal quand ${escapeHtml(p.malAise.trim())}.</p>`;
+    return `
+      <div class="phrase-recap-card">
+        <div class="phrase-recap-title">${v.pos+1}. ${escapeHtml(v.name)}</div>
+        ${lines}
+      </div>
+    `;
+  }).filter(Boolean).join("");
+
+  // --- Bloc 6 : synthèse / question de projet ---
+  const top3Names = top3.map(v=>v.name).join(", ");
+
+  return `
+    <div class="analysis-header">
+      <span class="kicker">Document de travail · Bilan de compétences</span>
+      <h3>Analyse de vos valeurs essentielles</h3>
+      <div class="meta">Généré le ${today} · ${namedValues.length} valeurs renseignées</div>
+    </div>
+
+    <div class="analysis-section">
+      <h4><span class="tag">Récap.</span> Vos 10 valeurs classées</h4>
+      <p>Voici l'ensemble de vos valeurs, dans l'ordre que vous avez établi, avec la définition que vous en avez donnée :</p>
+      <table class="crit-table recap-table">
+        <thead><tr><th style="width:50px;">Rang</th><th>Valeur</th><th>Définition apportée</th></tr></thead>
+        <tbody>${fullTableRows}</tbody>
+      </table>
+    </div>
+
+    <div class="analysis-section">
+      <h4><span class="tag">01</span> Vos valeurs prioritaires</h4>
+      <p>Sur la base de votre hiérarchisation, voici les trois valeurs que vous placez au sommet :</p>
+      <div class="top-values-strip">${topStrip}</div>
+      <p style="margin-top:16px;">Ce sont elles qui devraient peser le plus dans l'évaluation de toute piste professionnelle envisagée : un environnement qui les respecte aura statistiquement plus de chances de vous apporter satisfaction et engagement durable.</p>
+    </div>
+
+    <div class="analysis-section">
+      <h4><span class="tag">02</span> Les grandes tendances de votre profil de valeurs</h4>
+      <p>Vos dix valeurs se regroupent en plusieurs grandes familles. Cette lecture par familles permet de dégager une tendance de fond, au-delà du détail de chaque valeur prise isolément :</p>
+      <div class="family-grid">${familyCards}</div>
+      ${unclassifiedBlock}
+    </div>
+
+    ${implicationsHTML ? `
+    <div class="analysis-section">
+      <h4><span class="tag">03</span> Ce que cela signifie pour votre environnement de travail</h4>
+      <p>Vos familles de valeurs dominantes orientent vers certains types de contextes professionnels et, à l'inverse, signalent ceux susceptibles de générer de la frustration ou une perte de motivation :</p>
+      ${implicationsHTML}
+    </div>
+    ` : ""}
+
+    <div class="analysis-section">
+      <h4><span class="tag">04</span> Des critères de décision pour votre projet</h4>
+      <p>Pour évaluer une piste professionnelle, voici trois questions-filtres construites à partir de vos valeurs prioritaires :</p>
+      <table class="crit-table">
+        <thead><tr><th>Valeur</th><th>Ce qu'elle signifie pour vous</th><th>Ce qu'il faut chercher dans un environnement</th></tr></thead>
+        <tbody>${critRows}</tbody>
+      </table>
+    </div>
+
+    ${phraseBlocks ? `
+    <div class="analysis-section">
+      <h4><span class="tag">05</span> Vos valeurs en mots : ce qui les fait vivre, ce qui les bafoue</h4>
+      <p>Pour chacune de vos valeurs approfondies à l'étape 2, voici ce que vous en avez dit dans vos propres mots :</p>
+      ${phraseBlocks}
+    </div>
+    ` : ""}
+
+    <div class="analysis-section">
+      <h4><span class="tag">06</span> Synthèse et piste de réflexion</h4>
+      <p>Vos valeurs <strong>${escapeHtml(top3Names)}</strong> constituent le socle à partir duquel évaluer toute option professionnelle, qu'il s'agisse d'un poste actuel, d'une évolution interne ou d'une reconversion. La question à se poser pour chaque piste envisagée est simple à formuler, moins simple à instruire : <em>« Dans quelle mesure ce contexte me permettra-t-il de vivre ces valeurs au quotidien, et non seulement de les cocher sur une fiche de poste ? »</em></p>
+      <p>Ce travail gagne à être mis en regard de vos compétences et de vos intérêts professionnels : une option peut être techniquement accessible et pourtant entrer en tension avec ce qui compte le plus pour vous. C'est précisément ce croisement qui permet de construire un projet à la fois réaliste et porteur de sens.</p>
+    </div>
+  `;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderValueRows();
+renderBank();
+</script>
+
+</body>
+</html>
