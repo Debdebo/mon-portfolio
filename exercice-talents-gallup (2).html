@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercice Talents Gallup — 34 thèmes</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #1a1a1a; background: #f8f9fb; font-size: 14px; }
+
+.app { max-width: 880px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+h1 { font-size: 22px; font-weight: 600; color: #1A237E; margin-bottom: 4px; }
+.subtitle { font-size: 13px; color: #666; margin-bottom: 1.25rem; }
+
+.intro-banner { background: #EEF2FF; border: 1px solid #C5CAE9; border-radius: 10px; padding: 14px 18px; margin-bottom: 1rem; font-size: 13px; color: #3949AB; line-height: 1.6; }
+.intro-banner strong { font-weight: 600; }
+
+/* Tabs */
+.tabs { display: flex; gap: 6px; margin-bottom: 1.25rem; border-bottom: 1px solid #e0e0e0; flex-wrap: wrap; }
+.tab-btn { background: none; border: none; padding: 10px 14px; font-size: 12.5px; font-weight: 600; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; display: flex; align-items: center; gap: 6px; }
+.tab-btn.active { color: #1A237E; border-bottom-color: #1A237E; }
+.tab-btn:hover:not(.active):not(:disabled) { color: #555; }
+.tab-btn:disabled { color: #ccc; cursor: not-allowed; }
+.tab-btn .step-num { width: 18px; height: 18px; border-radius: 50%; background: #e0e0e0; color: white; font-size: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tab-btn.active .step-num { background: #1A237E; }
+.tab-btn.done .step-num { background: #2E7D32; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Guide page (family descriptions) */
+.guide-intro { font-size: 13px; color: #555; line-height: 1.7; margin-bottom: 1.5rem; }
+.family-card { border-radius: 10px; border: 1px solid #e0e0e0; overflow: hidden; margin-bottom: 14px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.family-card-header { padding: 12px 18px; display: flex; align-items: center; gap: 10px; }
+.family-card-header .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.family-card-header h2 { font-size: 15px; font-weight: 600; }
+.family-card-body { padding: 4px 18px 16px; }
+.family-card-body p { font-size: 13px; line-height: 1.75; color: #333; margin-bottom: 10px; }
+.family-card-body ul { margin: 0 0 10px 1.1rem; }
+.family-card-body li { font-size: 13px; line-height: 1.7; color: #333; margin-bottom: 4px; }
+.family-card-body .conclu { font-size: 13px; line-height: 1.75; color: #333; font-style: italic; }
+.family-talents-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.family-talents-list span { font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 12px; }
+
+.conclusion-card { border-radius: 10px; border: 1px solid #C5CAE9; background: #1A237E; color: white; padding: 20px 24px; margin-top: 8px; }
+.conclusion-card h2 { font-size: 15px; margin-bottom: 10px; }
+.conclusion-card p { font-size: 13px; line-height: 1.8; color: #E8EAF6; margin-bottom: 10px; }
+.conclusion-card p:last-child { margin-bottom: 0; }
+
+/* Questionnaire */
+.identity-card { background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 16px 20px; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.identity-card label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; }
+.identity-card input { width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; font-family: inherit; }
+.identity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.cat-section { margin-bottom: 12px; border-radius: 10px; border: 1px solid #e0e0e0; overflow: hidden; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.cat-header { display: flex; align-items: center; gap: 10px; padding: 11px 16px; cursor: pointer; user-select: none; background: white; }
+.cat-header:hover { background: #fafafa; }
+.cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.cat-title { font-size: 13px; font-weight: 600; flex: 1; }
+.cat-badge { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+.cat-chevron { font-size: 14px; color: #999; transition: transform 0.2s; display: inline-block; }
+.cat-chevron.open { transform: rotate(180deg); }
+
+.col-labels { display: grid; grid-template-columns: 1fr 72px 72px 72px; padding: 6px 16px 5px; border-top: 1px solid #f0f0f0; background: #fafafa; }
+.col-label { font-size: 11px; font-weight: 600; text-align: center; }
+.col-label:first-child { text-align: left; color: #888; font-weight: 400; }
+
+.talent-row { display: grid; grid-template-columns: 1fr 72px 72px 72px; padding: 10px 16px; border-top: 1px solid #f0f0f0; align-items: start; }
+.talent-row:hover { background: #fafafa; }
+
+.talent-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.talent-desc { font-size: 12px; color: #444; line-height: 1.5; margin-bottom: 2px; }
+.talent-ex { font-size: 11.5px; color: #888; font-style: italic; line-height: 1.4; }
+
+.radio-cell { display: flex; justify-content: center; padding-top: 3px; }
+.radio-cell input[type=radio] { width: 16px; height: 16px; cursor: pointer; }
+
+.sticky-bar { position: sticky; top: 0; z-index: 10; background: #f8f9fb; padding: 10px 0; margin-bottom: 1rem; }
+.actions-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+button { font-family: inherit; }
+.btn-primary { background: #1A237E; color: white; border: none; padding: 10px 22px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+.btn-primary:hover:not(:disabled) { background: #283593; }
+.btn-primary:disabled { background: #bbb; cursor: not-allowed; }
+.btn-secondary { background: white; color: #444; border: 1px solid #ddd; padding: 9px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+.btn-secondary:hover { background: #f5f5f5; }
+
+.progress-wrap { flex: 1; min-width: 120px; }
+.progress-track { height: 6px; background: #e8e8e8; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: #1565C0; border-radius: 3px; transition: width 0.3s; }
+.progress-label { font-size: 11px; color: #888; margin-top: 3px; }
+
+.summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+.summary-card { border-radius: 8px; padding: 10px 12px; border: 1px solid #e0e0e0; background: white; }
+.summary-cat-name { font-size: 11px; font-weight: 600; margin-bottom: 6px; }
+.scores { display: flex; gap: 5px; flex-wrap: wrap; }
+.score-pill { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 12px; }
+.sp-plus  { background: #E8F5E9; color: #1B5E20; }
+.sp-moyen { background: #FFF3E0; color: #E65100; }
+.sp-moins { background: #FFEBEE; color: #B71C1C; }
+
+/* Channels step */
+.channels-intro { background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px 22px; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.channels-intro h2 { font-size: 15px; color: #1A237E; margin-bottom: 8px; }
+.channels-intro p { font-size: 13px; color: #444; line-height: 1.7; margin-bottom: 8px; }
+.channels-intro p:last-child { margin-bottom: 0; }
+.channel-legend { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.channel-legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #444; background: #fafafa; border: 1px solid #eee; border-radius: 8px; padding: 6px 12px; flex: 1; min-width: 200px; }
+.channel-legend-item .ic { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; color: white; }
+
+.no-plus-message { background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 2rem; text-align: center; color: #888; font-size: 13px; }
+
+.channel-talent-card { background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 16px 20px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.channel-talent-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.channel-talent-header .fam-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.channel-talent-header .t-name { font-size: 14px; font-weight: 600; }
+.channel-talent-header .fam-label { font-size: 11px; color: #999; font-weight: 500; }
+.channel-talent-def { font-size: 12.5px; color: #555; line-height: 1.6; margin-bottom: 12px; padding-left: 19px; }
+.channel-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-left: 19px; }
+.channel-option { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1.5px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.12s; }
+.channel-option:hover { border-color: #bbb; background: #fafafa; }
+.channel-option input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
+.channel-option .opt-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; flex-shrink: 0; }
+.channel-option .opt-text { font-size: 12.5px; font-weight: 600; }
+.channel-option.checked-mental { border-color: #1565C0; background: #E3F2FD; }
+.channel-option.checked-emotionnel { border-color: #AD1457; background: #FCE4EC; }
+.channel-option.checked-physique { border-color: #EF6C00; background: #FFF3E0; }
+
+.channels-progress { font-size: 12px; color: #888; margin-bottom: 1rem; text-align: right; }
+
+/* Analysis */
+.analysis-box { border-radius: 10px; border: 1px solid #C5CAE9; overflow: hidden; margin-top: 1.25rem; }
+.analysis-header { padding: 12px 18px; background: #1A237E; color: white; font-size: 14px; font-weight: 600; }
+.analysis-body { padding: 1.5rem; background: white; }
+.analysis-body h3 { font-size: 14.5px; color: #1A237E; margin: 1.3rem 0 0.6rem; padding-top: 0.6rem; border-top: 1px solid #f0f0f0; }
+.analysis-body h3:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.analysis-body p { font-size: 13.5px; line-height: 1.8; color: #2a2a2a; margin-bottom: 0.55rem; }
+.analysis-body ul { margin: 0.4rem 0 0.7rem 1.1rem; }
+.analysis-body li { font-size: 13.5px; line-height: 1.75; color: #2a2a2a; margin-bottom: 0.45rem; }
+.analysis-body li strong { color: #1A237E; }
+.analysis-body .talent-tag { display: inline-block; background: #EEF2FF; color: #1A237E; font-weight: 600; font-size: 12.5px; padding: 1px 8px; border-radius: 10px; margin: 0 2px; white-space: nowrap; }
+.analysis-body .key-advice { background: #FFF8E1; border-left: 3px solid #F5B400; padding: 14px 18px; margin-top: 1.2rem; font-size: 13.5px; font-style: italic; color: #6D4C00; border-radius: 0 6px 6px 0; line-height: 1.7; }
+.analysis-body .combo-card { background: #FAFAFA; border: 1px solid #eee; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; }
+.analysis-body .combo-card .combo-title { font-size: 13px; font-weight: 600; color: #1A237E; margin-bottom: 4px; }
+.analysis-body .combo-card p { margin-bottom: 0; font-size: 13px; }
+
+.channel-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0.8rem 0 1rem; }
+.channel-summary-card { border-radius: 8px; padding: 12px 14px; text-align: center; }
+.channel-summary-card .num { font-size: 22px; font-weight: 700; }
+.channel-summary-card .lbl { font-size: 11.5px; font-weight: 600; margin-top: 2px; }
+.channel-talent-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; justify-content: center; }
+.channel-talent-pills span { font-size: 10.5px; background: rgba(255,255,255,0.6); padding: 1px 7px; border-radius: 8px; }
+
+.analysis-actions { padding: 10px 18px; border-top: 1px solid #eee; display: flex; gap: 8px; background: #fafafa; }
+
+.hidden { display: none !important; }
+
+footer { text-align: center; font-size: 11.5px; color: #aaa; margin-top: 2.5rem; line-height: 1.6; }
+
+@media (max-width: 560px) {
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .col-labels, .talent-row { grid-template-columns: 1fr 56px 56px 56px; }
+  .identity-row { grid-template-columns: 1fr; }
+  .tabs { overflow-x: auto; }
+  .channel-options { grid-template-columns: 1fr; }
+  .channel-summary-grid { grid-template-columns: 1fr; }
+}
+
+@media print {
+  .tabs, .sticky-bar, .analysis-actions, footer { display: none !important; }
+  .tab-panel { display: block !important; margin-bottom: 2rem; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<h1>Exercice Talents Gallup</h1>
+<p class="subtitle">34 talents · 4 familles · 3 canaux d'expression · Analyse instantanée</p>
+
+<div class="intro-banner">
+  <strong>Avant de commencer :</strong> Cet exercice vise à identifier vos talents dominants parmi 34 thèmes. Il ne s'agit pas d'évaluer des compétences ou des performances, mais de mettre en lumière vos forces naturelles. Un talent est quelque chose que l'on réussit naturellement, sans effort — contrairement à une compétence qui s'acquiert, un talent est inné et se révèle souvent dès l'enfance. L'objectif est de mieux vous connaître et d'orienter votre projet professionnel. <strong>Il n'y a pas de bonnes ou mauvaises réponses !</strong>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="quiz"><span class="step-num">1</span> Questionnaire</button>
+  <button class="tab-btn" data-tab="channels" id="tabbtn-channels" disabled><span class="step-num">2</span> Canaux d'expression</button>
+  <button class="tab-btn" data-tab="analysis" id="tabbtn-analysis" disabled><span class="step-num">3</span> Mon analyse</button>
+  <button class="tab-btn" data-tab="guide"><span class="step-num">4</span> Comprendre les 4 familles</button>
+</div>
+
+<!-- ===== STEP 1 : QUIZ TAB ===== -->
+<div class="tab-panel active" id="tab-quiz">
+
+  <div class="identity-card">
+    <div class="identity-row">
+      <div>
+        <label for="field-name">Nom et prénom (facultatif)</label>
+        <input type="text" id="field-name" placeholder="Ex : Jean Dupont" autocomplete="name">
+      </div>
+      <div>
+        <label for="field-date">Date</label>
+        <input type="date" id="field-date">
+      </div>
+    </div>
+  </div>
+
+  <div class="sticky-bar">
+    <div class="actions-row">
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="progress-label" id="prog-label">0 / 34 talents renseignés</div>
+      </div>
+      <button class="btn-secondary" id="btn-reset">Réinitialiser</button>
+    </div>
+  </div>
+
+  <div id="cats-container"></div>
+
+  <div id="summary-section" class="hidden">
+    <div class="summary-grid" id="summary-grid"></div>
+    <div class="actions-row" style="justify-content:flex-end;">
+      <button class="btn-primary" id="btn-go-channels">Continuer vers l'étape 2 →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== STEP 2 : CHANNELS TAB ===== -->
+<div class="tab-panel" id="tab-channels">
+
+  <div class="channels-intro">
+    <h2>Consigne</h2>
+    <p>Pour chacun des talents que vous avez classés en <strong>« Plus »</strong>, indiquez par quel(s) canal(aux) vous le mobilisez naturellement. Vous pouvez cocher une seule case, deux, ou les trois si le talent s'exprime à la fois par votre tête, votre cœur et votre corps.</p>
+    <div class="channel-legend">
+      <div class="channel-legend-item"><div class="ic" style="background:#1565C0;">🧠</div><div><strong>Mental</strong> — talents de conception, raisonnement, structuration des idées</div></div>
+      <div class="channel-legend-item"><div class="ic" style="background:#AD1457;">❤️</div><div><strong>Émotionnel</strong> — talents relationnels, communication, savoir-être</div></div>
+      <div class="channel-legend-item"><div class="ic" style="background:#EF6C00;">⚡</div><div><strong>Physique</strong> — ce qui nourrit l'action</div></div>
+    </div>
+  </div>
+
+  <div class="channels-progress" id="channels-progress"></div>
+
+  <div id="channels-container"></div>
+
+  <div class="actions-row" style="justify-content:flex-end; margin-top: 1rem;">
+    <button class="btn-primary" id="btn-go-analysis">Voir mon analyse →</button>
+  </div>
+
+</div>
+
+<!-- ===== STEP 3 : ANALYSIS TAB ===== -->
+<div class="tab-panel" id="tab-analysis">
+  <div id="analysis-section">
+    <div class="analysis-box">
+      <div class="analysis-header">✦ Votre analyse personnalisée</div>
+      <div class="analysis-body" id="analysis-body"></div>
+      <div class="analysis-actions">
+        <button class="btn-secondary" id="btn-print">Imprimer / Enregistrer en PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STEP 4 : GUIDE TAB ===== -->
+<div class="tab-panel" id="tab-guide">
+  <p class="guide-intro">Voici ce que représente chacune des 4 grandes familles de talents Gallup. Cette lecture vous aide à prendre du recul sur l'ensemble de votre profil, au-delà des talents pris isolément.</p>
+
+  <div class="family-card" id="guide-Stratégiques">
+    <div class="family-card-header" style="background:#E3F2FD;">
+      <div class="dot" style="background:#1565C0;"></div>
+      <h2 style="color:#1565C0;">Talents de pensée stratégique</h2>
+    </div>
+    <div class="family-card-body">
+      <p>Les talents stratégiques traduisent la manière dont la personne analyse, comprend et anticipe. Ils reflètent sa capacité à prendre du recul, à donner du sens et à se projeter.</p>
+      <p>Ces talents permettent notamment de :</p>
+      <ul>
+        <li>analyser des situations complexes ;</li>
+        <li>faire des liens entre des informations disparates ;</li>
+        <li>apprendre rapidement et en profondeur ;</li>
+        <li>imaginer des scénarios futurs et identifier des options possibles.</li>
+      </ul>
+      <p class="conclu">Une personne dotée de forts talents stratégiques est à l'aise avec la réflexion, la vision, la conceptualisation et la prise de décision éclairée. Elle apporte de la clarté, de la hauteur de vue et de la cohérence dans les projets.</p>
+      <div class="family-talents-list" id="taglist-Stratégiques"></div>
+    </div>
+  </div>
+
+  <div class="family-card" id="guide-Exécutifs">
+    <div class="family-card-header" style="background:#E8F5E9;">
+      <div class="dot" style="background:#2E7D32;"></div>
+      <h2 style="color:#2E7D32;">Talents d'exécution</h2>
+    </div>
+    <div class="family-card-body">
+      <p>Les talents d'exécution montrent comment la personne transforme les idées en actions concrètes. Ils sont liés à la capacité à avancer, structurer, tenir dans la durée et produire des résultats.</p>
+      <p>Ils se manifestent par :</p>
+      <ul>
+        <li>le goût de l'effort et de l'accomplissement ;</li>
+        <li>le sens de l'organisation et des priorités ;</li>
+        <li>la fiabilité, la rigueur et l'engagement ;</li>
+        <li>la capacité à résoudre des problèmes et à sécuriser les actions.</li>
+      </ul>
+      <p class="conclu">Ces talents sont essentiels pour passer à l'action, finaliser les projets et maintenir une dynamique productive. Ils apportent de la stabilité, de l'efficacité et de la crédibilité dans le travail.</p>
+      <div class="family-talents-list" id="taglist-Exécutifs"></div>
+    </div>
+  </div>
+
+  <div class="family-card" id="guide-Influence">
+    <div class="family-card-header" style="background:#FFF3E0;">
+      <div class="dot" style="background:#E65100;"></div>
+      <h2 style="color:#E65100;">Talents d'influence</h2>
+    </div>
+    <div class="family-card-body">
+      <p>Les talents d'influence reflètent la capacité de la personne à faire bouger les lignes, porter une voix et mobiliser.</p>
+      <p>Ils s'expriment à travers :</p>
+      <ul>
+        <li>l'aisance à prendre la parole et à convaincre ;</li>
+        <li>l'envie d'avoir un impact et d'être moteur ;</li>
+        <li>la capacité à initier l'action et entraîner les autres ;</li>
+        <li>le goût du challenge, de la visibilité et de l'excellence.</li>
+      </ul>
+      <p class="conclu">Ces talents permettent de donner de l'élan, de défendre des idées, de fédérer autour d'un projet et de créer une dynamique collective. Ils sont particulièrement utiles dans des contextes entrepreneuriaux, commerciaux ou de leadership.</p>
+      <div class="family-talents-list" id="taglist-Influence"></div>
+    </div>
+  </div>
+
+  <div class="family-card" id="guide-Relationnels">
+    <div class="family-card-header" style="background:#F3E5F5;">
+      <div class="dot" style="background:#6A1B9A;"></div>
+      <h2 style="color:#6A1B9A;">Talents relationnels</h2>
+    </div>
+    <div class="family-card-body">
+      <p>Les talents relationnels décrivent la manière dont la personne entre en lien avec les autres, crée de la confiance et contribue à la qualité des relations humaines.</p>
+      <p>Ils se traduisent par :</p>
+      <ul>
+        <li>l'écoute, l'empathie et la compréhension des émotions ;</li>
+        <li>la capacité à créer un climat de coopération ;</li>
+        <li>l'attention portée aux individus et à leur singularité ;</li>
+        <li>la volonté d'inclure, de soutenir et de faire grandir les autres.</li>
+      </ul>
+      <p class="conclu">Ces talents sont particulièrement précieux dans les environnements collaboratifs, l'accompagnement, le management ou les métiers de relation. Ils favorisent l'engagement, la cohésion et le bien-être collectif.</p>
+      <div class="family-talents-list" id="taglist-Relationnels"></div>
+    </div>
+  </div>
+
+  <div class="conclusion-card">
+    <h2>Conclusion</h2>
+    <p>Aucune famille de talents n'est meilleure qu'une autre : c'est leur combinaison qui fait la richesse d'un profil. L'objectif de l'analyse Gallup n'est pas de combler des manques, mais de s'appuyer sur les talents dominants pour construire un projet professionnel aligné, durable et motivant.</p>
+    <p>Au-delà des familles de talents, il est essentiel de comprendre comment les talents s'expriment concrètement : par quels mécanismes internes, dans quelles conditions, et à travers quels canaux privilégiés. Cette lecture permet d'identifier le mode de fonctionnement naturel de la personne et les environnements dans lesquels elle donne le meilleur d'elle-même.</p>
+    <p>Mental, émotionnel, physique ? Cette lecture par canaux permet de dépasser une simple liste de talents pour comprendre le fonctionnement global de la personne : comment elle pense, comment elle structure, comment elle interagit, comment elle agit et se met en mouvement.</p>
+    <p>Elle constitue une base solide pour ajuster un projet professionnel, un mode de travail ou une orientation entrepreneuriale en cohérence avec les talents réellement mobilisables au quotidien.</p>
+  </div>
+</div>
+
+<footer>
+  Outil basé sur le modèle des 34 talents Gallup CliftonStrengths.<br>
+  Vos réponses restent uniquement dans votre navigateur — rien n'est envoyé à un serveur.
+</footer>
+
+</div>
+
+<script>
+const TALENTS = {
+  "Stratégiques": {
+    color: "#1565C0", light: "#E3F2FD",
+    items: [
+      ["Analytique","Tu décortiques les situations. Tu cherches les preuves, les causes, les données. Tu veux comprendre comment les choses fonctionnent réellement.","Ex : Examiner des données ou des résultats pour comprendre pourquoi un projet a échoué.", "vous aide à fonder vos décisions sur des preuves solides plutôt que sur des intuitions", "Décortique les situations, cherche preuves et causes."],
+      ["Contexte","Tu comprends le présent en regardant le passé. Tu t'appuies sur les faits historiques, les origines ou les expériences précédentes pour décider.","Ex : Utiliser l'expérience passée pour guider les décisions actuelles.", "vous donne une mémoire utile pour ne pas reproduire les erreurs et capitaliser sur ce qui a déjà fonctionné", "Comprend le présent grâce au passé."],
+      ["Futuriste","Tu imagines le futur comme une vision claire. Tu te projettes facilement et inspires les autres grâce à tes idées sur ce qui pourrait exister.","Ex : Imaginer de nouvelles solutions ou projets qui pourraient transformer l'entreprise.", "vous permet de donner une direction et du sens à un projet sur le long terme", "Imagine l'avenir et inspire avec sa vision."],
+      ["Idéation","Tu produis beaucoup d'idées et aimes les concepts originaux. Tu fais des liens que d'autres ne voient pas.","Ex : Proposer des idées innovantes pour résoudre un problème complexe.", "nourrit votre capacité à innover et à sortir des sentiers battus", "Génère des idées en continu."],
+      ["Collecteur","Tu accumules des informations, outils, ressources ou contacts. Tu es curieux de tout et gardes ce qui pourrait servir plus tard.","Ex : Collecter des informations et ressources utiles pour un projet futur.", "fait de vous une ressource précieuse, capable de mobiliser rapidement l'information ou le contact pertinent", "Accumule informations et ressources."],
+      ["Intellect","Tu aimes réfléchir, explorer des concepts et avoir des conversations profondes. La pensée est une activité en soi.","Ex : Prendre le temps de réfléchir profondément avant de proposer des stratégies.", "vous donne la capacité de prendre du recul avant d'agir, plutôt que de réagir dans l'urgence", "Réfléchit en profondeur."],
+      ["Apprenant","Tu adores apprendre. Le processus d'apprentissage te donne de l'énergie, peu importe le résultat final.","Ex : Explorer de nouvelles connaissances, participer à des ateliers ou lire des articles spécialisés.", "vous permet de monter rapidement en compétence sur de nouveaux sujets", "Aime apprendre et progresser."],
+      ["Stratégique","Tu repères rapidement les chemins possibles. Là où d'autres voient un mur, tu vois des options.","Ex : Identifier rapidement la meilleure approche parmi plusieurs options.", "vous aide à choisir le bon chemin parmi plusieurs options possibles, même en contexte incertain", "Repère les options les plus efficaces."],
+    ]
+  },
+  "Exécutifs": {
+    color: "#2E7D32", light: "#E8F5E9",
+    items: [
+      ["Accomplissement","Tu aimes avancer, réaliser, accomplir. Tu te sens bien quand tu progresses.","Ex : Terminer un projet complexe en respectant les délais, même si cela demande un effort soutenu.", "vous donne l'énergie nécessaire pour tenir un rythme de travail soutenu et aller au bout des choses", "Besoin d'avancer et d'accomplir."],
+      ["Organisateur","Tu sais gérer plusieurs éléments en même temps et optimiser l'organisation des ressources humaines ou matérielles.","Ex : Réorganiser les tâches d'une équipe pour que tout le monde soit efficace et motivé.", "vous rend particulièrement efficace pour coordonner des ressources complexes et changeantes", "Optimise l'organisation."],
+      ["Conviction","Tu possèdes des valeurs fortes qui guident tes choix et donnent du sens à tes actions.","Ex : Maintenir des standards éthiques élevés et faire passer la mission ou les valeurs avant tout.", "ancre votre travail dans un sens et une cohérence forte, au-delà du simple résultat", "Guidé par des valeurs fortes."],
+      ["Équité","Tu cherches la justice et l'équité. Tu veux que les règles soient appliquées de manière égale.","Ex : Appliquer les mêmes règles à tous les collègues pour garantir l'équité.", "fait de vous une personne de confiance dans la gestion de règles communes et de décisions justes", "Recherche justice et règles claires."],
+      ["Prudent","Tu identifies les risques, anticipes les problèmes et avances avec prudence réfléchie.","Ex : Analyser attentivement les risques avant de prendre une décision importante.", "sécurise les décisions importantes en anticipant ce qui pourrait mal tourner", "Analyse les risques."],
+      ["Discipline","Tu crées de l'ordre, des routines et des processus stables. Tu aimes la structure.","Ex : Créer un planning précis et s'y tenir pour accomplir ses objectifs.", "vous donne un cadre fiable qui réduit l'incertitude et sécurise l'exécution", "Crée structure et ordre."],
+      ["Focus","Tu avances vers un objectif clair. Tu élimines les distractions et restes concentré.","Ex : Se concentrer sur un objectif clé malgré les distractions ou les urgences.", "vous permet de ne pas vous disperser et d'avancer efficacement vers un objectif", "Priorise et reste concentré."],
+      ["Responsabilité","Tu tiens tes engagements avec sérieux. Quand tu acceptes quelque chose, tu t'y sens profondément lié.","Ex : Prendre en charge un dossier de A à Z et s'assurer qu'il est parfaitement traité.", "fait de vous quelqu'un sur qui l'on peut compter à 100%", "Tient fortement ses engagements."],
+      ["Réparateur","Tu repères ce qui ne fonctionne pas et tu as le talent pour réparer ou résoudre ces problèmes.","Ex : Identifier un problème récurrent dans une procédure et proposer des solutions efficaces.", "vous rend très efficace pour diagnostiquer et corriger ce qui dysfonctionne", "Résout problèmes et dysfonctionnements."],
+    ]
+  },
+  "Influence": {
+    color: "#E65100", light: "#FFF3E0",
+    items: [
+      ["Activateur","Tu dois passer à l'action. Tu transformes une idée en mouvement rapidement.","Ex : Passer rapidement de l'idée à l'action et motiver l'équipe à avancer.", "vous permet de débloquer des situations qui stagnent en passant rapidement à l'action", "Passe vite à l'action."],
+      ["Commandement","Tu prends naturellement le lead et n'as pas peur d'aborder des sujets difficiles.","Ex : Prendre les devants dans une situation complexe et guider les autres avec assurance.", "vous donne la capacité de prendre les choses en main dans les moments difficiles", "Prend le lead naturellement."],
+      ["Communication","Tu sais parler, raconter et expliquer. Tu rends les messages vivants et accessibles.","Ex : Présenter un projet ou un rapport de manière claire et persuasive.", "vous permet de rendre vos idées accessibles et convaincantes pour n'importe quel public", "Explique et raconte clairement."],
+      ["Compétition","Tu te compares, vises le meilleur et es stimulé par les défis.","Ex : Chercher à être le meilleur dans un domaine tout en inspirant les autres à se dépasser.", "vous pousse à viser l'excellence et à vous dépasser face aux défis", "Aime se comparer et gagner."],
+      ["Maximiseur","Tu veux transformer ce qui est déjà bon en excellent. Tu cherches l'excellence, pas juste le correct.","Ex : Identifier les points forts d'un collègue et l'aider à les développer.", "vous permet de transformer ce qui fonctionne déjà bien en quelque chose d'exceptionnel", "Transforme le bon en excellent."],
+      ["Confiance","Tu possèdes une certitude intérieure forte. Tu as confiance en ton jugement même en terrain incertain.","Ex : Prendre des décisions difficiles avec confiance, même face à l'incertitude.", "vous donne la solidité nécessaire pour décider et agir même dans l'incertitude", "Confiance intérieure forte."],
+      ["Importance","Tu veux avoir un impact visible et être reconnu pour tes contributions.","Ex : Chercher des responsabilités ou des missions à fort impact et visibilité.", "vous pousse à rechercher des missions où votre contribution aura un impact réel et visible", "Veut un impact visible."],
+      ["Sociabilité","Tu aimes rencontrer de nouvelles personnes et gagner leur sympathie.","Ex : Créer rapidement des liens et convaincre de nouveaux partenaires ou collègues.", "vous rend très à l'aise pour créer rapidement de nouveaux réseaux et partenariats", "Aime créer de nouveaux contacts."],
+    ]
+  },
+  "Relationnels": {
+    color: "#6A1B9A", light: "#F3E5F5",
+    items: [
+      ["Adaptabilité","Tu vis dans le présent et t'adaptes facilement aux changements.","Ex : S'adapter rapidement à un changement de projet ou de planning sans stress.", "vous permet de rester serein et efficace même quand tout change autour de vous", "S'adapte facilement."],
+      ["Lié au sens","Tu vois des liens entre les choses, un sens global. Rien n'arrive complètement par hasard.","Ex : Identifier les liens entre les projets, les personnes et les objectifs pour favoriser la collaboration.", "vous aide à fédérer autour d'un sens commun et à relier des éléments en apparence séparés", "Voit les liens et le sens global."],
+      ["Développeur","Tu aimes voir les autres progresser et tu les encourages naturellement.","Ex : Accompagner un collègue débutant pour qu'il progresse dans son poste.", "fait de vous un soutien précieux pour la progression et la montée en compétence des autres", "Fait progresser les autres."],
+      ["Empathie","Tu ressens ce que les autres vivent. Tu perçois les émotions même non exprimées.","Ex : Ressentir le stress ou les inquiétudes d'un collègue et l'écouter pour le soutenir.", "vous donne une finesse d'écoute rare qui crée une vraie confiance chez les autres", "Ressent les émotions des autres."],
+      ["Harmonie","Tu apaises les tensions et cherches la collaboration plutôt que les conflits.","Ex : Réduire les conflits dans l'équipe en cherchant un terrain d'entente.", "vous rend particulièrement utile pour apaiser les tensions et fluidifier la collaboration", "Apaise les tensions."],
+      ["Intégrateur","Tu invites ceux qui sont mis de côté. Tu veux que chacun se sente accepté.","Ex : S'assurer que toutes les voix sont entendues et que personne n'est laissé de côté.", "fait de vous quelqu'un qui veille à ce que personne ne soit exclu d'un collectif", "Intègre ceux qui sont exclus."],
+      ["Individualisation","Tu vois l'unicité de chaque personne et adaptes ton approche en fonction de ses besoins.","Ex : Adapter son management ou ses conseils à chaque personne selon ses forces et besoins.", "vous permet d'ajuster finement votre approche à chaque personne plutôt que d'appliquer une méthode unique", "Comprend l'unicité de chacun."],
+      ["Positive","Tu diffuses de l'énergie et de l'enthousiasme. Tu aides les autres à voir les opportunités.","Ex : Maintenir l'enthousiasme de l'équipe lors d'un projet difficile.", "vous rend précieux pour maintenir le moral et l'énergie d'un collectif, même dans les moments difficiles", "Diffuse de l'enthousiasme."],
+      ["Relationnel","Tu préfères les relations profondes. Tu investis dans des liens vrais et durables.","Ex : Créer des liens profonds et durables avec ses collègues et partenaires.", "vous permet de construire des relations professionnelles solides et durables, basées sur la confiance", "Crée des relations profondes."],
+    ]
+  }
+};
+
+/* ---- Textes de base par famille (issus du guide) ---- */
+const CAT_PROFILE_TEXT = {
+  "Stratégiques": "une appétence naturelle pour l'analyse, la réflexion et la vision : vous prenez du recul, donnez du sens et savez vous projeter. Vous êtes à l'aise pour analyser des situations complexes, faire des liens entre des informations disparates et imaginer des scénarios futurs",
+  "Exécutifs": "une vraie capacité à transformer les idées en actions concrètes : vous structurez, tenez dans la durée et produisez des résultats. Le goût de l'effort, le sens de l'organisation et la fiabilité sont au cœur de votre fonctionnement",
+  "Influence": "une aisance naturelle à faire bouger les lignes, porter une voix et mobiliser. Vous êtes à l'aise pour prendre la parole, convaincre et initier l'action, avec l'envie d'avoir un impact visible",
+  "Relationnels": "une grande capacité à entrer en lien avec les autres, créer de la confiance et contribuer à la qualité des relations humaines, à travers l'écoute, l'empathie et l'attention portée à chacun",
+};
+
+const CAT_APPORT_TEXT = {
+  "Stratégiques": "de la clarté, de la hauteur de vue et de la cohérence dans les projets",
+  "Exécutifs": "de la stabilité, de l'efficacité et de la crédibilité dans le travail",
+  "Influence": "de l'élan, la capacité à défendre des idées et à fédérer autour d'un projet",
+  "Relationnels": "de l'engagement, de la cohésion et du bien-être collectif",
+};
+
+const CAT_METIER_TEXT = {
+  "Stratégiques": ["conseil et analyse stratégique", "recherche, veille ou expertise technique", "gestion de projets nécessitant une vision long terme", "formation et transmission de savoirs"],
+  "Exécutifs": ["gestion de projet ou pilotage opérationnel", "coordination d'équipe ou logistique", "gestion administrative, financière ou juridique", "amélioration continue, qualité, méthode"],
+  "Influence": ["développement commercial ou business development", "management ou leadership d'équipe", "communication, marketing ou relations publiques", "entrepreneuriat et création d'activité"],
+  "Relationnels": ["accompagnement, coaching ou ressources humaines", "métiers du soin, du social ou de l'éducation", "enseignement, formation ou médiation", "tout rôle nécessitant un fort travail d'équipe"],
+};
+
+const CAT_VIGILANCE_TEXT = {
+  "Stratégiques": "un environnement qui exige beaucoup d'analyse préalable ou de prise de recul pourra vous demander plus d'énergie qu'à d'autres ; vous risquez aussi de trouver frustrants les contextes où il faut agir vite sans avoir le temps de bien comprendre",
+  "Exécutifs": "les contextes très flous, sans cadre ni structure claire, pourront générer chez vous de l'inconfort ; un manque de méthode autour de vous peut être source de friction",
+  "Influence": "prendre la parole en public, négocier ou porter un message avec assurance pourra demander un effort plus important ; les environnements très feutrés où il faut s'effacer peuvent vous coûter en énergie",
+  "Relationnels": "un poste très solitaire ou avec peu d'interactions humaines pourra moins bien vous correspondre ; un climat relationnel dégradé autour de vous peut affecter votre énergie globale",
+};
+
+/* ---- Combinaisons remarquables (paires de talents individuels) ---- */
+const COMBOS = [
+  { pair: ["Analytique", "Communication"], title: "Analyste pédagogue", text: "vous savez à la fois creuser un sujet en profondeur et le restituer de façon claire et convaincante — une combinaison rare qui fait de vous quelqu'un capable de vulgariser des sujets complexes." },
+  { pair: ["Stratégique", "Activateur"], title: "Visionnaire pragmatique", text: "vous voyez vite les options possibles et n'avez pas peur de passer à l'action rapidement — vous transformez la réflexion stratégique en mouvement concret, sans rester bloqué dans l'analyse." },
+  { pair: ["Empathie", "Commandement"], title: "Leader humain", text: "vous savez à la fois ressentir ce que vivent les autres et prendre les choses en main avec assurance — un leadership qui embarque sans écraser." },
+  { pair: ["Discipline", "Idéation"], title: "Créatif structuré", text: "vous savez générer des idées originales tout en les inscrivant dans un cadre fiable et des routines solides — vos idées ont plus de chances d'aboutir concrètement." },
+  { pair: ["Responsabilité", "Maximiseur"], title: "Garant de l'excellence", text: "vous prenez vos engagements très au sérieux et visez systématiquement le meilleur résultat possible — une combinaison qui inspire une grande confiance." },
+  { pair: ["Développeur", "Individualisation"], title: "Mentor sur mesure", text: "vous aimez faire grandir les autres tout en adaptant précisément votre approche à chaque personnalité — un atout fort pour le management ou l'accompagnement individuel." },
+  { pair: ["Communication", "Positive"], title: "Porteur d'énergie", text: "vous savez à la fois transmettre un message de façon vivante et insuffler de l'enthousiasme autour de vous — vous embarquez facilement les autres dans vos projets." },
+  { pair: ["Prudent", "Réparateur"], title: "Sécurisateur de système", text: "vous anticipez les risques avant qu'ils ne deviennent des problèmes, et savez résoudre efficacement ce qui dysfonctionne — un profil rassurant pour fiabiliser un projet ou une organisation." },
+  { pair: ["Futuriste", "Conviction"], title: "Visionnaire engagé", text: "vous portez une vision claire de l'avenir, ancrée dans des valeurs fortes — vous donnez du sens autant que de la direction à un projet collectif." },
+  { pair: ["Harmonie", "Adaptabilité"], title: "Stabilisateur agile", text: "vous savez apaiser les tensions tout en restant flexible face au changement — un vrai atout dans les environnements incertains ou les équipes sous pression." },
+  { pair: ["Compétition", "Focus"], title: "Performeur concentré", text: "vous êtes stimulé par les défis et savez garder le cap sur un objectif sans vous disperser — une combinaison redoutable pour atteindre des résultats ambitieux." },
+  { pair: ["Collecteur", "Apprenant"], title: "Explorateur de savoirs", text: "vous accumulez naturellement informations et ressources tout en étant stimulé par l'apprentissage en continu — vous devenez vite une référence sur les sujets qui vous intéressent." },
+];
+
+/* ---- Channels meta ---- */
+const CHANNELS = {
+  mental: { label: "Mental", color: "#1565C0", light: "#E3F2FD", icon: "🧠", desc: "talents de conception, raisonnement, structuration des idées" },
+  emotionnel: { label: "Émotionnel", color: "#AD1457", light: "#FCE4EC", icon: "❤️", desc: "talents relationnels, communication, savoir-être" },
+  physique: { label: "Physique", color: "#EF6C00", light: "#FFF3E0", icon: "⚡", desc: "ce qui nourrit l'action" },
+};
+
+const state = {};       // talent -> Plus/Moyen/Moins
+const channelState = {}; // talent -> {mental:bool, emotionnel:bool, physique:bool}
+let answered = 0;
+const TOTAL = 34;
+
+/* ---------- Tabs ---------- */
+function goToTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
+  document.getElementById('tab-' + tabName).classList.add('active');
+}
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.disabled) return;
+    goToTab(btn.dataset.tab);
+  });
+});
+
+/* ---------- Populate guide talent tags ---------- */
+function buildGuideTags() {
+  Object.entries(TALENTS).forEach(([catName, cat]) => {
+    const container = document.getElementById('taglist-' + catName);
+    cat.items.forEach(([name]) => {
+      const tag = document.createElement('span');
+      tag.textContent = name;
+      tag.style.background = cat.light;
+      tag.style.color = cat.color;
+      container.appendChild(tag);
+    });
+  });
+}
+
+/* ---------- Build questionnaire UI ---------- */
+function buildUI() {
+  const container = document.getElementById('cats-container');
+  Object.entries(TALENTS).forEach(([catName, cat]) => {
+    const section = document.createElement('div');
+    section.className = 'cat-section';
+
+    const header = document.createElement('div');
+    header.className = 'cat-header';
+    header.innerHTML = `
+      <div class="cat-dot" style="background:${cat.color}"></div>
+      <span class="cat-title" style="color:${cat.color}">${catName}</span>
+      <span class="cat-badge" id="badge-${catName}" style="background:${cat.light};color:${cat.color}">0/${cat.items.length}</span>
+      <span class="cat-chevron open" id="chev-${catName}">▾</span>
+    `;
+
+    const body = document.createElement('div');
+    body.id = 'body-' + catName;
+
+    const labelRow = document.createElement('div');
+    labelRow.className = 'col-labels';
+    labelRow.innerHTML = `
+      <div class="col-label">Talent</div>
+      <div class="col-label" style="color:#1B5E20">Plus</div>
+      <div class="col-label" style="color:#E65100">Moyen</div>
+      <div class="col-label" style="color:#B71C1C">Moins</div>
+    `;
+    body.appendChild(labelRow);
+
+    cat.items.forEach(([name, desc, ex]) => {
+      const key = catName + '||' + name;
+      state[key] = null;
+      const row = document.createElement('div');
+      row.className = 'talent-row';
+      row.innerHTML = `
+        <div>
+          <div class="talent-name" style="color:${cat.color}">${name}</div>
+          <div class="talent-desc">${desc}</div>
+          <div class="talent-ex">${ex}</div>
+        </div>
+        <div class="radio-cell"><input type="radio" name="${key}" value="Plus" style="accent-color:${cat.color}"></div>
+        <div class="radio-cell"><input type="radio" name="${key}" value="Moyen" style="accent-color:#E65100"></div>
+        <div class="radio-cell"><input type="radio" name="${key}" value="Moins" style="accent-color:#B71C1C"></div>
+      `;
+      row.querySelectorAll('input').forEach(r => {
+        r.addEventListener('change', () => onChange(key, r.value, catName, cat));
+      });
+      body.appendChild(row);
+    });
+
+    header.addEventListener('click', () => {
+      const b = document.getElementById('body-' + catName);
+      const ch = document.getElementById('chev-' + catName);
+      b.classList.toggle('hidden');
+      ch.classList.toggle('open');
+    });
+
+    section.appendChild(header);
+    section.appendChild(body);
+    container.appendChild(section);
+  });
+}
+
+function onChange(key, val, catName, cat) {
+  if (state[key] === null) answered++;
+  state[key] = val;
+  updateProgress();
+  updateBadge(catName, cat);
+  if (answered === TOTAL) {
+    updateSummary();
+    document.getElementById('summary-section').classList.remove('hidden');
+    document.getElementById('tabbtn-channels').disabled = false;
+    document.querySelector('.tab-btn[data-tab="quiz"]').classList.add('done');
+  } else {
+    document.getElementById('summary-section').classList.add('hidden');
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round(answered / TOTAL * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = `${answered} / ${TOTAL} talents renseignés`;
+}
+
+function updateBadge(catName, cat) {
+  const done = cat.items.filter(([n]) => state[catName + '||' + n] !== null).length;
+  const badge = document.getElementById('badge-' + catName);
+  badge.textContent = `${done}/${cat.items.length}`;
+  if (done === cat.items.length) { badge.style.background = cat.color; badge.style.color = 'white'; }
+}
+
+function getCounts() {
+  const result = {};
+  Object.entries(TALENTS).forEach(([catName, cat]) => {
+    const counts = { Plus: 0, Moyen: 0, Moins: 0 };
+    const plusNames = [];
+    const moinsNames = [];
+    cat.items.forEach(([n]) => {
+      const v = state[catName + '||' + n];
+      if (v) counts[v]++;
+      if (v === 'Plus') plusNames.push(n);
+      if (v === 'Moins') moinsNames.push(n);
+    });
+    result[catName] = { counts, plusNames, moinsNames };
+  });
+  return result;
+}
+
+function updateSummary() {
+  const grid = document.getElementById('summary-grid');
+  grid.innerHTML = '';
+  const data = getCounts();
+  Object.entries(TALENTS).forEach(([catName, cat]) => {
+    const counts = data[catName].counts;
+    grid.innerHTML += `
+      <div class="summary-card">
+        <div class="summary-cat-name" style="color:${cat.color}">${catName}</div>
+        <div class="scores">
+          <span class="score-pill sp-plus">+${counts.Plus}</span>
+          <span class="score-pill sp-moyen">~${counts.Moyen}</span>
+          <span class="score-pill sp-moins">-${counts.Moins}</span>
+        </div>
+      </div>`;
+  });
+}
+
+/* Helper: find which category a talent name belongs to */
+function findTalentCategory(name) {
+  for (const [catName, cat] of Object.entries(TALENTS)) {
+    if (cat.items.some(([n]) => n === name)) return catName;
+  }
+  return null;
+}
+function findTalentMeta(name) {
+  for (const cat of Object.values(TALENTS)) {
+    const found = cat.items.find(([n]) => n === name);
+    if (found) return found; // [name, desc, ex, contribution, shortDef]
+  }
+  return null;
+}
+
+function getAllPlusTalents() {
+  const list = [];
+  Object.entries(TALENTS).forEach(([catName, cat]) => {
+    cat.items.forEach(([n]) => {
+      if (state[catName + '||' + n] === 'Plus') list.push({ name: n, cat: catName });
+    });
+  });
+  return list;
+}
+
+/* ---------- STEP 2: Channels UI ---------- */
+document.getElementById('btn-go-channels').addEventListener('click', () => {
+  buildChannelsUI();
+  goToTab('channels');
+});
+
+function buildChannelsUI() {
+  const container = document.getElementById('channels-container');
+  container.innerHTML = '';
+  const plusTalents = getAllPlusTalents();
+
+  if (plusTalents.length === 0) {
+    container.innerHTML = `<div class="no-plus-message">Vous n'avez coché aucun talent en "Plus" — cette étape n'est donc pas applicable. Vous pouvez directement consulter votre analyse.</div>`;
+    updateChannelsProgress(0, 0);
+    return;
+  }
+
+  plusTalents.forEach(({ name, cat }) => {
+    const meta = findTalentMeta(name);
+    const shortDef = meta ? meta[4] : '';
+    const catColor = TALENTS[cat].color;
+    if (!channelState[name]) channelState[name] = { mental: false, emotionnel: false, physique: false };
+
+    const card = document.createElement('div');
+    card.className = 'channel-talent-card';
+    card.innerHTML = `
+      <div class="channel-talent-header">
+        <div class="fam-dot" style="background:${catColor}"></div>
+        <span class="t-name" style="color:${catColor}">${name}</span>
+        <span class="fam-label">— ${cat}</span>
+      </div>
+      <div class="channel-talent-def">${shortDef}</div>
+      <div class="channel-options">
+        <label class="channel-option" id="opt-${name}-mental">
+          <input type="checkbox" data-talent="${name}" data-channel="mental">
+          <div class="opt-icon" style="background:${CHANNELS.mental.color}">${CHANNELS.mental.icon}</div>
+          <span class="opt-text">Mental</span>
+        </label>
+        <label class="channel-option" id="opt-${name}-emotionnel">
+          <input type="checkbox" data-talent="${name}" data-channel="emotionnel">
+          <div class="opt-icon" style="background:${CHANNELS.emotionnel.color}">${CHANNELS.emotionnel.icon}</div>
+          <span class="opt-text">Émotionnel</span>
+        </label>
+        <label class="channel-option" id="opt-${name}-physique">
+          <input type="checkbox" data-talent="${name}" data-channel="physique">
+          <div class="opt-icon" style="background:${CHANNELS.physique.color}">${CHANNELS.physique.icon}</div>
+          <span class="opt-text">Physique</span>
+        </label>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  container.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const talent = cb.dataset.talent;
+      const channel = cb.dataset.channel;
+      channelState[talent][channel] = cb.checked;
+      document.getElementById(`opt-${talent}-${channel}`).classList.toggle('checked-' + channel, cb.checked);
+      updateChannelsProgress(plusTalents.length);
+    });
+  });
+
+  updateChannelsProgress(plusTalents.length);
+}
+
+function updateChannelsProgress(total) {
+  const done = Object.values(channelState).filter(c => c.mental || c.emotionnel || c.physique).length;
+  document.getElementById('channels-progress').textContent = total > 0 ? `${done} / ${total} talents renseignés` : '';
+}
+
+document.getElementById('btn-go-analysis').addEventListener('click', () => {
+  document.getElementById('tabbtn-analysis').disabled = false;
+  document.querySelector('.tab-btn[data-tab="channels"]').classList.add('done');
+  generateAnalysis();
+  goToTab('analysis');
+});
+
+/* ---------- Local rule-based analysis (no API), enriched with channels ---------- */
+function generateAnalysis() {
+  const data = getCounts();
+  const name = document.getElementById('field-name').value.trim();
+  const greeting = name ? `${name}, ` : '';
+
+  const ranked = Object.entries(data)
+    .map(([cat, d]) => ({ cat, plus: d.counts.Plus, plusNames: d.plusNames, moinsNames: d.moinsNames }))
+    .sort((a, b) => b.plus - a.plus);
+
+  const top = ranked[0];
+  const second = ranked[1];
+  const weakest = ranked[ranked.length - 1];
+
+  const allPlusTalents = [];
+  ranked.forEach(r => r.plusNames.forEach(n => allPlusTalents.push(n)));
+
+  let html = '';
+
+  /* 1. Profil dominant */
+  html += `<h3>1. Profil dominant</h3>`;
+  if (top.plus > 0) {
+    html += `<p>${greeting}votre profil de talents est marqué en priorité par la famille <span class="talent-tag" style="background:${TALENTS[top.cat].light};color:${TALENTS[top.cat].color}">${top.cat}</span> (${top.plus} talent${top.plus > 1 ? 's' : ''} dominant${top.plus > 1 ? 's' : ''}). Concrètement, vous avez ${CAT_PROFILE_TEXT[top.cat]}. Vous apportez naturellement ${CAT_APPORT_TEXT[top.cat]} dans les environnements où vous évoluez.</p>`;
+    if (second && second.plus > 0) {
+      html += `<p>Cette force se conjugue à une seconde tendance marquée du côté <span class="talent-tag" style="background:${TALENTS[second.cat].light};color:${TALENTS[second.cat].color}">${second.cat}</span>, qui vient compléter et nuancer votre manière d'agir au quotidien : ${CAT_PROFILE_TEXT[second.cat]}.</p>`;
+    }
+  } else {
+    html += `<p>${greeting}vos réponses montrent un profil assez équilibré entre les 4 familles de talents, sans dominante très marquée. C'est aussi une richesse : vous pouvez mobiliser des registres différents selon les situations, plutôt que d'être enfermé·e dans un seul mode de fonctionnement.</p>`;
+  }
+
+  /* 2. Points forts à valoriser */
+  html += `<h3>2. Points forts à valoriser</h3>`;
+  if (allPlusTalents.length > 0) {
+    html += `<p>Voici vos talents dominants et ce qu'ils vous apportent concrètement au quotidien :</p><ul>`;
+    allPlusTalents.slice(0, 10).forEach(n => {
+      const meta = findTalentMeta(n);
+      const contribution = meta ? meta[3] : '';
+      html += `<li><strong>${n}</strong> — ce talent ${contribution}.</li>`;
+    });
+    html += `</ul><p>Ce sont les leviers sur lesquels vous pouvez vous appuyer en priorité : ils vous demandent le moins d'effort et constituent vos points d'excellence naturelle. L'enjeu n'est pas de les "améliorer", mais de chercher des contextes professionnels qui leur donnent de la place.</p>`;
+  } else {
+    html += `<p>Aucun talent n'a été identifié en "Plus" — vos forces se répartissent plutôt du côté des talents "Moyen", à mobiliser selon le contexte. Cela peut aussi traduire un profil polyvalent, capable de s'adapter à des situations variées sans dépendre d'un registre unique.</p>`;
+  }
+
+  /* 3. Vos canaux d'expression (nouvelle section) */
+  if (allPlusTalents.length > 0) {
+    html += `<h3>3. Vos canaux d'expression dominants</h3>`;
+    const channelCounts = { mental: 0, emotionnel: 0, physique: 0 };
+    const channelTalents = { mental: [], emotionnel: [], physique: [] };
+    let multiChannelCount = 0;
+    let noChannelCount = 0;
+
+    allPlusTalents.forEach(n => {
+      const c = channelState[n];
+      if (!c) { noChannelCount++; return; }
+      const activeChannels = Object.entries(c).filter(([, v]) => v).map(([k]) => k);
+      if (activeChannels.length === 0) { noChannelCount++; return; }
+      if (activeChannels.length > 1) multiChannelCount++;
+      activeChannels.forEach(ch => { channelCounts[ch]++; channelTalents[ch].push(n); });
+    });
+
+    const totalAnswered = allPlusTalents.length - noChannelCount;
+
+    if (totalAnswered > 0) {
+      html += `<p>Pour chacun de vos talents dominants, vous avez indiqué par quel canal vous le mobilisez naturellement — votre tête (mental), votre cœur (émotionnel) ou votre corps (physique). Voici la répartition :</p>`;
+
+      html += `<div class="channel-summary-grid">`;
+      [
+        { key: 'mental', ...CHANNELS.mental },
+        { key: 'emotionnel', ...CHANNELS.emotionnel },
+        { key: 'physique', ...CHANNELS.physique },
+      ].forEach(ch => {
+        html += `<div class="channel-summary-card" style="background:${ch.light};">
+          <div class="num" style="color:${ch.color}">${channelCounts[ch.key]}</div>
+          <div class="lbl" style="color:${ch.color}">${ch.icon} ${ch.label}</div>
+          <div class="channel-talent-pills">${channelTalents[ch.key].slice(0,6).map(t => `<span style="color:${ch.color}">${t}</span>`).join('')}</div>
+        </div>`;
+      });
+      html += `</div>`;
+
+      const sortedChannels = Object.entries(channelCounts).sort((a, b) => b[1] - a[1]);
+      const dominantChannel = sortedChannels[0];
+
+      if (dominantChannel[1] > 0) {
+        const chMeta = CHANNELS[dominantChannel[0]];
+        html += `<p>Votre canal le plus mobilisé est le <strong style="color:${chMeta.color}">${chMeta.label.toLowerCase()}</strong> (${chMeta.desc}). Cela suggère que vos talents s'expriment surtout par ce biais : `;
+        if (dominantChannel[0] === 'mental') html += `vous donnez le meilleur de vous-même dans des contextes qui sollicitent la réflexion, l'analyse ou la structuration des idées, plus que dans l'action immédiate ou la relation directe.`;
+        if (dominantChannel[0] === 'emotionnel') html += `vous donnez le meilleur de vous-même dans des contextes relationnels, là où l'écoute, la communication et le savoir-être font la différence.`;
+        if (dominantChannel[0] === 'physique') html += `vous donnez le meilleur de vous-même dans l'action concrète, le mouvement et la mise en œuvre rapide, plus que dans la réflexion prolongée.`;
+        html += `</p>`;
+      }
+
+      if (multiChannelCount > 0) {
+        html += `<p>Notez que ${multiChannelCount} de vos talents s'expriment par plusieurs canaux à la fois — c'est souvent le signe de talents particulièrement intégrés et faciles à mobiliser dans des contextes variés.</p>`;
+      }
+    }
+    if (noChannelCount > 0) {
+      html += `<p style="color:#999; font-style:italic;">(${noChannelCount} talent${noChannelCount>1?'s':''} dominant${noChannelCount>1?'s':''} sans canal renseigné.)</p>`;
+    }
+  }
+
+  /* 4. Combinaisons remarquables */
+  const matchedCombos = COMBOS.filter(c => c.pair.every(t => allPlusTalents.includes(t)));
+  html += `<h3>4. Combinaisons remarquables</h3>`;
+  if (matchedCombos.length > 0) {
+    matchedCombos.slice(0, 3).forEach(c => {
+      html += `<div class="combo-card"><div class="combo-title">${c.pair[0]} + ${c.pair[1]} — "${c.title}"</div><p>Cette association est particulièrement intéressante chez vous : ${c.text}</p></div>`;
+    });
+  } else if (top.plus > 0 && second && second.plus > 0) {
+    html += `<div class="combo-card"><div class="combo-title">${top.cat} + ${second.cat}</div><p>L'association de vos talents <span class="talent-tag" style="background:${TALENTS[top.cat].light};color:${TALENTS[top.cat].color}">${top.cat}</span> et <span class="talent-tag" style="background:${TALENTS[second.cat].light};color:${TALENTS[second.cat].color}">${second.cat}</span> est intéressante : elle vous permet de combiner ${CAT_PROFILE_TEXT[top.cat].split(':')[0].trim()} avec ${CAT_PROFILE_TEXT[second.cat].split(':')[0].trim()}. C'est une combinaison qui peut faire une vraie différence dans votre façon de travailler.</p></div>`;
+  } else {
+    html += `<p>Avec un profil plus réparti, votre force réside moins dans une combinaison de pointe que dans votre capacité à naviguer entre plusieurs registres selon les besoins du moment.</p>`;
+  }
+
+  /* 5. Orientations professionnelles */
+  html += `<h3>5. Orientations professionnelles suggérées</h3>`;
+  html += `<p>Sur la base de votre famille de talents dominante (${top.cat}), les environnements suivants pourraient particulièrement vous convenir :</p><ul>`;
+  CAT_METIER_TEXT[top.cat].forEach(m => html += `<li>${m.charAt(0).toUpperCase() + m.slice(1)}</li>`);
+  html += `</ul>`;
+  if (second && second.plus > 0) {
+    html += `<p>Votre profil secondaire (${second.cat}) peut aussi orienter vers des postes hybrides, à l'intersection des deux registres — par exemple un rôle de ${CAT_METIER_TEXT[second.cat][0]} intégrant une forte dimension ${top.cat.toLowerCase()}.</p>`;
+  }
+
+  /* 6. Points de vigilance */
+  html += `<h3>6. Points de vigilance</h3>`;
+  html += `<p>Vos talents les moins mobilisés se situent du côté de la famille <span class="talent-tag" style="background:${TALENTS[weakest.cat].light};color:${TALENTS[weakest.cat].color}">${weakest.cat}</span>. Cela ne signifie pas une faiblesse à corriger absolument, mais un point à avoir en tête : ${CAT_VIGILANCE_TEXT[weakest.cat]}.</p>`;
+  if (weakest.moinsNames.length > 0) {
+    html += `<p>Plus précisément, les talents <strong>${weakest.moinsNames.slice(0,3).join(', ')}</strong> sont ceux que vous mobilisez le moins naturellement. Le plus efficace est souvent de s'entourer de personnes complémentaires sur ce registre plutôt que de chercher à tout faire seul·e.</p>`;
+  }
+
+  /* 7. Conclusion générale */
+  html += `<h3>7. Pour aller plus loin</h3>`;
+  html += `<p>Aucune famille de talents n'est meilleure qu'une autre : c'est leur combinaison qui fait la richesse d'un profil. L'objectif de cette lecture n'est pas de combler des manques, mais de s'appuyer sur vos talents dominants pour construire un projet professionnel aligné, durable et motivant.</p>`;
+  html += `<p>Au-delà des familles de talents, comprendre comment ils s'expriment concrètement chez vous — par quels mécanismes internes, dans quelles conditions, et à travers quels canaux privilégiés (mental, émotionnel, physique) — permet de saisir votre mode de fonctionnement global : comment vous pensez, structurez, interagissez, agissez et vous mettez en mouvement. C'est une base solide pour ajuster un projet professionnel en cohérence avec vos talents réellement mobilisables au quotidien.</p>`;
+  html += `<p style="font-size:12.5px; color:#888;">Pour (re)lire en détail la signification de chacune des 4 familles de talents, consultez l'onglet « Comprendre les 4 familles ».</p>`;
+
+  /* Conseil clé */
+  html += `<div class="key-advice">Conseil clé : ne cherchez pas à corriger vos points faibles en priorité — concentrez votre énergie sur vos talents dominants, c'est là que vous serez le plus efficace, le plus naturel et le plus épanoui professionnellement.</div>`;
+
+  document.getElementById('analysis-body').innerHTML = html;
+}
+
+document.getElementById('btn-print').addEventListener('click', () => window.print());
+
+function resetAll() {
+  Object.keys(state).forEach(k => state[k] = null);
+  Object.keys(channelState).forEach(k => delete channelState[k]);
+  answered = 0;
+  document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+  document.getElementById('field-name').value = '';
+  document.getElementById('field-date').value = '';
+  updateProgress();
+  document.getElementById('summary-section').classList.add('hidden');
+  document.getElementById('tabbtn-channels').disabled = true;
+  document.getElementById('tabbtn-analysis').disabled = true;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('done'));
+  document.getElementById('channels-container').innerHTML = '';
+  document.getElementById('analysis-body').innerHTML = '';
+  Object.entries(TALENTS).forEach(([catName, cat]) => {
+    const b = document.getElementById('badge-' + catName);
+    b.textContent = `0/${cat.items.length}`;
+    b.style.background = cat.light;
+    b.style.color = cat.color;
+  });
+  goToTab('quiz');
+}
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (confirm('Voulez-vous vraiment réinitialiser toutes vos réponses ?')) resetAll();
+});
+
+buildGuideTags();
+buildUI();
+</script>
+</body>
+</html>
