@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Entretien préalable — Bilan de compétences</title>
+<style>
+  :root{
+    --navy:#5A1846;
+    --navy-deep:#38102C;
+    --gold:#C79A32;
+    --cream:#F7EFDD;
+    --paper:#FFFFFF;
+    --ink:#2E2530;
+    --ink-soft:#6B5F66;
+    --line:#E4D6B8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Segoe UI', Arial, sans-serif;
+    line-height:1.5;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px 80px;}
+  header.masthead{
+    background:linear-gradient(120deg,var(--navy-deep) 0%, var(--navy) 55%, #7A2860 100%);
+    color:#F5E9CE;
+    padding:40px 24px 34px;
+    margin-bottom:36px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.masthead::after{
+    content:"";
+    position:absolute;
+    right:-40px; top:-60px;
+    width:220px; height:220px;
+    background:radial-gradient(circle, rgba(199,154,50,.45) 0%, rgba(199,154,50,0) 70%);
+  }
+  header.masthead .inner{max-width:880px;margin:0 auto;position:relative;}
+  header.masthead .marque{
+    font-size:.72rem;
+    letter-spacing:.5px;
+    color:var(--gold);
+    margin:0 0 10px;
+    font-weight:600;
+  }
+  header.masthead h1{
+    font-family:'Georgia','Lora',serif;
+    font-size:1.7rem;
+    margin:0 0 6px;
+    letter-spacing:.2px;
+  }
+  header.masthead p{
+    margin:0;
+    color:#D9C9A8;
+    font-size:.95rem;
+  }
+  .gold-rule{height:2px;width:56px;background:var(--gold);margin:14px 0 0;}
+
+  section.bloc{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:4px solid var(--gold);
+    border-radius:2px;
+    padding:22px 26px;
+    margin-bottom:22px;
+  }
+  section.bloc h2{
+    font-family:'Georgia','Lora',serif;
+    font-size:1.05rem;
+    color:var(--navy);
+    margin:0 0 4px;
+  }
+  section.bloc .souscription{
+    color:var(--ink-soft);
+    font-size:.85rem;
+    margin:0 0 16px;
+  }
+  .champ{margin-bottom:16px;}
+  .champ:last-child{margin-bottom:0;}
+  label.q{
+    display:block;
+    font-size:.92rem;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+  @media(max-width:640px){.row2,.row3{grid-template-columns:1fr;}}
+
+  input[type=text], input[type=date], select, textarea{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    font-size:.92rem;
+    font-family:inherit;
+    color:var(--ink);
+    background:#FBFAF6;
+  }
+  textarea{resize:vertical;min-height:64px;}
+  input:focus, select:focus, textarea:focus{
+    outline:2px solid var(--gold);
+    outline-offset:1px;
+  }
+
+  .options{display:flex;flex-wrap:wrap;gap:8px;}
+  .opt{
+    position:relative;
+  }
+  .opt input{position:absolute;opacity:0;width:1px;height:1px;}
+  .opt span{
+    display:inline-block;
+    padding:7px 13px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    font-size:.86rem;
+    cursor:pointer;
+    background:#FBFAF6;
+    transition:background .12s, border-color .12s, color .12s;
+  }
+  .opt input:checked + span{
+    background:var(--navy);
+    border-color:var(--navy);
+    color:#F3EEDF;
+  }
+  .opt input:focus-visible + span{outline:2px solid var(--gold);outline-offset:1px;}
+
+  .autre-inline{margin-top:8px;max-width:340px;}
+
+  .actions{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    margin:30px 0 8px;
+    flex-wrap:wrap;
+  }
+  button{
+    font-family:inherit;
+    font-size:.94rem;
+    cursor:pointer;
+    border-radius:3px;
+  }
+  #generer{
+    background:var(--navy);
+    color:#F3EEDF;
+    border:1px solid var(--navy);
+    padding:12px 26px;
+    font-weight:600;
+  }
+  #generer:hover{background:var(--navy-deep);}
+  .btn-secondaire{
+    background:transparent;
+    color:var(--navy);
+    border:1px solid var(--navy);
+    padding:11px 18px;
+  }
+  .btn-secondaire:hover{background:#EDEAE0;}
+  .note-action{font-size:.82rem;color:var(--ink-soft);margin:0;}
+
+  #resultat{
+    display:none;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-top:5px solid var(--gold);
+    padding:34px 38px;
+    margin-top:30px;
+  }
+  #resultat h2{
+    font-family:'Georgia','Lora',serif;
+    color:var(--navy);
+    font-size:1.25rem;
+    margin:0 0 4px;
+  }
+  #resultat .sous{color:var(--ink-soft);font-size:.85rem;margin:0 0 22px;}
+  #resultat p{
+    font-family:'Georgia','Lora',serif;
+    font-size:1rem;
+    line-height:1.75;
+    text-align:justify;
+    color:#232B37;
+    margin:0 0 16px;
+  }
+  #resultat p:last-child{margin-bottom:0;}
+  .zone-copie{
+    margin-top:22px;
+    padding-top:16px;
+    border-top:1px dashed var(--line);
+    display:flex;
+    gap:10px;
+  }
+
+  @media print{
+    header.masthead, section.bloc, .actions{display:none !important;}
+    body{background:#fff;}
+    #resultat{display:block !important;border:none;padding:0;}
+    .zone-copie{display:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="inner">
+    <p class="marque">PERSPECTIVES PRO</p>
+    <h1>Entretien préalable au bilan de compétences</h1>
+    <p>Questionnaire de recueil — génère automatiquement une synthèse rédigée pour le dossier du bénéficiaire</p>
+    <div class="gold-rule"></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="bloc">
+    <h2>I. Identification</h2>
+    <p class="souscription">Éléments d'identification du bénéficiaire, utilisés pour accorder automatiquement le texte généré.</p>
+    <div class="row3">
+      <div class="champ">
+        <label class="q" for="nom">Nom du bénéficiaire</label>
+        <input type="text" id="nom" placeholder="ex. Dupont Claire">
+      </div>
+      <div class="champ">
+        <label class="q">Civilité</label>
+        <div class="options">
+          <label class="opt"><input type="radio" name="genre" value="F" checked><span>Madame</span></label>
+          <label class="opt"><input type="radio" name="genre" value="M"><span>Monsieur</span></label>
+        </div>
+      </div>
+      <div class="champ">
+        <label class="q" for="date">Date de l'entretien</label>
+        <input type="date" id="date">
+      </div>
+    </div>
+  </section>
+
+  <section class="bloc">
+    <h2>II. Situation professionnelle actuelle</h2>
+    <div class="champ">
+      <label class="q">Statut actuel</label>
+      <div class="options" id="statut">
+        <label class="opt"><input type="radio" name="statut" value="en poste"><span>En poste</span></label>
+        <label class="opt"><input type="radio" name="statut" value="demandeur d'emploi"><span>Demandeur d'emploi</span></label>
+        <label class="opt"><input type="radio" name="statut" value="en arrêt de travail"><span>En arrêt de travail</span></label>
+        <label class="opt"><input type="radio" name="statut" value="en reconversion engagée"><span>Reconversion déjà engagée</span></label>
+      </div>
+    </div>
+    <div class="row3">
+      <div class="champ">
+        <label class="q" for="poste">Poste / dernier poste occupé</label>
+        <input type="text" id="poste" placeholder="ex. assistante administrative">
+      </div>
+      <div class="champ">
+        <label class="q" for="secteur">Secteur d'activité</label>
+        <input type="text" id="secteur" placeholder="ex. logistique">
+      </div>
+      <div class="champ">
+        <label class="q" for="anciennete">Ancienneté / expérience</label>
+        <input type="text" id="anciennete" placeholder="ex. 12 ans">
+      </div>
+    </div>
+  </section>
+
+  <section class="bloc">
+    <h2>III. Éléments déclencheurs de la démarche</h2>
+    <p class="souscription">Plusieurs choix possibles.</p>
+    <div class="champ">
+      <div class="options" id="declencheurs">
+        <label class="opt"><input type="checkbox" value="une perte de sens dans l'activité exercée"><span>Perte de sens au travail</span></label>
+        <label class="opt"><input type="checkbox" value="un contexte de restructuration ou de licenciement"><span>Restructuration / licenciement</span></label>
+        <label class="opt"><input type="checkbox" value="une usure professionnelle liée à l'ancienneté sur le poste"><span>Usure professionnelle</span></label>
+        <label class="opt"><input type="checkbox" value="des contraintes de santé ou une inaptitude"><span>Contraintes de santé</span></label>
+        <label class="opt"><input type="checkbox" value="un mal-être ou un conflit dans l'environnement de travail"><span>Mal-être / conflit au travail</span></label>
+        <label class="opt"><input type="checkbox" value="l'absence de perspectives d'évolution en interne"><span>Absence d'évolution interne</span></label>
+        <label class="opt"><input type="checkbox" value="un projet de mobilité géographique"><span>Projet de mobilité géographique</span></label>
+        <label class="opt"><input type="checkbox" value="une envie plus générale de changement de vie professionnelle"><span>Envie de changement de vie</span></label>
+      </div>
+      <div class="autre-inline">
+        <input type="text" id="declencheurs-autre" placeholder="Autre élément déclencheur (précisez)">
+      </div>
+    </div>
+  </section>
+
+  <section class="bloc">
+    <h2>IV. Motivations à l'origine du bilan</h2>
+    <p class="souscription">Plusieurs choix possibles.</p>
+    <div class="champ">
+      <div class="options" id="motivations">
+        <label class="opt"><input type="checkbox" value="confirmer un projet professionnel déjà identifié"><span>Confirmer un projet déjà identifié</span></label>
+        <label class="opt"><input type="checkbox" value="explorer de nouvelles pistes professionnelles"><span>Explorer de nouvelles pistes</span></label>
+        <label class="opt"><input type="checkbox" value="mettre en valeur des compétences peu exploitées jusqu'ici"><span>Valoriser des compétences peu exploitées</span></label>
+        <label class="opt"><input type="checkbox" value="sécuriser son parcours professionnel"><span>Sécuriser son parcours</span></label>
+        <label class="opt"><input type="checkbox" value="préparer une reconversion professionnelle"><span>Préparer une reconversion</span></label>
+        <label class="opt"><input type="checkbox" value="envisager la création ou la reprise d'une entreprise"><span>Création / reprise d'entreprise</span></label>
+        <label class="opt"><input type="checkbox" value="être accompagné dans une évolution en interne"><span>Évolution interne accompagnée</span></label>
+        <label class="opt"><input type="checkbox" value="retrouver de la motivation et de la confiance en soi"><span>Retrouver motivation / confiance</span></label>
+      </div>
+      <div class="autre-inline">
+        <input type="text" id="motivations-autre" placeholder="Autre élément de motivation (précisez)">
+      </div>
+    </div>
+  </section>
+
+  <section class="bloc">
+    <h2>V. Attentes vis-à-vis du bilan</h2>
+    <p class="souscription">Plusieurs choix possibles.</p>
+    <div class="champ">
+      <div class="options" id="attentes">
+        <label class="opt"><input type="checkbox" value="mieux se connaître sur le plan professionnel"><span>Mieux se connaître</span></label>
+        <label class="opt"><input type="checkbox" value="clarifier l'ensemble de ses compétences"><span>Clarifier ses compétences</span></label>
+        <label class="opt"><input type="checkbox" value="identifier des pistes professionnelles concrètes"><span>Identifier des pistes concrètes</span></label>
+        <label class="opt"><input type="checkbox" value="construire un plan d'action réaliste"><span>Construire un plan d'action</span></label>
+        <label class="opt"><input type="checkbox" value="être accompagné dans les démarches à venir"><span>Être accompagné dans les démarches</span></label>
+        <label class="opt"><input type="checkbox" value="bénéficier d'un regard extérieur et objectif sur son parcours"><span>Obtenir un regard extérieur objectif</span></label>
+      </div>
+      <div class="autre-inline">
+        <input type="text" id="attentes-autre" placeholder="Autres attentes (précisez)">
+      </div>
+    </div>
+  </section>
+
+  <section class="bloc">
+    <h2>VI. Freins et difficultés perçus par le bénéficiaire</h2>
+    <p class="souscription">Plusieurs choix possibles.</p>
+    <div class="champ">
+      <div class="options" id="freins">
+        <label class="opt"><input type="checkbox" value="un niveau de formation jugé insuffisant"><span>Formation jugée insuffisante</span></label>
+        <label class="opt"><input type="checkbox" value="un manque d'expérience dans le domaine envisagé"><span>Manque d'expérience visée</span></label>
+        <label class="opt"><input type="checkbox" value="l'âge, perçu comme un frein potentiel"><span>Âge perçu comme un frein</span></label>
+        <label class="opt"><input type="checkbox" value="des contraintes de santé"><span>Contraintes de santé</span></label>
+        <label class="opt"><input type="checkbox" value="un manque de confiance en soi"><span>Manque de confiance en soi</span></label>
+        <label class="opt"><input type="checkbox" value="une méconnaissance des métiers et du marché de l'emploi"><span>Méconnaissance du marché</span></label>
+        <label class="opt"><input type="checkbox" value="un budget limité pour financer une éventuelle formation"><span>Budget limité pour une formation</span></label>
+        <label class="opt"><input type="checkbox" value="des freins liés à la mobilité"><span>Freins liés à la mobilité</span></label>
+      </div>
+      <div class="autre-inline">
+        <input type="text" id="freins-autre" placeholder="Autres freins identifiés (précisez)">
+      </div>
+    </div>
+  </section>
+
+  <section class="bloc">
+    <h2>VII. Contraintes pratiques</h2>
+    <div class="champ">
+      <label class="q">Mobilité géographique</label>
+      <div class="options" id="mobilite">
+        <label class="opt"><input type="radio" name="mobilite" value="aucune contrainte de mobilité identifiée"><span>Aucune contrainte</span></label>
+        <label class="opt"><input type="radio" name="mobilite" value="une mobilité limitée à un rayon restreint autour du domicile"><span>Rayon limité</span></label>
+        <label class="opt"><input type="radio" name="mobilite" value="un attachement fort au bassin d'emploi actuel"><span>Attaché(e) au bassin actuel</span></label>
+        <label class="opt"><input type="radio" name="mobilite" value="une mobilité envisageable à l'échelle régionale ou nationale"><span>Mobilité régionale/nationale envisageable</span></label>
+      </div>
+      <div class="autre-inline">
+        <input type="text" id="mobilite-detail" placeholder="Précision éventuelle (ex. rayon en km, secteur géographique)">
+      </div>
+    </div>
+    <div class="champ">
+      <label class="q">Contraintes financières</label>
+      <select id="financier">
+        <option value="aucune">Aucune contrainte identifiée</option>
+        <option value="anticiper">Un financement à anticiper en cas de formation</option>
+        <option value="serre">Un budget serré, contrainte significative</option>
+      </select>
+    </div>
+    <div class="champ">
+      <label class="q">Jours de disponibilité</label>
+      <div class="options" id="jours-dispo">
+        <label class="opt"><input type="checkbox" value="lundi"><span>Lundi</span></label>
+        <label class="opt"><input type="checkbox" value="mardi"><span>Mardi</span></label>
+        <label class="opt"><input type="checkbox" value="mercredi"><span>Mercredi</span></label>
+        <label class="opt"><input type="checkbox" value="jeudi"><span>Jeudi</span></label>
+        <label class="opt"><input type="checkbox" value="vendredi"><span>Vendredi</span></label>
+        <label class="opt"><input type="checkbox" value="samedi"><span>Samedi</span></label>
+        <label class="opt"><input type="checkbox" value="dimanche"><span>Dimanche</span></label>
+      </div>
+    </div>
+    <div class="champ">
+      <label class="q">Créneaux horaires privilégiés</label>
+      <div class="options" id="creneaux-dispo">
+        <label class="opt"><input type="checkbox" value="le matin"><span>Matin</span></label>
+        <label class="opt"><input type="checkbox" value="l'après-midi"><span>Après-midi</span></label>
+        <label class="opt"><input type="checkbox" value="en fin de journée / soirée"><span>Fin de journée / soirée</span></label>
+        <label class="opt"><input type="checkbox" value="en journée complète"><span>Journée complète</span></label>
+      </div>
+      <div class="autre-inline">
+        <input type="text" id="dispo-detail" placeholder="Précision d'horaires (ex. à partir de 14h, hors mercredi matin...)">
+      </div>
+    </div>
+    <div class="champ">
+      <label class="q" for="contraintes-familiales">Contraintes familiales ou personnelles (facultatif)</label>
+      <textarea id="contraintes-familiales" placeholder="ex. garde d'enfants, aidant familial, projet de déménagement..."></textarea>
+    </div>
+  </section>
+
+  <section class="bloc">
+    <h2>VIII. Ressources et atouts identifiés par le bénéficiaire</h2>
+    <div class="champ">
+      <label class="q" for="ressources">Ce que le bénéficiaire estime être ses points forts</label>
+      <textarea id="ressources" placeholder="Notes libres, formulations du bénéficiaire..."></textarea>
+    </div>
+  </section>
+
+  <section class="bloc">
+    <h2>IX. Attentes vis-à-vis de l'accompagnement</h2>
+    <div class="champ">
+      <label class="q" for="attentes-consultant">Ce que le bénéficiaire attend du consultant / de l'accompagnement</label>
+      <textarea id="attentes-consultant" placeholder="ex. être challengé, être rassuré, disposer d'outils concrets..."></textarea>
+    </div>
+    <div class="champ">
+      <label class="q" for="remarques">Remarques complémentaires</label>
+      <textarea id="remarques" placeholder="Tout élément utile non couvert ci-dessus"></textarea>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button id="generer" onclick="genererAnalyse()">Générer l'analyse</button>
+    <button class="btn-secondaire" onclick="reinitialiser()">Réinitialiser le formulaire</button>
+  </div>
+  <p class="note-action">L'analyse est générée localement à partir des réponses saisies ci-dessus ; aucune donnée n'est transmise.</p>
+
+  <div id="resultat">
+    <h2>Synthèse de l'entretien préalable</h2>
+    <p class="sous" id="resultat-sous"></p>
+    <div id="texte-genere"></div>
+    <div class="zone-copie">
+      <button class="btn-secondaire" onclick="copierTexte()">Copier le texte</button>
+      <button class="btn-secondaire" onclick="window.print()">Imprimer / exporter en PDF</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function valCheckedRadio(name){
+  const el = document.querySelector('input[name="'+name+'"]:checked');
+  return el ? el.value : null;
+}
+function valChecked(containerId){
+  return Array.from(document.querySelectorAll('#'+containerId+' input[type=checkbox]:checked')).map(i=>i.value);
+}
+function listeFR(items){
+  items = items.filter(Boolean);
+  if(items.length===0) return null;
+  if(items.length===1) return items[0];
+  return items.slice(0,-1).join(', ') + ' ainsi que ' + items[items.length-1];
+}
+function maj(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function genererAnalyse(){
+  const nomBrut = document.getElementById('nom').value.trim();
+  const genre = valCheckedRadio('genre') || 'F';
+  const civilite = genre==='F' ? 'Madame' : 'Monsieur';
+  const pronom = genre==='F' ? 'elle' : 'il';
+  const poss = genre==='F' ? 'sa' : 'son';
+  const nomComplet = nomBrut ? (civilite+' '+nomBrut) : (civilite);
+  const date = document.getElementById('date').value;
+  const dateAffiche = date ? new Date(date).toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'}) : null;
+
+  const statut = valCheckedRadio('statut');
+  const poste = document.getElementById('poste').value.trim();
+  const secteur = document.getElementById('secteur').value.trim();
+  const anciennete = document.getElementById('anciennete').value.trim();
+
+  const declencheurs = valChecked('declencheurs');
+  const declencheurAutre = document.getElementById('declencheurs-autre').value.trim();
+  if(declencheurAutre) declencheurs.push(declencheurAutre);
+
+  const motivations = valChecked('motivations');
+  const motivationsAutre = document.getElementById('motivations-autre').value.trim();
+  if(motivationsAutre) motivations.push(motivationsAutre);
+
+  const attentes = valChecked('attentes');
+  const attentesAutre = document.getElementById('attentes-autre').value.trim();
+  if(attentesAutre) attentes.push(attentesAutre);
+
+  const freins = valChecked('freins');
+  const freinsAutre = document.getElementById('freins-autre').value.trim();
+  if(freinsAutre) freins.push(freinsAutre);
+
+  const mobilite = valCheckedRadio('mobilite');
+  const mobiliteDetail = document.getElementById('mobilite-detail').value.trim();
+  const financier = document.getElementById('financier').value;
+  const joursDispo = valChecked('jours-dispo');
+  const creneauxDispo = valChecked('creneaux-dispo');
+  const dispoDetail = document.getElementById('dispo-detail').value.trim();
+  const contraintesFam = document.getElementById('contraintes-familiales').value.trim();
+
+  const ressources = document.getElementById('ressources').value.trim();
+  const attentesConsultant = document.getElementById('attentes-consultant').value.trim();
+  const remarques = document.getElementById('remarques').value.trim();
+
+  const paragraphes = [];
+
+  // Paragraphe 1 : contexte et situation actuelle
+  let p1 = "L'entretien préalable" + (dateAffiche ? (" s'est déroulé le "+dateAffiche) : " s'est déroulé") + " avec " + nomComplet + ", dans le cadre de la mise en œuvre d'un bilan de compétences.";
+  if(statut || poste || secteur || anciennete){
+    let elems = [];
+    if(statut) elems.push(statut);
+    if(poste) elems.push("occupant" + (genre==='F'?'e':'') + " le poste de " + poste);
+    if(secteur) elems.push("dans le secteur " + secteur);
+    if(anciennete) elems.push("pour une expérience de " + anciennete);
+    p1 += " Sur le plan professionnel, " + pronom + " se trouve actuellement " + elems.join(', ') + ".";
+  }
+  paragraphes.push(p1);
+
+  // Paragraphe 2 : éléments déclencheurs
+  if(declencheurs.length){
+    const listeD = listeFR(declencheurs);
+    paragraphes.push("La démarche entreprise par " + nomComplet + " trouve son origine dans plusieurs éléments de contexte, notamment " + listeD + ". Ces éléments constituent le point de départ de la réflexion engagée dans le cadre du présent accompagnement.");
+  }
+
+  // Paragraphe 3 : motivations
+  if(motivations.length){
+    const listeM = listeFR(motivations);
+    paragraphes.push(maj(pronom) + " exprime le souhait, à travers ce bilan, de " + listeM + ". Ces motivations orientent d'emblée la manière dont l'accompagnement devra être construit, en cohérence avec les besoins exprimés dès cette première rencontre.");
+  }
+
+  // Paragraphe 4 : attentes vis-à-vis du bilan
+  if(attentes.length){
+    const listeA = listeFR(attentes);
+    paragraphes.push("Concernant les attentes formulées à l'égard du bilan lui-même, " + nomComplet + " souhaite en particulier " + listeA + ". Ces attentes seront prises en compte tout au long des phases d'investigation et de synthèse.");
+  }
+
+  // Paragraphe 5 : freins et difficultés
+  if(freins.length){
+    const listeF = listeFR(freins);
+    paragraphes.push("Plusieurs difficultés ou freins sont d'ores et déjà identifiés par " + poss + " intéressé" + (genre==='F'?'e':'') + ", à savoir " + listeF + ". Ces éléments feront l'objet d'une attention particulière au cours de la phase d'investigation, afin d'être objectivés et, autant que possible, dépassés.");
+  }
+
+  // Paragraphe 6 : ressources perçues
+  if(ressources){
+    paragraphes.push("Interrogé" + (genre==='F'?'e':'') + " sur ses propres atouts, " + nomComplet + " met en avant les éléments suivants : " + ressources + " Ce premier regard porté sur soi constituera un point d'appui pour la suite de l'accompagnement.");
+  }
+
+  // Paragraphe 7 : contraintes pratiques
+  let contraintesElems = [];
+  if(mobilite) contraintesElems.push(mobilite + (mobiliteDetail ? (" ("+mobiliteDetail+")") : ""));
+  if(financier==='anticiper') contraintesElems.push("un financement à anticiper en cas d'orientation vers une formation");
+  if(financier==='serre') contraintesElems.push("un budget serré, constituant une contrainte à prendre en compte");
+  if(contraintesFam) contraintesElems.push("des contraintes personnelles ou familiales, en l'occurrence " + contraintesFam);
+  if(contraintesElems.length){
+    paragraphes.push("Sur le plan pratique, l'entretien a permis de mettre en évidence " + listeFR(contraintesElems) + ". Ces éléments seront intégrés dans la construction des pistes professionnelles envisagées, afin de garantir leur caractère réaliste.");
+  }
+
+  // Paragraphe disponibilités (jours + créneaux)
+  if(joursDispo.length || creneauxDispo.length || dispoDetail){
+    let dispoElems = [];
+    if(joursDispo.length===7){
+      dispoElems.push("tous les jours de la semaine");
+    } else if(joursDispo.length){
+      dispoElems.push("les " + listeFR(joursDispo));
+    }
+    if(creneauxDispo.length){
+      dispoElems.push(listeFR(creneauxDispo));
+    }
+    let phraseDispo = "Concernant les disponibilités, " + nomComplet + " se déclare disponible";
+    if(dispoElems.length){
+      phraseDispo += " " + dispoElems.join(', ');
+    } else {
+      phraseDispo += ", sans créneau précisé à ce stade";
+    }
+    phraseDispo += dispoDetail ? (", étant précisé que " + dispoDetail + ".") : ".";
+    paragraphes.push(phraseDispo);
+  }
+
+  // Paragraphe 8 : attentes vis-à-vis de l'accompagnement + remarques
+  if(attentesConsultant || remarques){
+    let p8 = "";
+    if(attentesConsultant){
+      p8 += "Concernant l'accompagnement lui-même, " + nomComplet + " indique attendre " + attentesConsultant + ".";
+    }
+    if(remarques){
+      p8 += (p8 ? " Par ailleurs, " : "Par ailleurs, ") + "il est utile de noter que " + remarques;
+    }
+    paragraphes.push(p8);
+  }
+
+  // Paragraphe de conclusion
+  paragraphes.push("Cet entretien préalable a permis de poser les bases de l'accompagnement à venir et de dégager les premiers axes de travail. Les éléments recueillis seront approfondis au cours de la phase d'investigation, à l'aide des outils mobilisés dans le cadre du bilan de compétences.");
+
+  const container = document.getElementById('texte-genere');
+  container.innerHTML = paragraphes.map(p=>'<p>'+p+'</p>').join('');
+  document.getElementById('resultat-sous').textContent = nomComplet + (dateAffiche ? (' — entretien du ' + dateAffiche) : '');
+  document.getElementById('resultat').style.display = 'block';
+  document.getElementById('resultat').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function copierTexte(){
+  const texte = Array.from(document.querySelectorAll('#texte-genere p')).map(p=>p.textContent).join('\n\n');
+  navigator.clipboard.writeText(texte).then(()=>{
+    const btn = document.querySelectorAll('.zone-copie button')[0];
+    const original = btn.textContent;
+    btn.textContent = 'Copié ✓';
+    setTimeout(()=>{btn.textContent = original;}, 1600);
+  });
+}
+
+function reinitialiser(){
+  if(confirm('Réinitialiser tous les champs du questionnaire ?')){
+    document.querySelectorAll('input[type=text], input[type=date], textarea').forEach(el=>el.value='');
+    document.querySelectorAll('input[type=checkbox]').forEach(el=>el.checked=false);
+    document.querySelectorAll('input[type=radio]').forEach(el=>el.checked=false);
+    document.querySelector('input[name=genre][value=F]').checked = true;
+    document.getElementById('financier').value = 'aucune';
+    document.getElementById('resultat').style.display = 'none';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+</script>
+</body>
+</html>
