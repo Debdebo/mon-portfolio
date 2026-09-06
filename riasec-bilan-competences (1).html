@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explorer mes intérêts professionnels — Questionnaire RIASEC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#EEECE3;
+    --paper:#FBFAF6;
+    --ink:#2A2820;
+    --ink-soft:#5B5848;
+    --line:#DAD5C6;
+    --r:#A85A3A;
+    --i:#3E6E73;
+    --a:#7C4E82;
+    --s:#B85C6B;
+    --e:#B98A32;
+    --c:#45566E;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans', -apple-system, sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:48px 24px 96px;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', Georgia, serif;
+    font-weight:600;
+    line-height:1.15;
+    margin:0 0 0.4em;
+  }
+  h1{font-size:2rem; letter-spacing:-0.01em;}
+  h2{font-size:1.4rem;}
+  p{margin:0 0 1em; color:var(--ink-soft); max-width:62ch;}
+  .intro-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:28px 32px;
+    margin-bottom:32px;
+  }
+  .scale-legend{
+    display:grid;
+    grid-template-columns:1fr repeat(4,72px);
+    gap:8px;
+    align-items:end;
+    padding:0 0 10px;
+    margin-bottom:6px;
+    border-bottom:1px solid var(--line);
+    font-size:0.78rem;
+    color:var(--ink-soft);
+  }
+  .scale-legend span{text-align:center;}
+  .scale-legend span:first-child{text-align:left;}
+
+  .progress-track{
+    height:3px;
+    background:var(--line);
+    border-radius:2px;
+    margin:28px 0 32px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--ink);
+    width:0%;
+    transition:width .35s ease;
+  }
+  .step-label{
+    font-size:0.82rem;
+    color:var(--ink-soft);
+    letter-spacing:0.02em;
+    margin-bottom:4px;
+  }
+
+  .q-list{list-style:none; margin:0; padding:0;}
+  .q-row{
+    display:grid;
+    grid-template-columns:1fr repeat(4,72px);
+    align-items:center;
+    gap:8px;
+    padding:14px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .q-row p.qtext{margin:0; color:var(--ink); font-size:0.98rem; max-width:44ch;}
+  .opt{
+    width:34px;height:34px;
+    margin:0 auto;
+    border-radius:50%;
+    border:1.5px solid #C9C3B2;
+    background:var(--paper);
+    cursor:pointer;
+    transition:all .15s ease;
+    padding:0;
+  }
+  .opt:hover{border-color:var(--ink-soft);}
+  .opt.selected{
+    background:var(--ink);
+    border-color:var(--ink);
+  }
+  .opt:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+
+  .nav-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:32px;
+  }
+  button.primary, button.ghost{
+    font-family:'Work Sans', sans-serif;
+    font-size:0.95rem;
+    font-weight:500;
+    padding:12px 22px;
+    border-radius:3px;
+    cursor:pointer;
+    border:1.5px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+  }
+  button.primary:disabled{
+    opacity:0.35;
+    cursor:not-allowed;
+  }
+  button.ghost{
+    background:transparent;
+    color:var(--ink);
+  }
+  .hint{font-size:0.82rem; color:var(--ink-soft); margin-top:6px;}
+
+  /* Results */
+  #results{display:none;}
+  .hexwrap{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:24px;
+    margin:24px 0 32px;
+    display:flex;
+    justify-content:center;
+  }
+  .code-banner{
+    font-family:'Fraunces', serif;
+    font-size:2.4rem;
+    font-weight:600;
+    letter-spacing:0.04em;
+    margin-bottom:4px;
+  }
+  .profile-card{
+    border-left:4px solid var(--line);
+    padding:6px 0 6px 18px;
+    margin-bottom:22px;
+  }
+  .profile-card h3{font-size:1.1rem; margin-bottom:6px;}
+  .profile-card .tag{
+    display:inline-block;
+    font-size:0.72rem;
+    font-weight:600;
+    letter-spacing:0.03em;
+    padding:2px 8px;
+    border-radius:20px;
+    color:#fff;
+    margin-bottom:8px;
+  }
+  .profile-card.low{
+    opacity:0.85;
+  }
+  .profile-card.low .tag{
+    color:var(--ink);
+    background:transparent !important;
+    border:1.5px solid currentColor;
+  }
+  .reflect-block{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:24px 28px;
+    margin:28px 0;
+  }
+  .reflect-block label{
+    display:block;
+    font-weight:500;
+    margin:16px 0 6px;
+  }
+  .reflect-block label:first-of-type{margin-top:0;}
+  textarea{
+    width:100%;
+    min-height:64px;
+    font-family:'Work Sans', sans-serif;
+    font-size:0.95rem;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:10px 12px;
+    resize:vertical;
+    background:#fff;
+    color:var(--ink);
+  }
+  .score-table{width:100%; border-collapse:collapse; margin:20px 0 8px; font-size:0.9rem;}
+  .score-table td{padding:6px 4px; border-bottom:1px solid var(--line);}
+  .score-table .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px;}
+  .bar-bg{background:#E2DFD3; border-radius:3px; height:8px; width:100%; overflow:hidden;}
+  .bar-fill{height:100%; border-radius:3px;}
+
+  @media (max-width:520px){
+    .q-row{grid-template-columns:1fr; gap:6px;}
+    .q-row .opts-row{display:flex; gap:14px; justify-content:flex-start;}
+    .scale-legend{display:none;}
+  }
+
+  @media print{
+    body{background:#fff;}
+    .no-print{display:none !important;}
+    #questionnaire{display:none !important;}
+    #results{display:block !important;}
+    .hexwrap, .intro-card, .reflect-block{border:1px solid #ccc;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="intro">
+    <div class="step-label">Bilan de compétences — outil d'exploration</div>
+    <h1>Questionnaire d'intérêts professionnels (RIASEC)</h1>
+    <div class="intro-card">
+      <p>Ce questionnaire s'appuie sur le modèle RIASEC de John Holland, qui décrit six grandes familles d'intérêts et de comportements professionnels. Il ne mesure ni intelligence ni niveau de qualification : il repère ce qui vous attire et ce dans quoi vous vous sentez à l'aise, pour nourrir la réflexion menée pendant votre bilan.</p>
+      <p>90 affirmations vous seront proposées, réparties en 6 séries de 15. Pour chacune, indiquez dans quelle mesure elle vous correspond. Répondez spontanément, en pensant à ce que vous aimez ou aimeriez faire — pas seulement à ce que vous savez déjà faire.</p>
+      <button class="primary" id="startBtn" type="button">Commencer</button>
+    </div>
+  </div>
+
+  <div id="questionnaire" style="display:none;">
+    <div class="step-label" id="stepLabel">Série 1 / 6</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="scale-legend">
+      <span></span>
+      <span>Pas du tout</span>
+      <span>Un peu</span>
+      <span>Assez</span>
+      <span>Beaucoup</span>
+    </div>
+
+    <ul class="q-list" id="qList"></ul>
+
+    <div class="nav-row">
+      <button class="ghost no-print" id="prevBtn" type="button">Précédent</button>
+      <button class="primary" id="nextBtn" type="button" disabled>Suivant</button>
+    </div>
+    <p class="hint">Répondez à chaque affirmation pour passer à la série suivante.</p>
+  </div>
+
+  <div id="results">
+    <div class="step-label">Résultat de l'exploration</div>
+    <h1>Votre profil d'intérêts</h1>
+    <p>Ce résultat n'est ni un verdict ni une case : il donne un point de départ pour discuter, pendant votre bilan, des activités qui vous attirent réellement et de la manière dont elles peuvent s'articuler avec votre parcours.</p>
+
+    <div class="code-banner" id="codeBanner"></div>
+    <p id="codeSub" style="margin-top:-8px;"></p>
+
+    <div class="hexwrap"><svg id="hexSvg" width="380" height="380" viewBox="0 0 380 380"></svg></div>
+
+    <table class="score-table" id="scoreTable"></table>
+
+    <h2>Vos dominantes</h2>
+    <div id="profileCards"></div>
+
+    <h2>Vos traits moins présents</h2>
+    <p>Un score plus faible ne traduit pas une incapacité : il indique simplement une appétence spontanée plus faible. C'est une indication utile pour ne pas construire un projet uniquement autour de ces dimensions.</p>
+    <div id="profileCardsLow"></div>
+
+    <div class="reflect-block no-print-avoid">
+      <h2 style="margin-bottom:4px;">Pour poursuivre la réflexion</h2>
+      <p style="margin-bottom:0;">À utiliser en entretien ou en préparation, avant la restitution.</p>
+      <label for="r1">Parmi les affirmations où vous avez répondu « Beaucoup », lesquelles retrouvez-vous déjà dans votre parcours (études, emplois, engagements, loisirs) ?</label>
+      <textarea id="r1"></textarea>
+      <label for="r2">Lesquelles aimeriez-vous développer davantage à l'avenir, même si ce n'est pas encore le cas aujourd'hui ?</label>
+      <textarea id="r2"></textarea>
+      <label for="r3">Ce résultat vous surprend-il ? Qu'est-ce qu'il confirme ou, au contraire, qu'est-ce qu'il bouscule dans l'idée que vous vous faisiez de votre projet ?</label>
+      <textarea id="r3"></textarea>
+    </div>
+
+    <div class="nav-row no-print">
+      <button class="ghost" id="restartBtn" type="button">Recommencer à zéro</button>
+      <button class="ghost" id="editBtn" type="button">Modifier mes réponses</button>
+    </div>
+    <div class="nav-row no-print" style="margin-top:12px;">
+      <button class="ghost" id="printBtn" type="button">Imprimer directement</button>
+      <button class="primary" id="downloadBtn" type="button">Télécharger mon résultat (fichier à imprimer)</button>
+    </div>
+    <p class="hint no-print">Si « Imprimer directement » n'ouvre rien (fréquent dans un aperçu de fichier intégré), utilisez « Télécharger mon résultat » : un fichier s'enregistre sur votre appareil, à ouvrir ensuite dans votre navigateur pour l'imprimer ou l'exporter en PDF depuis là.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+  const DATA = {
+    R: { name:"Réaliste", color:"#A85A3A",
+      desc:"Vous êtes attiré·e par le concret, l'action et le résultat tangible : travailler avec des objets, des outils ou des matières, souvent en extérieur ou sur le terrain.",
+      domains:"métiers techniques et manuels, artisanat, maintenance, environnement, agriculture, logistique",
+      items:[
+        "Réparer ou entretenir un objet, un appareil ou un véhicule",
+        "Travailler avec mes mains sur un support concret (bois, métal, terre, tissu)",
+        "Passer du temps en extérieur, au contact de la nature ou du terrain",
+        "Utiliser des outils, des machines ou des engins techniques",
+        "Construire ou assembler quelque chose de mes mains",
+        "M'occuper d'animaux ou de plantes",
+        "Effectuer des tâches physiques qui demandent de l'endurance",
+        "Suivre un plan technique précis (schéma, notice, plan de montage)",
+        "Diagnostiquer une panne ou un dysfonctionnement technique",
+        "Préférer l'action concrète aux longues discussions",
+        "Conduire un véhicule ou piloter une machine",
+        "Installer ou réparer une infrastructure (électricité, plomberie, mécanique)",
+        "Me décrire comme quelqu'un de pratique et efficace",
+        "Travailler seul·e, à mon rythme, sur une tâche manuelle",
+        "Manipuler des matériaux ou des produits bruts"
+      ]},
+    I: { name:"Investigateur", color:"#3E6E73",
+      desc:"Vous aimez comprendre, analyser et chercher des explications rigoureuses ; la réflexion et la méthode priment sur l'action immédiate.",
+      domains:"recherche, sciences, ingénierie, data, expertise technique, diagnostic médical",
+      items:[
+        "Chercher à comprendre pourquoi un phénomène se produit",
+        "Analyser des données, des chiffres ou des résultats",
+        "Lire des articles scientifiques, techniques ou spécialisés",
+        "Résoudre un problème complexe qui demande de la réflexion",
+        "Mener une enquête ou une recherche approfondie sur un sujet",
+        "Faire des expériences ou tester des hypothèses",
+        "Me sentir à l'aise avec les raisonnements logiques ou mathématiques",
+        "Comparer plusieurs sources d'information avant de conclure",
+        "Travailler sur un diagnostic médical, technique ou scientifique",
+        "Être curieux·se et aimer comprendre le fonctionnement des choses",
+        "Élaborer un modèle ou une méthode d'analyse",
+        "Prendre le temps d'analyser avant d'agir",
+        "M'intéresser aux sciences (astronomie, biologie, physique, informatique)",
+        "Vérifier la fiabilité d'une information avant de la partager",
+        "Travailler en autonomie sur une question complexe et précise"
+      ]},
+    A: { name:"Artistique", color:"#7C4E82",
+      desc:"Vous avez besoin d'exprimer une sensibilité ou une vision personnelle, et vous êtes à l'aise avec l'ambiguïté et l'improvisation.",
+      domains:"création, design, communication visuelle, écriture, spectacle, artisanat d'art",
+      items:[
+        "Créer quelque chose d'original (texte, image, musique, objet)",
+        "Imaginer une mise en scène, une décoration ou une composition visuelle",
+        "Écrire pour exprimer une idée ou une émotion",
+        "Jouer d'un instrument, chanter ou pratiquer une activité artistique",
+        "Dessiner, peindre ou concevoir un visuel",
+        "Improviser ou sortir des sentiers battus",
+        "Rechercher l'esthétique dans ce que je produis",
+        "Réinventer une façon de faire plutôt que suivre une méthode imposée",
+        "Me décrire comme quelqu'un de sensible et d'imaginatif",
+        "Concevoir un objet, un vêtement ou un espace original",
+        "Photographier ou filmer pour raconter une histoire",
+        "Participer à un projet créatif collectif (spectacle, exposition, publication)",
+        "Avoir besoin de liberté et de variété dans mon travail",
+        "Interpréter un rôle ou une pièce devant un public",
+        "Exprimer mes idées par un moyen visuel ou artistique plutôt que par un écrit classique"
+      ]},
+    S: { name:"Social", color:"#B85C6B",
+      desc:"Vous êtes tourné·e vers les autres : écouter, transmettre, accompagner. Le lien humain donne du sens à votre activité.",
+      domains:"formation, santé, accompagnement social, ressources humaines, secteur associatif",
+      items:[
+        "Écouter et accompagner une personne en difficulté",
+        "Transmettre un savoir, former ou enseigner",
+        "Travailler en équipe pour atteindre un objectif commun",
+        "M'engager dans une cause sociale, associative ou communautaire",
+        "Aider quelqu'un à prendre une décision importante pour lui",
+        "Animer un groupe ou une réunion",
+        "Instaurer un climat de confiance avec les autres",
+        "M'occuper d'enfants, de personnes âgées ou en situation de handicap",
+        "Me décrire comme quelqu'un d'empathique et à l'écoute",
+        "Résoudre un conflit entre plusieurs personnes",
+        "Conseiller ou orienter une personne dans son parcours",
+        "Organiser une activité collective ou un événement solidaire",
+        "Prendre soin du bien-être d'autrui au quotidien",
+        "Préférer les métiers qui ont un impact humain direct",
+        "Travailler dans le secteur de la santé, de l'éducation ou de l'accompagnement"
+      ]},
+    E: { name:"Entreprenant", color:"#B98A32",
+      desc:"Vous aimez convaincre, décider et entraîner les autres vers un objectif ; l'action, le challenge et la prise de responsabilité vous stimulent.",
+      domains:"commerce, management, entrepreneuriat, développement commercial, gestion de projet",
+      items:[
+        "Convaincre ou persuader quelqu'un d'adhérer à une idée",
+        "Vendre un produit, un service ou une idée",
+        "Prendre des initiatives et des décisions rapidement",
+        "Diriger une équipe ou un projet",
+        "Négocier un accord ou une transaction",
+        "Lancer un projet, une activité ou une entreprise",
+        "Prendre la parole en public",
+        "Fixer des objectifs ambitieux et chercher à les atteindre",
+        "Me décrire comme quelqu'un de dynamique et persuasif",
+        "Gérer un budget, une équipe ou des ressources",
+        "Prendre des risques pour saisir une opportunité",
+        "Motiver et entraîner les autres vers un objectif",
+        "Aimer la compétition et le dépassement de soi",
+        "Développer un réseau professionnel",
+        "Représenter une organisation auprès de partenaires ou de clients"
+      ]},
+    C: { name:"Conventionnel", color:"#45566E",
+      desc:"Vous êtes à l'aise dans un cadre structuré, avec des règles claires et des tâches bien définies ; la fiabilité et la rigueur sont vos points d'appui.",
+      domains:"gestion administrative, comptabilité, contrôle qualité, logistique documentaire, back-office",
+      items:[
+        "Organiser et classer des documents, des dossiers ou des données",
+        "Suivre des procédures précises et bien définies",
+        "Vérifier l'exactitude de chiffres, de comptes ou de rapports",
+        "Travailler avec rigueur et méthode",
+        "Tenir à jour un planning, un tableau de suivi ou une base de données",
+        "Me sentir à l'aise avec des tâches répétitives et bien cadrées",
+        "Rédiger des comptes-rendus, des procès-verbaux ou des rapports",
+        "Utiliser des logiciels de gestion, de comptabilité ou de bureautique",
+        "Me décrire comme quelqu'un d'organisé et de fiable",
+        "Respecter des délais et des consignes précises",
+        "Effectuer des opérations de calcul ou de facturation",
+        "Avoir un cadre de travail stable et prévisible",
+        "Archiver, ordonner ou structurer de l'information",
+        "Contrôler la conformité d'un dossier ou d'une procédure",
+        "Préférer des missions clairement définies plutôt qu'ouvertes"
+      ]}
+  };
+
+  const LETTERS = ["R","I","A","S","E","C"];
+  const ITEMS = [];
+  for(let i=0;i<15;i++){
+    LETTERS.forEach(L=>{
+      ITEMS.push({id:L+i, letter:L, text:DATA[L].items[i]});
+    });
+  }
+  const PAGE_SIZE = 15;
+  const PAGES = [];
+  for(let p=0;p<ITEMS.length;p+=PAGE_SIZE){ PAGES.push(ITEMS.slice(p,p+PAGE_SIZE)); }
+
+  const answers = {};
+  let currentPage = 0;
+
+  const qList = document.getElementById('qList');
+  const stepLabel = document.getElementById('stepLabel');
+  const progressFill = document.getElementById('progressFill');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function renderPage(scrollTop){
+    if(scrollTop === undefined) scrollTop = true;
+    const page = PAGES[currentPage];
+    qList.innerHTML = "";
+    page.forEach(item=>{
+      const li = document.createElement('li');
+      li.className = 'q-row';
+      const p = document.createElement('p');
+      p.className = 'qtext';
+      p.textContent = item.text;
+      li.appendChild(p);
+
+      const optsWrap = document.createElement('div');
+      optsWrap.className = 'opts-row';
+      optsWrap.style.display = 'contents';
+
+      for(let v=0; v<4; v++){
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt';
+        btn.setAttribute('aria-label', ["Pas du tout","Un peu","Assez","Beaucoup"][v]);
+        if(answers[item.id] === v) btn.classList.add('selected');
+        btn.addEventListener('click', ()=>{
+          answers[item.id] = v;
+          renderPage(false);
+        });
+        li.appendChild(btn);
+      }
+      qList.appendChild(li);
+    });
+    stepLabel.textContent = "Série " + (currentPage+1) + " / " + PAGES.length;
+    progressFill.style.width = Math.round(((currentPage)/PAGES.length)*100 + (100/PAGES.length)) + "%";
+    prevBtn.style.visibility = currentPage === 0 ? 'hidden' : 'visible';
+    nextBtn.textContent = currentPage === PAGES.length-1 ? "Voir mon profil" : "Suivant";
+    updateNext();
+    if(scrollTop){ window.scrollTo({top:0, behavior:'smooth'}); }
+  }
+
+  function updateNext(){
+    const page = PAGES[currentPage];
+    const allAnswered = page.every(item => answers[item.id] !== undefined);
+    nextBtn.disabled = !allAnswered;
+  }
+
+  prevBtn.addEventListener('click', ()=>{
+    if(currentPage>0){ currentPage--; renderPage(); }
+  });
+  nextBtn.addEventListener('click', ()=>{
+    if(currentPage < PAGES.length-1){
+      currentPage++;
+      renderPage();
+    } else {
+      showResults();
+    }
+  });
+
+  document.getElementById('startBtn').addEventListener('click', ()=>{
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('questionnaire').style.display = 'block';
+    renderPage();
+  });
+
+  document.getElementById('restartBtn').addEventListener('click', ()=>{
+    Object.keys(answers).forEach(k=>delete answers[k]);
+    currentPage = 0;
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('intro').style.display = 'block';
+    window.scrollTo({top:0});
+  });
+
+  document.getElementById('editBtn').addEventListener('click', ()=>{
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('questionnaire').style.display = 'block';
+    currentPage = 0;
+    renderPage();
+  });
+
+  function buildStandaloneResultHTML(){
+    const styleTag = document.querySelector('style');
+    const resultsClone = document.getElementById('results').cloneNode(true);
+    resultsClone.querySelectorAll('.no-print').forEach(el=>el.remove());
+    resultsClone.style.display = 'block';
+    resultsClone.removeAttribute('id');
+    return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+      '<title>Mon profil RIASEC</title>' + styleTag.outerHTML +
+      '<style>body{padding:0;} .wrap{padding:32px 24px;} .profile-card, .reflect-block{page-break-inside:avoid;}</style>' +
+      '</head><body><div class="wrap">' + resultsClone.outerHTML + '</div></body></html>';
+  }
+
+  document.getElementById('printBtn').addEventListener('click', ()=>{
+    try{ window.print(); }
+    catch(e){ alert("L'impression directe n'est pas disponible ici. Utilisez plutôt le bouton « Télécharger mon résultat »."); }
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', ()=>{
+    try{
+      const html = buildStandaloneResultHTML();
+      const blob = new Blob([html], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'mon-profil-riasec.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(()=> URL.revokeObjectURL(url), 5000);
+    }catch(e){
+      alert("Le téléchargement automatique n'a pas fonctionné sur cet appareil. Essayez d'ouvrir ce fichier directement dans un navigateur (Chrome, Safari…) plutôt que dans un aperçu intégré, puis réessayez.");
+    }
+  });
+
+  function computeScores(){
+    const scores = {};
+    LETTERS.forEach(L=>{
+      let sum = 0;
+      for(let i=0;i<15;i++){ sum += (answers[L+i] || 0); }
+      scores[L] = sum;
+    });
+    return scores;
+  }
+
+  function showResults(){
+    document.getElementById('questionnaire').style.display = 'none';
+    const scores = computeScores();
+    const maxScore = 45;
+    const ranked = [...LETTERS].sort((a,b)=> scores[b]-scores[a]);
+    const code = ranked.slice(0,3).join("");
+
+    document.getElementById('codeBanner').textContent = code;
+    document.getElementById('codeBanner').style.color = DATA[ranked[0]].color;
+    document.getElementById('codeSub').textContent =
+      "Dominantes : " + ranked.slice(0,3).map(L=>DATA[L].name).join(" · ");
+
+    // Hexagon
+    const svg = document.getElementById('hexSvg');
+    svg.innerHTML = "";
+    const cx=190, cy=190, maxR=150;
+    const ns = "http://www.w3.org/2000/svg";
+    function pointAt(idx, r){
+      const angle = (-90 + idx*60) * Math.PI/180;
+      return [cx + r*Math.cos(angle), cy + r*Math.sin(angle)];
+    }
+    // grid rings
+    [0.25,0.5,0.75,1].forEach(frac=>{
+      const pts = LETTERS.map((L,idx)=> pointAt(idx, maxR*frac).join(",")).join(" ");
+      const poly = document.createElementNS(ns,'polygon');
+      poly.setAttribute('points', pts);
+      poly.setAttribute('fill','none');
+      poly.setAttribute('stroke','#DAD5C6');
+      poly.setAttribute('stroke-width','1');
+      svg.appendChild(poly);
+    });
+    // axes + labels
+    LETTERS.forEach((L,idx)=>{
+      const [x,y] = pointAt(idx, maxR);
+      const line = document.createElementNS(ns,'line');
+      line.setAttribute('x1',cx); line.setAttribute('y1',cy);
+      line.setAttribute('x2',x); line.setAttribute('y2',y);
+      line.setAttribute('stroke','#DAD5C6'); line.setAttribute('stroke-width','1');
+      svg.appendChild(line);
+
+      const [lx,ly] = pointAt(idx, maxR+22);
+      const text = document.createElementNS(ns,'text');
+      text.setAttribute('x',lx); text.setAttribute('y',ly+4);
+      text.setAttribute('text-anchor','middle');
+      text.setAttribute('font-family',"'Work Sans', sans-serif");
+      text.setAttribute('font-size','13');
+      text.setAttribute('font-weight','600');
+      text.setAttribute('fill', DATA[L].color);
+      text.textContent = L;
+      svg.appendChild(text);
+    });
+    // data polygon
+    const dataPts = LETTERS.map((L,idx)=> pointAt(idx, maxR*(scores[L]/maxScore)).join(",")).join(" ");
+    const dataPoly = document.createElementNS(ns,'polygon');
+    dataPoly.setAttribute('points', dataPts);
+    dataPoly.setAttribute('fill', DATA[ranked[0]].color);
+    dataPoly.setAttribute('fill-opacity','0.22');
+    dataPoly.setAttribute('stroke', DATA[ranked[0]].color);
+    dataPoly.setAttribute('stroke-width','2');
+    svg.appendChild(dataPoly);
+    // vertex dots
+    LETTERS.forEach((L,idx)=>{
+      const [x,y] = pointAt(idx, maxR*(scores[L]/maxScore));
+      const dot = document.createElementNS(ns,'circle');
+      dot.setAttribute('cx',x); dot.setAttribute('cy',y); dot.setAttribute('r','4');
+      dot.setAttribute('fill', DATA[L].color);
+      svg.appendChild(dot);
+    });
+
+    // score table
+    const table = document.getElementById('scoreTable');
+    table.innerHTML = "";
+    ranked.forEach(L=>{
+      const pct = Math.round((scores[L]/maxScore)*100);
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td style="width:140px;"><span class="dot" style="background:'+DATA[L].color+'"></span>'+DATA[L].name+'</td>'+
+        '<td><div class="bar-bg"><div class="bar-fill" style="width:'+pct+'%;background:'+DATA[L].color+'"></div></div></td>'+
+        '<td style="width:60px; text-align:right; color:var(--ink-soft);">'+scores[L]+' / '+maxScore+'</td>';
+      table.appendChild(tr);
+    });
+
+    // profile cards for top 3
+    const cardsWrap = document.getElementById('profileCards');
+    cardsWrap.innerHTML = "";
+    ranked.slice(0,3).forEach(L=>{
+      const div = document.createElement('div');
+      div.className = 'profile-card';
+      div.style.borderLeftColor = DATA[L].color;
+      div.innerHTML =
+        '<span class="tag" style="background:'+DATA[L].color+'">'+L+'</span>'+
+        '<h3>'+DATA[L].name+'</h3>'+
+        '<p style="margin-bottom:0;">'+DATA[L].desc+' Pistes de domaines : '+DATA[L].domains+'.</p>';
+      cardsWrap.appendChild(div);
+    });
+
+    // profile cards for bottom 3 (less dominant traits)
+    const cardsWrapLow = document.getElementById('profileCardsLow');
+    cardsWrapLow.innerHTML = "";
+    ranked.slice(-3).forEach(L=>{
+      const div = document.createElement('div');
+      div.className = 'profile-card low';
+      div.style.borderLeftColor = DATA[L].color;
+      div.innerHTML =
+        '<span class="tag" style="color:'+DATA[L].color+'">'+L+'</span>'+
+        '<h3>'+DATA[L].name+'</h3>'+
+        '<p style="margin-bottom:0;">Ce résultat suggère de ne pas prioriser les métiers construits uniquement autour de : '+DATA[L].domains+'. Cela ne signifie pas une incapacité à les exercer, seulement une appétence spontanée plus faible que pour vos dominantes.</p>';
+      cardsWrapLow.appendChild(div);
+    });
+
+    document.getElementById('results').style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+})();
+</script>
+</body>
+</html>
